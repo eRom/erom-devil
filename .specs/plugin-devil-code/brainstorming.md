@@ -85,7 +85,22 @@ Fichiers temp dans un `mktemp -d`, passés en `INPUTS:` étiquetés :
 - **INTENT** *(optionnel)* — le doc d'intention.
 
 Cas dégradé : PR non checkoutée localement → FILES omis, signalé dans la
-confirmation et le rapport.
+confirmation et le rapport. Le verdict rendu en DIFF seul n'est pas bridé
+mais porte un badge d'ouverture « REVIEW SUR DIFF SEUL — contexte réduit »
+(dogfood Q10), et la mission demande au devil de calibrer : issue dépendant
+du contexte absent → sévérité prudente, dépendance nommée.
+
+**Scan pré-vol anti-fuite (dogfood Q2, 3/3)** — avant tout envoi :
+
+- Exclusion dure du paquet FILES : fichiers type `.env*`, `*.pem`, `*.key`,
+  `credentials*`, `secrets*` (liste figée dans la skill). Exclusion signalée.
+- Scan de DIFF + FILES par une douzaine de regex à haute valeur (blocs
+  private key, `AKIA…`, `ghp_…`, `sk-…`, `xox…`, affectations
+  password/token/secret/api_key). Un hit → STOP avant envoi, lignes
+  suspectes affichées, Romain tranche : exclure le fichier, annuler, ou
+  forcer en connaissance de cause. Zéro dépendance nouvelle ; le biais
+  assumé est le faux positif (un STOP à tort coûte une relecture, un faux
+  négatif coûte une fuite irréversible).
 
 ## Mission (le nerf de la guerre : l'anti-bruit)
 
@@ -95,12 +110,27 @@ Reviewer senior avocat du diable sur un **changement**. Règles dures :
   Interdit de flagger du code pré-existant non touché.
 - Chaque issue : `file:ligne` + `failure_scenario` concret + suggestion
   actionnable. Pas de scénario d'échec crédible = pas d'issue.
+- Sémantique du `failure_scenario` (dogfood Q4) : « conséquence concrète et
+  située », déclinée par catégorie — correctness/security/performance/tests
+  = entrées → résultat faux ; architecture/maintainability = le coût futur
+  nommé et son déclencheur (« ajouter un 4e transport forcera à dupliquer X
+  dans 3 skills »). « C'est moche » interdit ; « ça coûtera X au prochain
+  Y » exigé. Un seul champ, schéma inchangé, la mission porte la nuance.
 - Style et naming purs interdits. Confiance élevée exigée (héritage
   `/security-review`).
 - Si INTENT fourni : juger aussi l'alignement du code à l'intention
   (catégorie `intent`), l'angle de `requesting-code-review`.
 - Verdict : ≥ 80 approve, 50-79 rework, < 50 reject. Reject = le changement
   est structurellement mauvais, réécrire coûte moins cher que corriger.
+
+**Ancrage vérifié (dogfood Q3)** — le contrat transport (VALIDATE_JQ + retry
++ SCHEMA_INVALID) couvre la syntaxe, pas les faits. En plus :
+
+- VALIDATE_JQ renforcé : bornes de score 0-100, enums severity/category.
+- Au rapport, l'orchestrateur vérifie chaque `file:ligne` contre le diff :
+  issue hors périmètre → affichée DÉCLASSÉE « non ancrée », jamais
+  supprimée en silence ; la correction guidée l'ignore. Zéro appel en plus,
+  la dégradation est visible.
 
 ## Rapport, correction, swarm
 
@@ -113,6 +143,13 @@ Reviewer senior avocat du diable sur un **changement**. Règles dures :
 - Swarm : 3 voix en parallèle, quorum ≥ 2, consolidation par problème de
   fond (aidée par file:line), badges 3/3 2/3 1/3, voix dissonante jamais
   écrasée, max 1 re-swarm.
+- Réduction du verdict swarm (dogfood Q1, 3/3) : table devil-spec-swarm
+  explicitée — ≥ 2 approve ET 0 reject → VALABLE ; ≥ 2 reject → JETABLE ;
+  tout le reste (dont le split approve/rework/reject) → MODIFICATIONS
+  REQUISES. Pas de score global consolidé : grille par devil + moyenne
+  indicative. **Garde-fou sécurité** : toute issue `critical` de catégorie
+  `security` portée par au moins un devil plafonne le verdict à
+  MODIFICATIONS REQUISES, même à 3 approve.
 
 ## Non-buts
 
@@ -128,6 +165,29 @@ Reviewer senior avocat du diable sur un **changement**. Règles dures :
   avec validation de Romain, comme devil-spec.
 - Corollaire v0.1.0 inchangé : les entrées transitent par des fournisseurs
   externes, jamais de secrets dans un diff soumis aux devils.
+
+## Questions écartées au dogfood (2026-07-18)
+
+Interrogatoire à trois voix (`/devil-brain-swarm`) : 10 questions consolidées,
+5 retenues (traitées dans les sections amendées ci-dessus), 5 écartées avec
+rationale — l'esquive visible plutôt que silencieuse :
+
+1. **Working tree mouvant pendant la review** (gemini, bloquante) : outil
+   mono-utilisateur en session interactive ; Romain est dans la session
+   pendant le run, et la correction guidée relit chaque fichier avant Edit.
+   Pas de CI, pas d'équipe : géré par l'usage.
+2. **Panne fournisseur / quorum** (deepseek + glm, importante) : déjà couvert
+   par le pattern v0.2.0 décalqué — 3 voix pleines, 2 voix signalées en tête
+   de rapport, ≤ 1 voix = pas de verdict. Jamais de dégradation silencieuse.
+3. **Refs git indisponibles / offline** (gemini, importante) : outil local
+   interactif ; une erreur git remonte à l'orchestrateur qui la présente et
+   propose un target alternatif. Pas de mode headless à protéger.
+4. **Temp files orphelins sur crash** (gemini, importante) : même pattern
+   mktemp + trash que v0.2.0, résidu sur crash toléré sur machine perso.
+5. **Version pinning des modèles** (deepseek, importante) : les modèles cloud
+   (agy, ollama cloud) ne sont pas pinnables par le plugin ; dérive assumée,
+   le dogfood continu fait office de non-régression. Limite v0.2.0 déjà actée
+   (« diversité des trois voix postulée »).
 
 ## Points d'attention livraison
 
