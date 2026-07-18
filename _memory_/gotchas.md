@@ -52,10 +52,13 @@
   retour ; lire la sortie. (Piège récurrent pour agents/wrappers d'exécution.)
 
 ## Hook rtk local
-- Réécrit les sorties git/grep/ls même parfois avec `command` (ex. plage de
-  commits condensée) → pour un hash/état décisionnel, vérifier via
-  `git rev-parse` ciblé ou redirection fichier + Read. Un implémenteur a
-  rapporté une plage fausse (70afb04..) à cause de ça ; le commit réel était propre.
+- RÉSOLU 2026-07-18 : exclusions actives via `~/Library/Application Support/
+  rtk/config.toml` (convention Apple, symlink vers `~/.config/rtk/config.toml`)
+  — grep, curl, find, git log, git status, git branch passent en clair.
+  `ls` et le reste restent réécrits. Le préfixe `command` ne protège PAS
+  (réécriture par hook harnais, avant le shell). Historique : plage de commits
+  faussée (70afb04..) quand git log était encore réécrit ; le commit réel
+  était propre.
 
 ## Teammates / agents nommés
 - Le canal de retour des agents NOMMÉS (mode teammate) est intermittent :
