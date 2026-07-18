@@ -1,0 +1,37 @@
+{
+  "type": "object",
+  "required": ["assessment", "questions"],
+  "properties": {
+    "assessment": {
+      "type": "string",
+      "description": "Impression generale en une ligne (contexte non evaluatif, pas un verdict)"
+    },
+    "questions": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["question", "domain", "risk", "criticality"],
+        "properties": {
+          "question": {
+            "type": "string",
+            "description": "Question formulee pour etre posee telle quelle au porteur du projet"
+          },
+          "domain": {
+            "type": "string",
+            "description": "Domaine concerne (formulation libre)"
+          },
+          "risk": {
+            "type": "string",
+            "description": "Ce qui se passe concretement si on ecrit la spec sans la reponse"
+          },
+          "criticality": {
+            "type": "string",
+            "enum": ["blocking", "important", "exploratory"],
+            "description": "blocking: specifier sans repondre serait dangereux; important: zone de flou majeure; exploratory: angle jamais considere"
+          }
+        }
+      }
+    }
+  }
+}
