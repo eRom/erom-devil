@@ -47,11 +47,19 @@ plugin corrompu.
 | *(rien)*, tree sale (`git status --porcelain` non vide) | working tree | `git diff HEAD` (staged + unstaged) |
 | *(rien)*, tree propre | branche vs base auto | base = HEAD branch d'`origin` (fallback `main` puis `master` locale) → `git diff base...HEAD` |
 
+En mode working tree (et en mode auto « tree sale »), les fichiers non
+suivis (`git ls-files --others --exclude-standard`) sont AUSSI inclus, en
+lecture seule, chacun via `git diff --no-index /dev/null <fichier>` (produit
+un hunk « new file » `@@ -0,0 +1,N @@`, ancrable comme tout fichier neuf).
+Aucun `git add`, aucune mutation d'index.
+
 Gardes et cas limites (STOP = arrêt propre avec le message, AUCUN appel
 modèle) :
 - Hors repo git → STOP.
 - Ref/PR introuvable → STOP avec le message git/gh.
-- Diff vide → STOP « rien à reviewer ».
+- Diff vide (fichiers suivis modifiés ET fichiers non suivis tous absents)
+  → STOP « rien à reviewer » (sinon, untracked présents, on review les
+  untracked).
 - `gh` non installée en mode PR → STOP « gh CLI requis pour le mode PR ».
 - Arg qui est un chemin existant (`src/index.ts`, `lib/`) → STOP « target =
   PR, range ou ref ; la review d'un fichier/dossier sans notion de
@@ -84,6 +92,13 @@ fichier temp) → absent. Pas d'auto-detect `.specs/`.
 | PR checkoutée, tree sale | `git show HEAD:chemin` | non — rapport seul |
 | PR non checkoutée | **FILES omis** + badge « REVIEW SUR DIFF SEUL » | non — rapport seul |
 
+  En mode working tree (et auto « tree sale »), les fichiers non suivis
+  entrent dans FILES comme les autres fichiers modifiés (état = leur
+  contenu sur disque) et leurs hunks « new file » dans le DIFF.
+
+  Détection `b` = HEAD (lignes range ci-dessus) : comparer `git rev-parse b`
+  à `git rev-parse HEAD` — égalité → range courant, sinon range historique.
+
   `git show b:chemin` en échec (rename compliqué) → fichier listé
   `=== FILE: chemin (indisponible au commit b) ===`, la review continue.
   Budget FILES : 200 Ko. Au-delà : tri des fichiers par lignes de diff
@@ -94,11 +109,19 @@ fichier temp) → absent. Pas d'auto-detect `.specs/`.
 
 ## Étape 3 — Scan pré-vol anti-fuite (AVANT tout envoi)
 
-1. **Exclusions dures du paquet FILES** (glob, liste figée) : `.env*`,
-   `*.pem`, `*.key`, `*.p12`, `*.pfx`, `id_rsa*`, `id_ed25519*`,
-   `credentials*`, `secrets*`, `*.keystore`. Fichier exclu = listé dans la
-   confirmation ; ses hunks restent dans le DIFF, couverts par le scan
-   ci-dessous.
+1. **Exclusions dures** (glob, liste figée) : `.env*`, `*.pem`, `*.key`,
+   `*.p12`, `*.pfx`, `id_rsa*`, `id_ed25519*`, `credentials*`, `secrets*`,
+   `*.keystore`. Les fichiers matchant sont retirés du paquet FILES ET du
+   DIFF : le fichier exclu ne part donc PAS au modèle (ni via FILES ni via
+   le DIFF). Le scan de contenu (point 2 ci-dessous) reste la 2e couche,
+   pour les secrets logés dans des fichiers NON exclus. Mécanique de
+   retrait :
+   - modes git : régénérer/filtrer le DIFF avec des pathspecs d'exclusion
+     (`-- . ':(exclude).env*' ':(exclude)*.pem' …`, même mécanique que le
+     choix « exclure » du STOP ci-dessous) ;
+   - mode PR (`gh pr diff`, pas de pathspec) : retirer du texte du diff les
+     sections `diff --git a/<fichier exclu> …` correspondantes.
+   Les fichiers exclus sont listés dans la confirmation.
 2. **Scan de contenu** sur DIFF + FILES + INTENT (`command grep -E -n`,
    ajouter `-i` UNIQUEMENT pour la ligne « affectations ») :
 
@@ -130,7 +153,8 @@ Toujours confirmer avant de lancer :
 
 > **Contexte détecté :**
 > - Mode : <PR 123 / branche vs main / range a..b / working tree>
-> - Fichiers : <N> (±<lignes>) · FILES <complet / tronqué : n exclus / omis>
+> - Fichiers : <N> (±<lignes>) [dont <U> non suivis, en mode working tree /
+>   tree sale] · FILES <complet / tronqué : n exclus / omis>
 > - Intent : <chemin / body PR / absent>
 > - Scan : <clean / forcé> · Correction guidée : <disponible / rapport seul>
 > - Devil : <devil> (<modèle>)
@@ -172,7 +196,8 @@ Erreur : <error> — <detail>
 ### Si `status: "ok"` — ancrage d'abord
 
 Extrais du DIFF les plages de lignes modifiées PAR FICHIER (en-têtes de
-hunks `@@ -a,b +c,d @@`, côté état final `+c,d`). Pour chaque issue :
+hunks `@@ -a,b +c,d @@`, côté état final `+c,d` — forme mono-ligne possible
+`@@ -a +c @@`, compteur omis = 1). Pour chaque issue :
 1. fichier hors du périmètre du diff → **DÉCLASSÉE** ;
 2. ligne hors des plages modifiées, tolérance ±3 lignes → **DÉCLASSÉE** ;
    fichier supprimé → ancrage au fichier seul.

@@ -53,8 +53,15 @@ existant → INTENT ; le reste → target :
 | *(rien)*, tree sale (`git status --porcelain` non vide) | working tree | `git diff HEAD` (staged + unstaged) |
 | *(rien)*, tree propre | branche vs base auto | base = HEAD branch d'`origin` (fallback `main` puis `master` locale) → `git diff base...HEAD` |
 
+Le mode working tree (et l'auto « tree sale ») inclut aussi les fichiers non
+suivis, en lecture seule : chacun via `git diff --no-index /dev/null <f>`
+(liste via `git ls-files --others --exclude-standard`), aucun `git add`,
+aucune mutation d'index.
+
 Gardes : hors repo git → stop ; ref/PR introuvable → stop avec le message
-git/gh ; diff vide → stop « rien à reviewer », aucun appel modèle.
+git/gh ; diff vide (aucun fichier suivi modifié ET aucun fichier non suivi)
+→ stop « rien à reviewer », aucun appel modèle (sinon, untracked présents,
+la review porte dessus).
 
 Cas limites (tribunal 2026-07-18) :
 
@@ -95,6 +102,11 @@ absent. Pas d'auto-detect `.specs/`.
 | PR checkoutée, tree sale | `git show HEAD:chemin` | non — rapport seul |
 | PR non checkoutée | **FILES omis** + badge « REVIEW SUR DIFF SEUL — contexte réduit » | non — rapport seul |
 
+  En mode working tree (et auto « tree sale »), les fichiers non suivis
+  entrent dans FILES comme les autres fichiers modifiés (état = leur
+  contenu sur disque) et leurs hunks « new file » dans le DIFF (produits
+  par `git diff --no-index /dev/null <f>`).
+
   Budget FILES : 200 Ko. Au-delà : tri des fichiers par lignes de diff
   décroissantes, on garde jusqu'au budget, les exclus sont LISTÉS en tête du
   paquet (`=== FILES EXCLUS (budget) : … ===`) et signalés dans la
@@ -106,11 +118,17 @@ absent. Pas d'auto-detect `.specs/`.
 Ordre : exclusions de fichiers d'abord, scan de contenu ensuite, sur DIFF +
 FILES + INTENT assemblés.
 
-**Exclusions dures du paquet FILES** (glob, liste figée dans la skill) :
-`.env*`, `*.pem`, `*.key`, `*.p12`, `*.pfx`, `id_rsa*`, `id_ed25519*`,
-`credentials*`, `secrets*`, `*.keystore`. Fichier exclu = listé dans la
-confirmation ; ses hunks restent dans le DIFF → le scan de contenu ci-dessous
-les couvre.
+**Exclusions dures** (glob, liste figée dans la skill) : `.env*`, `*.pem`,
+`*.key`, `*.p12`, `*.pfx`, `id_rsa*`, `id_ed25519*`, `credentials*`,
+`secrets*`, `*.keystore`. Les fichiers matchant sont retirés du paquet
+FILES ET du DIFF (même mécanique de retrait pathspec que le choix
+« exclure » plus bas ; mode PR : sections `diff --git a/<fichier> …`
+retirées du texte du diff) : le fichier exclu ne part donc pas au modèle,
+ni via FILES ni via le DIFF. Le scan de contenu ci-dessous reste la 2e
+couche, pour les secrets logés dans des fichiers NON exclus. Résidu
+assumé : un secret non quoté dans un fichier NON exclu et de format non
+reconnu par les regex ci-dessous peut encore échapper (borne honnête ;
+biais faux-positif assumé côté formats reconnus).
 
 **Regex haute valeur** (`grep -E -n` ; `-i` UNIQUEMENT pour la ligne
 « affectations » — l'ajouter partout ferait des faux positifs sur les
@@ -178,6 +196,13 @@ Anti-bruit (règles dures) :
   ce qu'on peut défendre.
 - Fichiers de test modifiés : reviewés au titre du critère `tests`, pas
   comme du code de production.
+
+La mission définit la sévérité de chaque issue (`critical` = exploitable à
+distance, fuite/corruption de données, ou secret exposé ; `high` = bug de
+correction certain ou risque sérieux non démontré ; `medium`/`low` = impact
+moindre), pour que le garde-fou sécurité du swarm (§7, qui dépend de
+`critical`/`security`) s'appuie sur une étiquette définie, pas laissée au
+hasard.
 
 Verdict : score ≥ 80 → `approve` ; 50-79 → `rework` ; < 50 → `reject`
 (le changement est structurellement mauvais : réécrire coûte moins cher que

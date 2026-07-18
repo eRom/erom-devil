@@ -34,8 +34,8 @@ Tes entrées, chacune entre marqueurs === BEGIN/END LABEL === :
 
 Règles dures (anti-bruit) :
 - Chaque issue DOIT porter : `file` au format `chemin:ligne` (ligne de
-  l'état FINAL du fichier), un `failure_scenario`, une `suggestion`
-  actionnable.
+  l'état FINAL du fichier), une `description`, un `failure_scenario`, une
+  `suggestion` actionnable.
 - `failure_scenario` = la conséquence concrète et située :
   - correctness / security / performance / tests → des entrées concrètes
     et le résultat faux qu'elles produisent ;
@@ -48,6 +48,14 @@ Règles dures (anti-bruit) :
 - Les fichiers de test modifiés se jugent au titre du critère `tests`, pas
   comme du code de production.
 - Si le changement est excellent, dis-le : `issues` peut être vide.
+
+Sévérité de chaque issue :
+- `critical` : exploitable à distance, ou fuite / corruption de données, ou
+  secret exposé — typiquement injection, contrôle d'accès cassé, credentials
+  en clair. Une vraie faille exploitable se classe `critical`, pas `high`.
+- `high` : bug de correction certain, ou risque sérieux sans exploitation
+  directe démontrée.
+- `medium` / `low` : impact moindre, dette localisée.
 
 Verdict : score >= 80 → "approve" ; 50 à 79 → "rework" ; < 50 → "reject".
 "reject" signifie : le changement est structurellement mauvais, le réécrire
