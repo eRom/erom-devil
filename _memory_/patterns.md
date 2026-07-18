@@ -1,6 +1,6 @@
 # Patterns & conventions — erom-agence-devil
 
-> MàJ : 2026-07-18 (v0.2.0)
+> MàJ : 2026-07-18 (v0.3.0)
 
 ## Contrat de spawn (tous exercices → tous agents)
 - Prompt : `MISSION_FILE=` / `SCHEMA_FILE=` / `VALIDATE_JQ=` puis `INPUTS:`
@@ -25,6 +25,9 @@
   même angle mort/même risque), criticité de groupe = max, singletons 1/3,
   tri criticité PUIS convergence. Quorum commun : 3 plein / 2 dégradé annoncé
   / ≤1 échec franc.
+- code : verdict = table spec + GARDE-FOU (critical security ancrée →
+  jamais VALABLE, ne remonte jamais un JETABLE). Ancrage PAR VOIX avant
+  consolidation. Tri convergence puis sévérité.
 
 ## Agents symétriques
 - glm est la source ; deepseek = sed `s/glm-5\.2:cloud/deepseek-v4-pro:cloud/g`
@@ -56,3 +59,17 @@
 - Feature branch puis merge ff sur main ; commits fréquents avec trailers.
 - Tri d'affichage : criticités en français (BLOQUANTE/IMPORTANTE/EXPLORATOIRE),
   enums machine en anglais.
+
+## Exercice code (v0.3.0)
+- Le devil juge un CHANGEMENT, jamais un stock : arg chemin → STOP.
+- Packaging orchestrateur : DIFF jamais tronqué (> 1 Mo → refus), FILES
+  budget 200 Ko (tri par lignes de diff, exclus listés), INTENT jamais
+  auto-détecté (.specs interdit — arg explicite ou body PR).
+- Scan pré-vol AVANT tout envoi : globs d'exclusion + 9 regex figées
+  (biais faux positif assumé). Hit → STOP, Romain tranche
+  exclure/annuler/forcer.
+- Ancrage au retour : file:ligne vs plages de hunks ±3 ; hors périmètre →
+  DÉCLASSÉE visible (jamais supprimée), exclue de la correction et du
+  garde-fou.
+- Correction guidée UNIQUEMENT si le diff reviewé = working tree actuel
+  (tree propre requis hors mode working tree).

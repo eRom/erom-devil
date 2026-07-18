@@ -1,8 +1,8 @@
 # Architecture — erom-agence-devil
 
-> MàJ : 2026-07-18 (v0.2.0)
+> MàJ : 2026-07-18 (v0.3.0)
 
-**Type** : Plugin Claude Code `devil` (v0.2.0), distribué par `erom-marketplace`.
+**Type** : Plugin Claude Code `devil` (v0.3.0), distribué par `erom-marketplace`.
 
 **Objectif** : « avocats du diable » externes sur les documents amont, AVANT
 implémentation. Deux exercices :
@@ -11,6 +11,10 @@ implémentation. Deux exercices :
 - **brain** : interrogatoire socratique d'un brainstorming seul — les 5
   questions les plus dangereuses jamais posées, SANS score ni verdict ;
   0 question = prêt à spécifier (signal faible, limite actée).
+- **code** : review d'un CHANGEMENT (PR/branche/range/working tree) packagé
+  hermétiquement (DIFF + FILES + INTENT opt.), scan anti-fuite pré-vol,
+  ancrage file:ligne vérifié au retour, garde-fou sécurité en swarm (opus
+  exclu du tribunal, dispo en unitaire).
 
 **Stack** : agents + skills en markdown ; bash + `jq` + `sed` ; `agy`
 (Antigravity CLI → Gemini) ; `claude -p` → ollama cloud (GLM/Deepseek) ;
@@ -29,14 +33,14 @@ Ajouter un exercice = 1 mission + 1 schéma + 2 skills, agents inchangés.
 
 **Arborescence** :
 ```
-.claude-plugin/plugin.json      manifest 0.2.0 (PAS de clé agents)
-agents/devil-{gemini,glm,deepseek}.md      transport pur
+.claude-plugin/plugin.json      manifest 0.3.0 (PAS de clé agents)
+agents/devil-{gemini,glm,deepseek,opus}.md transport pur (opus hors swarms)
 skills/devil-spec{,-swarm}/     exercice spec (2 inputs BRAINSTORMING+SPECS)
 skills/devil-brain{,-swarm}/    exercice brain (1 input BRAINSTORMING)
-scripts/devil-spec-{mission.md,schema.json}
-scripts/devil-brain-{mission.md,schema.json}
-examples/                       fixtures veilleur (6 défauts plantés)
-.specs/plugin-devil{,-brain}/   design v0.1.0 et v0.2.0 (brainstorm+archi+plan)
+skills/devil-code{,-swarm}/     exercice code (DIFF + FILES/INTENT opt.)
+scripts/devil-{spec,brain,code}-{mission.md,schema.json}
+examples/                       fixtures veilleur (6 défauts) + code (5 défauts + secret)
+.specs/plugin-devil{,-brain,-code}/  designs v0.1.0, v0.2.0, v0.3.0
 ```
 
 **Flux** : skill résout mission/schéma/inputs → spawn agent(s)

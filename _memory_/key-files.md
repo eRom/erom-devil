@@ -1,6 +1,6 @@
 # Fichiers clés — erom-agence-devil
 
-> MàJ : 2026-07-18 (v0.2.0)
+> MàJ : 2026-07-18 (v0.3.0)
 
 ## Manifest
 - `.claude-plugin/plugin.json` — name `devil`, version 0.2.0, `"skills":
@@ -12,6 +12,11 @@
 - `devil-brain-mission.md` + `devil-brain-schema.json` — exercice brain :
   assessment (1 ligne non évaluative) + questions 0..5 {question, domain,
   risk, criticality blocking|important|exploratory}, maxItems 5.
+- `devil-code-mission.md` + `devil-code-schema.json` — exercice code :
+  6 critères code scorés {score,comment}, verdict approve|rework|reject,
+  issues {severity, category (6+intent), file "chemin:ligne",
+  failure_scenario obligatoire, suggestion}. VALIDATE_JQ borne scores ET
+  critères (testée jq 1.8.1).
 
 ## Agents (agents/) — transport pur, Sonnet, color red, tools Bash/Read/Glob/Grep
 - `devil-gemini.md` — agy ; inputs passés en CHEMINS (agy lit) ; review lue
@@ -31,6 +36,14 @@
 - `devil-brain-swarm/SKILL.md` — 3 voix parallèles ; consolidation par
   l'orchestrateur (LLM natif) ; tri criticité PUIS convergence (inverse de
   spec-swarm, assumé) ; écartées → non-buts possibles.
+- `devil-code/SKILL.md` — unitaire code ; résolution target (PR/range/
+  ref/auto), packaging TMP_DIR (DIFF jamais tronqué, FILES budget 200 Ko,
+  INTENT opt.), scan pré-vol AVANT envoi (STOP sur hit), ancrage
+  file:ligne ±3 sur les hunks, correction guidée selon mode (table).
+- `devil-code-swarm/SKILL.md` — tribunal code (opus exclu) ; ancrage par
+  voix, consolidation problème de fond, verdict table + garde-fou
+  sécurité (critical security ancrée → jamais VALABLE), tri convergence
+  puis sévérité.
 - Les 4 : spawn `devil:devil-<nom>` (fallback sans préfixe), chemins résolus
   2 niveaux au-dessus du base dir, VALIDATE_JQ jumeaux byte-identiques
   unitaire/swarm.
@@ -38,6 +51,10 @@
 ## Fixtures & specs
 - `examples/brainstorming.md` + `examples/specs.md` — couple veilleur,
   6 dérives plantées. Oracle des smokes (spec → 3/3 reject attendu).
+- `examples/code-diff.patch` + `code-files.txt` — paquet code planté
+  (injection db.ts:17, null deref auth.ts:9, N+1 report.ts:8, dup
+  maskName, test sans assertion). `code-secret.patch` — oracle du scan
+  pré-vol (AKIA + PRIVATE KEY, exemples doc AWS).
 - `.specs/plugin-devil-brain/{brainstorming,architecture-technique,plan}.md`
   — design v0.2.0 complet, avec « Limites connues » (dogfood) et pistes v0.3.
 
