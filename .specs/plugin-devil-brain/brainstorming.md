@@ -90,3 +90,45 @@ brainstorming ──(devil brain)──> doc enrichi ──> specs ──(devil-
   par des fournisseurs externes, c'est le principe même d'avocats externes
   (décision v0.1.0, assumée et tracée ici). Corollaire inchangé : jamais de
   secrets dans un brainstorming ou une spec.
+
+## Limites connues (levées par le dogfood, 2026-07-18)
+
+Le plugin s'est interrogé lui-même (`/devil-brain-swarm` sur ce brainstorming).
+Ces limites sont assumées, pas résolues : les nommer vaut mieux que les taire.
+
+1. **Le « 0 question » n'est pas calibré.** Rien ne distingue un doc complet
+   d'un doc trop mince pour offrir une prise. Le feu vert est structurellement
+   biaisé vers les docs les plus à risque. Posture : le 0-question est un
+   signal FAIBLE, pas un certificat ; l'`assessment` (toujours présent) porte
+   le contexte. Un brainstorming squelettique doit être reconnu comme tel par
+   le porteur AVANT d'appeler l'outil.
+2. **La diversité des trois voix est postulée, pas prouvée.** Trois modèles
+   transformer à corpus chevauchants peuvent partager un angle mort (domaine
+   de niche, dimension réglementaire ou sociale, réalité ops d'une petite
+   équipe). L'outil réduit la surface d'angles morts, il ne la garantit pas
+   nulle : il certifie l'absence de danger DANS l'horizon partagé des modèles,
+   pas au-delà.
+3. **Le tri est une porte à une personne.** L'auteur écrit le doc ET écarte
+   les questions ; rien ne l'empêche d'esquiver précisément ce qui le dérange,
+   et un angle mort converti en non-but échappe ensuite à devil-spec (qui
+   traite un non-but comme légitimement hors périmètre). Posture : une
+   question écartée mérite une ligne de rationale, pour rendre l'esquive
+   visible plutôt que silencieuse.
+4. **Tension secret ↔ richesse de l'input.** Dé-sensibiliser un brainstorming
+   pour l'envoi externe dégrade précisément le spécifique dont brain a besoin
+   pour ne pas produire du bruit générique. Pas de filtre local automatique :
+   le porteur arbitre au cas par cas entre spécificité et confidentialité, le
+   corollaire no-secrets restant la borne dure.
+5. **Re-passage sans mémoire.** Sur un doc réinvoqué après amendement, les
+   questions déjà écartées réapparaissent (devils stateless). Posture assumée :
+   re-appel manuel, le porteur ignore les redites ; une mémoire des écartées
+   est hors scope v0.2.
+
+## Pistes v0.3
+
+- **Parsing des documents non purement textuels** : diagrammes Mermaid,
+   schémas d'architecture. Aujourd'hui ignorés → risque de faux positifs sur
+   des infos présentes visuellement dans le doc.
+- **Contrat du « draft figé » en cours de session** : garantir une maturité
+   minimale avant appel, pour que les questions soient reproductibles et non
+   du bruit sur un draft trop précoce.
