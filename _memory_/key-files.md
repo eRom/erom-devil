@@ -4,7 +4,7 @@
 
 ## Manifest
 - `.claude-plugin/plugin.json` — name `devil`, version 0.2.0, `"skills":
-  "./skills/"`. PAS de clé `agents` (rejetée ; auto-découverte depuis `agents/`).
+  "./skills/"`. PAS de clé `agents` (voir gotchas.md « Manifest de plugin »).
 
 ## Contrats par exercice (scripts/)
 - `devil-spec-mission.md` + `devil-spec-schema.json` — exercice spec :
@@ -40,6 +40,11 @@
   6 dérives plantées. Oracle des smokes (spec → 3/3 reject attendu).
 - `.specs/plugin-devil-brain/{brainstorming,architecture-technique,plan}.md`
   — design v0.2.0 complet, avec « Limites connues » (dogfood) et pistes v0.3.
+
+## Ledger de chantier
+- `.superpowers/sdd/` — trace complète du chantier v0.2.0 : 7 task-briefs +
+  7 reports + 7 diffs de review + progress.md. Point d'entrée pour comprendre
+  comment la v0.2.0 a été menée.
 
 ## Marketplace (repo séparé)
 - `/Users/recarnot/dev/erom-marketplace/.claude-plugin/marketplace.json` —

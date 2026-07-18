@@ -10,6 +10,11 @@
 - Env : `ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_BASE_URL=http://localhost:11434
   ANTHROPIC_API_KEY="" CLAUDE_CODE_EFFORT_LEVEL=max` + `--dangerously-skip-permissions`.
 
+## Devils externes — confidentialité (recadrage Romain 2026-07-18)
+- L'envoi des specs/brainstorms aux devils (Gemini via agy, Ollama cloud) est
+  le design même du plugin : AUCUN avertissement de confidentialité à émettre
+  (« c'est implicite »). Ne pas re-proposer de garde-fou là-dessus.
+
 ## claude -p headless — hermétisme (flags validés live)
 - `--strict-mcp-config --tools "" --setting-sources "" --no-session-persistence`
   → run hermétique. `-p --output-format json` : stdout = JSON PUR, review dans
