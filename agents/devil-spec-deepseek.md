@@ -73,10 +73,20 @@ printf '%s' "$REVIEW" | command jq -e 'has("score") and has("verdict") and has("
 ```
 
 Si `RAW` est vide, ou `IS_ERR` vaut `true`, ou `VALID=no` : fais UN retry
-complet (Step 2 puis Step 3). Toujours en échec après retry :
-- `RAW` vide ou `IS_ERR=true` → error `CLI_FAILED` (detail : 500 premiers
-  chars de `stderr.log`, sinon de RAW)
-- sinon → error `PARSE_ERROR` (detail : 500 premiers chars de RESULT)
+complet (Step 2 puis Step 3). Toujours en échec après retry, choisis le
+detail LE PLUS DIAGNOSTIQUE — surtout PAS le warning « connectors are
+disabled » de stderr, qui est du bruit constant et trompeur :
+
+```bash
+API_STATUS=$(printf '%s' "$RAW" | command jq -r '.api_error_status // empty' 2>/dev/null)
+ERR_MSG=$(printf '%s' "$RAW" | command jq -r '.result // empty' 2>/dev/null)
+# priorité : message d'erreur amont (souvent présent même si is_error=true) > stderr
+DETAIL=$(printf '%s' "${API_STATUS:+[$API_STATUS] }${ERR_MSG:-$(head -c 500 "$TMP_DIR/stderr.log")}" | head -c 500)
+```
+
+- `RAW` vide ou `IS_ERR=true` → error `CLI_FAILED` (detail = `$DETAIL` ci-dessus)
+- `VALID=no` mais RAW exploitable → error `PARSE_ERROR` (detail : 500 premiers
+  chars de RESULT, sinon de RAW)
 - appel Bash tué par timeout → error `TIMEOUT`
 
 ### Step 4 — Enveloppe et nettoyage
