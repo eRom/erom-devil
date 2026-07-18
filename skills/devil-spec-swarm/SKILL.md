@@ -14,8 +14,8 @@ convergences, dissonances, verdict final argumenté.
 ## Étape 0 — Chemins du plugin
 
 Identique à /devil-spec : racine = deux niveaux au-dessus du base directory
-injecté ; résous `SCHEMA_FILE` = `<racine>/scripts/spec-review-schema.json`
-et `MISSION_FILE` = `<racine>/scripts/devil-mission.md`, vérifie l'existence.
+injecté ; résous `SCHEMA_FILE` = `<racine>/scripts/devil-spec-schema.json`
+et `MISSION_FILE` = `<racine>/scripts/devil-spec-mission.md`, vérifie l'existence.
 
 ## Étape 1 — Fichiers d'entrée
 
@@ -29,11 +29,11 @@ argument sinon auto-detect `.specs/`), avec l'annonce :
 
 IMPORTANT : les 3 appels Agent partent dans UN SEUL message (c'est ce qui les
 fait tourner en parallèle). Même prompt pour les trois, seul le
-subagent_type change : `devil:devil-spec-gemini`, `devil:devil-spec-glm`,
-`devil:devil-spec-deepseek` (fallback sans préfixe si non résolu) :
+subagent_type change : `devil:devil-gemini`, `devil:devil-glm`,
+`devil:devil-deepseek` (si le type est introuvable, fallback sans préfixe) :
 
 ```
-prompt: "BRAINSTORM_FILE=<abs>\nSPECS_FILE=<abs>\nSCHEMA_FILE=<abs>\nMISSION_FILE=<abs>\n\nExécute la procédure de review."
+prompt: "MISSION_FILE=<abs>\nSCHEMA_FILE=<abs>\nVALIDATE_JQ=has(\"score\") and has(\"verdict\") and has(\"summary\") and has(\"criteria\") and has(\"issues\") and (.verdict | IN(\"approve\",\"rework\",\"reject\"))\nINPUTS:\nBRAINSTORMING:<abs brainstorm>\nSPECS:<abs specs>\n\nExécute la procédure de transport."
 ```
 
 ## Étape 3 — Collecte et quorum

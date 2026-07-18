@@ -27,8 +27,8 @@ rapport et guides les corrections.
   `gemini` par défaut.
 - Racine du plugin : deux niveaux au-dessus du « Base directory for this
   skill » injecté ci-dessus. Résous en absolu :
-  - `SCHEMA_FILE` = `<racine>/scripts/spec-review-schema.json`
-  - `MISSION_FILE` = `<racine>/scripts/devil-mission.md`
+  - `SCHEMA_FILE` = `<racine>/scripts/devil-spec-schema.json`
+  - `MISSION_FILE` = `<racine>/scripts/devil-spec-mission.md`
 - Vérifie que les deux fichiers existent (Read). S'ils manquent, arrête et
   signale un plugin corrompu.
 
@@ -59,15 +59,14 @@ Attends la confirmation de Romain (« oui », « go », « lance »).
 
 ## Étape 2 — Lancer le sous-agent
 
-Spawn l'agent du devil choisi — `devil:devil-spec-gemini`,
-`devil:devil-spec-glm` ou `devil:devil-spec-deepseek` (si le nom préfixé
-n'est pas résolu par le harness, réessaie sans préfixe,
-ex. `devil-spec-glm`) :
+Spawn l'agent du devil choisi — `devil:devil-gemini`, `devil:devil-glm` ou
+`devil:devil-deepseek` ; si ce type est introuvable (plugin non chargé),
+retente sans préfixe, ex. `devil-glm` :
 
 ```
 Agent(
-  subagent_type: "devil:devil-spec-<devil>",
-  prompt: "BRAINSTORM_FILE=<abs>\nSPECS_FILE=<abs>\nSCHEMA_FILE=<abs>\nMISSION_FILE=<abs>\n\nExécute la procédure de review."
+  subagent_type: "devil:devil-<devil>",
+  prompt: "MISSION_FILE=<abs>\nSCHEMA_FILE=<abs>\nVALIDATE_JQ=has(\"score\") and has(\"verdict\") and has(\"summary\") and has(\"criteria\") and has(\"issues\") and (.verdict | IN(\"approve\",\"rework\",\"reject\"))\nINPUTS:\nBRAINSTORMING:<abs brainstorm>\nSPECS:<abs specs>\n\nExécute la procédure de transport."
 )
 ```
 
