@@ -1,0 +1,15 @@
+{
+  "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "devil",
+  "description": "Avocats du diable pour specs techniques : reviews critiques par Gemini, GLM et Deepseek, unitaires ou en swarm avec verdict consolidé.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Romain Ecarnot",
+    "url": "https://github.com/eRom"
+  },
+  "repository": "https://github.com/eRom/erom-agence-devil",
+  "license": "MIT",
+  "keywords": ["review", "specs", "devils-advocate", "gemini", "glm", "deepseek", "swarm"],
+  "skills": "./skills/",
+  "agents": "./agents/"
+}
