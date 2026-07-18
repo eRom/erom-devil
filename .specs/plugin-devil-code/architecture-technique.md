@@ -56,6 +56,20 @@ existant → INTENT ; le reste → target :
 Gardes : hors repo git → stop ; ref/PR introuvable → stop avec le message
 git/gh ; diff vide → stop « rien à reviewer », aucun appel modèle.
 
+Cas limites (tribunal 2026-07-18) :
+
+- `gh` non installée alors qu'un numéro de PR est fourni → stop « gh CLI
+  requis pour le mode PR », aucun fallback.
+- Arg qui est un chemin existant (`src/index.ts`, `lib/`) → stop explicite :
+  le target désigne un changement (PR, range, ref), pas un chemin — la
+  review de stock est un non-but du brainstorming. Message : « target =
+  PR, range ou ref ; review d'un fichier/dossier hors périmètre ».
+- Diff ne contenant QUE des fichiers binaires → stop « aucun contenu texte
+  à reviewer », aucun appel modèle.
+- `git show b:chemin` en échec sur un range historique (rename compliqué,
+  état incohérent) → fichier listé `=== FILE: chemin (indisponible au
+  commit b) ===` sans contenu, la review continue.
+
 INTENT par priorité : arg `*.md` > body de la PR (mode PR, écrit en temp) >
 absent. Pas d'auto-detect `.specs/`.
 
@@ -74,9 +88,11 @@ absent. Pas d'auto-detect `.specs/`.
 |---|---|---|
 | working tree | `cat` du checkout | oui |
 | branche vs base (tree propre) | `cat` du checkout (HEAD) | oui |
-| range `a..b` avec `b` = HEAD | `cat` du checkout | oui |
+| range `a..b` avec `b` = HEAD **et tree propre** | `cat` du checkout | oui |
+| range `a..b` avec `b` = HEAD, tree sale | `cat` du checkout (HEAD via `git show`) | non — le working tree ≠ le diff reviewé |
 | range historique (`b` ≠ HEAD) | `git show b:chemin` | non — rapport seul |
-| PR checkoutée localement | `cat` du checkout | oui |
+| PR checkoutée localement **(tree propre)** | `cat` du checkout | oui |
+| PR checkoutée, tree sale | `git show HEAD:chemin` | non — rapport seul |
 | PR non checkoutée | **FILES omis** + badge « REVIEW SUR DIFF SEUL — contexte réduit » | non — rapport seul |
 
   Budget FILES : 200 Ko. Au-delà : tri des fichiers par lignes de diff
@@ -115,6 +131,11 @@ Un hit → **STOP avant tout envoi** : lignes suspectes affichées
 ou forcer en connaissance de cause. Le choix « forcer » est rappelé dans la
 confirmation. Biais assumé : le faux positif (un STOP à tort coûte une
 relecture, un faux négatif coûte une fuite irréversible).
+
+Mécanique du choix « exclure » : le DIFF est régénéré avec un pathspec
+d'exclusion (`git diff … -- ':!chemin'` ; en mode PR, hunks du fichier
+retirés du diff téléchargé), le fichier est retiré de FILES, l'exclusion est
+listée dans la confirmation, puis le scan est rejoué sur le paquet réduit.
 
 ## 6. Contrat code
 
@@ -196,17 +217,30 @@ anglais, contenus en français (convention plugin).
 Une ligne, posée en single quotes par l'agent :
 
 ```
-has("score") and has("verdict") and has("summary") and has("criteria") and has("issues") and (.score|type=="number" and .>=0 and .<=100) and (.verdict|IN("approve","rework","reject")) and (.criteria|has("correctness") and has("architecture") and has("security") and has("performance") and has("tests") and has("maintainability")) and (.issues|type=="array" and all(has("severity") and has("category") and has("file") and has("description") and has("failure_scenario") and has("suggestion") and (.severity|IN("critical","high","medium","low")) and (.category|IN("correctness","architecture","security","performance","tests","maintainability","intent"))))
+has("score") and has("verdict") and has("summary") and has("criteria") and has("issues") and (.score|type=="number" and .>=0 and .<=100) and (.verdict|IN("approve","rework","reject")) and (.criteria|has("correctness") and has("architecture") and has("security") and has("performance") and has("tests") and has("maintainability")) and ([.criteria.correctness,.criteria.architecture,.criteria.security,.criteria.performance,.criteria.tests,.criteria.maintainability]|all(type=="object" and has("score") and has("comment") and (.score|type=="number" and .>=0 and .<=100))) and (.issues|type=="array" and all(has("severity") and has("category") and has("file") and has("description") and has("failure_scenario") and has("suggestion") and (.severity|IN("critical","high","medium","low")) and (.category|IN("correctness","architecture","security","performance","tests","maintainability","intent"))))
 ```
+
+Ligne testée sur jq 1.8.1 (tribunal 2026-07-18) : sample conforme → pass ;
+issue sans `failure_scenario` → fail ; critère à 150 ou remplacé par une
+string → fail.
 
 ### Ancrage vérifié (orchestrateur, dogfood Q3)
 
-Après réception d'une enveloppe `ok`, l'orchestrateur extrait la liste des
-fichiers du DIFF (`git diff --name-only` du même target) et vérifie le champ
-`file` de chaque issue : fichier hors périmètre → issue **DÉCLASSÉE**,
-affichée dans une section « Non ancrées » sous le tableau (jamais supprimée
-en silence), exclue de la correction guidée et du garde-fou sécurité. En
-swarm, l'ancrage est appliqué PAR VOIX, avant consolidation.
+Après réception d'une enveloppe `ok`, l'orchestrateur extrait du DIFF les
+plages de lignes modifiées PAR FICHIER (parsing des en-têtes de hunks
+`@@ -a,b +c,d @@`, côté état final `+c,d`) et vérifie le champ `file` de
+chaque issue à deux niveaux (tribunal 2026-07-18, ancrage ligne exigé par
+le brainstorm) :
+
+1. fichier hors du périmètre du diff → DÉCLASSÉE ;
+2. fichier dans le périmètre mais ligne hors des plages modifiées, avec une
+   tolérance de ±3 lignes de contexte → DÉCLASSÉE. Cas particulier :
+   fichier supprimé → ancrage au fichier seul (pas de plage à l'état final).
+
+Issue DÉCLASSÉE = affichée dans une section « Non ancrées » sous le tableau
+(jamais supprimée en silence), exclue de la correction guidée et du
+garde-fou sécurité. En swarm, l'ancrage est appliqué PAR VOIX, avant
+consolidation.
 
 ## 7. Skills code
 
@@ -243,9 +277,16 @@ Résumé : <summary>
 6. Next steps par verdict, gabarits devil-spec (approve → prêt à
    commit/merge ; rework → corriger/ignorer/re-review ; reject → pas de
    correction incrémentale, on rouvre la conception).
-7. Correction guidée UNIQUEMENT si le mode l'autorise (table § 4) : sévérité
-   décroissante, `low` ignorées sauf demande, relecture du fichier avant
-   chaque Edit, max 2 re-review, le devil ne modifie jamais rien.
+7. Correction guidée UNIQUEMENT si le mode l'autorise (table § 4).
+   Séquence par issue, sévérité décroissante (`low` ignorées sauf demande),
+   issues non ancrées exclues :
+   1. présenter l'issue (fichier:ligne, problème, scénario, suggestion) ;
+   2. Romain tranche : **appliquer** / **ignorer** / **stop** (arrêt de la
+      passe, récap immédiat) ;
+   3. si appliquer : relire le fichier concerné, puis Edit ;
+   4. issue suivante ; à la fin, récap une ligne par issue (appliquée /
+      ignorée) puis proposer re-review (max 2, même devil) ou commit.
+   Le devil ne modifie jamais rien : c'est l'orchestrateur qui édite.
 8. `trash "$TMP_DIR"`.
 
 ### `/devil-code-swarm [target] [intent.md]` (tribunal)
@@ -256,11 +297,19 @@ Résumé : <summary>
    actée) en UN SEUL message, prompt identique.
 3. Quorum v0.2.0 : 3 voix pleines ; 2 voix → rapport ouvert sur la voix
    absente ; ≤ 1 voix → pas de verdict, rapport d'échec.
-4. Ancrage par voix, puis consolidation par PROBLÈME DE FOND (jugement
-   sémantique aidé par file:ligne — même fichier et lignes voisines =
-   candidats à l'équivalence, mais deux issues au même endroit peuvent être
-   deux problèmes distincts). Badges 3/3, 2/3, 1/3 ; sévérité du groupe = la
-   plus haute ; suggestion la plus actionnable.
+4. Ancrage par voix, puis consolidation par PROBLÈME DE FOND. Doctrine
+   v0.2.0 rappelée : la consolidation est le travail LLM natif de
+   l'orchestrateur — AUCUN agent dédié, algorithme ou seuil à coder.
+   Heuristiques d'aide au jugement (tribunal 2026-07-18) :
+   - candidats à l'équivalence : même fichier ET plages de lignes
+     chevauchantes ou voisines (±10) ET même problème de fond (la catégorie
+     aide mais ne décide pas — un même bug peut être classé correctness par
+     l'un, security par l'autre) ;
+   - deux issues au même endroit peuvent rester deux problèmes distincts ;
+     en cas de doute, NE PAS fusionner (deux entrées valent mieux qu'un
+     amalgame) ;
+   - badge = nombre de voix du groupe ; sévérité du groupe = la plus haute ;
+     suggestion la plus actionnable conservée.
 5. **Verdict** (dogfood Q1 — 3/3) :
 
 | Situation (voix exprimées) | Verdict |
@@ -270,10 +319,12 @@ Résumé : <summary>
 | tout le reste (dont split approve/rework/reject) | **MODIFICATIONS REQUISES** |
 
    **Garde-fou sécurité** : ≥ 1 issue `critical` de catégorie `security`
-   ANCRÉE portée par au moins un devil → verdict plafonné à MODIFICATIONS
-   REQUISES, même à 3 approve, avec mention explicite du garde-fou dans le
-   rapport. Pas de score consolidé : grille des scores par devil + moyenne
-   indicative.
+   ANCRÉE portée par au moins un devil → le verdict ne peut pas être
+   VALABLE : un VALABLE issu de la table est ramené à MODIFICATIONS
+   REQUISES, avec mention explicite du garde-fou dans le rapport ; un
+   JETABLE reste JETABLE (le garde-fou ne remonte jamais un verdict,
+   tribunal 2026-07-18). Pas de score consolidé : grille des scores par
+   devil + moyenne indicative.
 6. Voix dissonante (reject isolé, écart > 30 sur un critère) : section
    dédiée, jamais écrasée. Rapport façon spec-swarm + colonne Fichier +
    badge DIFF seul le cas échéant.
@@ -299,5 +350,8 @@ Résumé : <summary>
    4 agents.
 7. **Dogfood méta** : `/devil-code` sur la branche d'implémentation de
    devil-code elle-même, avant merge.
-8. Bump 0.3.0, marketplace update, push, uninstall + install, smoke via
+8. MàJ README (sections `/devil-code` et `/devil-code-swarm`) + `_memory_`
+   (architecture, key-files, patterns : exercice code, scan pré-vol,
+   ancrage, garde-fou swarm).
+9. Bump 0.3.0, marketplace update, push, uninstall + install, smoke via
    plugin installé.
