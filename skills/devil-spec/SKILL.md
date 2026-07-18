@@ -1,156 +1,152 @@
 ---
 name: devil-spec
-description: "Review critique de specs tech via Gemini. Compare specs au brainstorm pour dérives/manques/incohérences. Triggers: /devil-spec, 'contre spec', 'review spec', 'critique les specs'."
+description: "Review critique de specs tech par un avocat du diable au choix (Gemini par défaut, GLM, Deepseek). Compare specs au brainstorm pour dérives/manques/incohérences. Triggers: /devil-spec, 'contre spec', 'review spec', 'critique les specs'."
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Agent, AskUserQuestion, Edit
 ---
 
-# /devil-spec — Review critique de specifications techniques
+# /devil-spec — Review critique de specs par un avocat du diable
 
-Review automatisee des specs techniques par Gemini, comparees au brainstorm original.
-Le sous-agent `devil-spec-reviewer` (rouge, Sonnet) gere l'appel Gemini et le parsing.
-Opus orchestre, presente le rapport et guide les corrections.
+Un devil externe (Gemini via agy, ou GLM/Deepseek via claude CLI sur ollama
+cloud) juge des specs techniques contre leur brainstorm d'origine. L'agent
+wrapper gère l'appel et le parsing ; toi (l'orchestrateur) tu présentes le
+rapport et guides les corrections.
 
 ## Syntaxe
 
 ```
-/devil-spec                                    # auto-detect des fichiers
-/devil-spec brainstorm.md specs.md             # paths explicites
-/devil-spec .specs/mvp/brainstorming.md .specs/mvp/architecture-technique.md
+/devil-spec                                    # auto-detect, devil gemini
+/devil-spec glm                                # auto-detect, devil glm
+/devil-spec brainstorm.md specs.md             # paths explicites, gemini
+/devil-spec brainstorm.md specs.md deepseek    # paths + devil
 ```
 
-## Etape 1 — Identifier les fichiers
+## Étape 0 — Résoudre le devil et les chemins du plugin
+
+- Devil : le dernier argument s'il vaut `gemini`, `glm` ou `deepseek` ; sinon
+  `gemini` par défaut.
+- Racine du plugin : deux niveaux au-dessus du « Base directory for this
+  skill » injecté ci-dessus. Résous en absolu :
+  - `SCHEMA_FILE` = `<racine>/scripts/spec-review-schema.json`
+  - `MISSION_FILE` = `<racine>/scripts/devil-mission.md`
+- Vérifie que les deux fichiers existent (Read). S'ils manquent, arrête et
+  signale un plugin corrompu.
+
+## Étape 1 — Identifier les fichiers d'entrée
 
 ### Si les paths sont fournis en argument
-Utilise-les directement. Verifie qu'ils existent.
+Utilise-les directement. Vérifie qu'ils existent.
 
-### Si aucun argument
+### Si aucun path
 Auto-detect :
-1. Cherche les fichiers `brainstorming.md` et `*-technique.md` ou `plan.md` dans `.specs/` (Glob `**/*.md`)
-2. Si plusieurs chantiers existent, demande a Romain lequel reviewer
-3. Si un seul chantier, prends le brainstorming.md + le fichier de specs le plus recent
+1. Cherche `brainstorming.md` et `*-technique.md` ou `plan.md` dans `.specs/`
+   (Glob `**/*.md`)
+2. Si plusieurs chantiers existent, demande à Romain lequel reviewer
+3. Si un seul chantier, prends le brainstorming.md + le fichier de specs le
+   plus récent
 
 ### Confirmation
-Toujours confirmer les fichiers detectes avant de lancer :
+Toujours confirmer avant de lancer :
 
-> **Fichiers detectes :**
+> **Fichiers détectés :**
 > - Brainstorm : `.specs/mvp/brainstorming.md`
 > - Specs : `.specs/mvp/architecture-technique.md`
+> - Devil : glm (glm-5.2:cloud)
 >
 > Je lance la review ?
 
-Attends la confirmation de Romain (ou un "oui", "go", "lance").
+Attends la confirmation de Romain (« oui », « go », « lance »).
 
-## Etape 2 — Lancer le sous-agent
+## Étape 2 — Lancer le sous-agent
 
-Spawn le sous-agent `devil-spec-reviewer` (type agent, Sonnet, rouge) :
+Spawn l'agent du devil choisi — `devil:devil-spec-gemini`,
+`devil:devil-spec-glm` ou `devil:devil-spec-deepseek` (si le nom préfixé
+n'est pas résolu par le harness, réessaie sans préfixe,
+ex. `devil-spec-glm`) :
 
 ```
 Agent(
-  subagent_type: "devil-spec-reviewer",
-  model: "sonnet",
-  prompt: "BRAINSTORM_FILE=${brainstorm_path_absolu}\nSPECS_FILE=${specs_path_absolu}\n\nExecute la procedure de review.",
-  run_in_background: true,
-  name: "devil-spec-review"
+  subagent_type: "devil:devil-spec-<devil>",
+  prompt: "BRAINSTORM_FILE=<abs>\nSPECS_FILE=<abs>\nSCHEMA_FILE=<abs>\nMISSION_FILE=<abs>\n\nExécute la procédure de review."
 )
 ```
 
-Pendant que Gemini tourne, affiche :
+Annonce avant le spawn : « **Review en cours…** <devil> analyse les specs vs
+le brainstorm (jusqu'à 9 min). »
 
-> **Review en cours...** Gemini analyse les specs vs le brainstorm.
+## Étape 3 — Parser l'enveloppe et présenter le rapport
 
-## Etape 3 — Presenter le rapport
+Le retour de l'agent est UNE ligne JSON : `{devil, model, status,
+review|error+detail}`.
 
-Quand le sous-agent retourne le resultat, formate-le ainsi :
-
-### Si ERROR
+### Si `status: "error"`
 ```
-══════ REVIEW ECHOUEE ══════
+══════ REVIEW ÉCHOUÉE ══════
 
-Antigravity n'a pas retourne du JSON valide apres 2 tentatives.
-Retour brut : [extrait]
+Devil : <devil> (<model>)
+Erreur : <error> — <detail>
 
-→ Tu peux relancer avec /devil-spec ou reviewer manuellement.
+→ Relance (/devil-spec <devil>), ou essaie un autre devil
+  (/devil-spec glm|deepseek|gemini), ou review manuelle.
 ```
 
-### Si JSON valide
-
+### Si `status: "ok"`
 ```
 ══════ REVIEW DE SPECS ══════
 
-Score : [XX]/100  [APPROVE ✓ | REWORK ✗]
+Devil : <devil> (<model>)
+Score : <score>/100  [APPROVE ✓ | REWORK ✗ | REJECT ☠]
 
-Criteres :
-  Fidelite      [XX]/100  [comment court]
-  Completude    [XX]/100  [comment court]
-  Coherence     [XX]/100  [comment court]
-  Faisabilite   [XX]/100  [comment court]
-  Securite      [XX]/100  [comment court]
-  Clarte        [XX]/100  [comment court]
+Critères :
+  Fidélité      <n>/100  <commentaire court>
+  Complétude    <n>/100  <commentaire court>
+  Cohérence     <n>/100  <commentaire court>
+  Faisabilité   <n>/100  <commentaire court>
+  Sécurité      <n>/100  <commentaire court>
+  Clarté        <n>/100  <commentaire court>
 
-Resume : [summary]
+Résumé : <summary>
 ```
 
-Si des issues existent, les afficher en tableau trie par severite :
+Issues (si non vide), tableau trié par sévérité (critical > high > medium > low) :
 
 ```
-Issues ([N]) :
-
-| Sev      | Cat          | Probleme           | Suggestion         | Source              |
-|----------|--------------|--------------------|--------------------|---------------------|
-| critical | fidelity     | [description]      | [suggestion]       | [section]           |
-| high     | completeness | [description]      | [suggestion]       | [section]           |
-| ...      | ...          | ...                | ...                | ...                 |
+| Sév | Cat | Problème | Suggestion | Source |
 ```
 
-## Etape 4 — Proposer le next step
+## Étape 4 — Next steps selon le verdict
 
-### Cas 1 : APPROVE (score >= 80)
-> **Verdict : APPROVE** — Les specs sont solides.
-> [Mentionner les issues mineures s'il y en a]
->
-> → On continue le flow superpowers ?
+### approve (score ≥ 80)
+> **Verdict : APPROVE** — Les specs sont solides. [issues mineures s'il y en a]
+> → On continue le flow ?
 
-### Cas 2 : REWORK (score < 80)
-> **Verdict : REWORK** — [N] issues a adresser.
->
-> Options :
-> 1. **Corriger** — Je corrige les specs en adressant les issues
-> 2. **Ignorer** — On passe quand meme (tu assumes les risques)
-> 3. **Re-review** — Je corrige puis relance Antigravity pour validation
+### rework (50-79)
+> **Verdict : REWORK** — <n> issues à adresser.
+> 1. **Corriger** — j'adresse les issues dans les specs
+> 2. **Ignorer** — on passe quand même (tu assumes)
+> 3. **Re-review** — je corrige puis je relance le même devil
 
-Attends la decision de Romain.
+### reject (< 50)
+> **Verdict : REJECT** — la spec trahit le brainstorm ou repose sur des choix
+> indéfendables. Pas de correction incrémentale : on rouvre le brainstorm
+> (réviser l'intention, ou retailler le périmètre), puis on réécrit les specs.
 
-## Etape 5 — Correction (si demandee)
+Attends la décision de Romain.
 
-Si Romain choisit "Corriger" ou "Re-review" :
+## Étape 5 — Correction (si demandée)
 
 1. Lis le fichier de specs complet
-2. Adresse chaque issue par severite decroissante (critical > high > medium)
-3. Pour chaque correction, explique brievement ce qui change
-4. Ecris le fichier corrige via Edit
-5. Affiche un resume des corrections :
+2. Adresse chaque issue par sévérité décroissante (critical > high > medium)
+3. Explique brièvement chaque changement
+4. Écris via Edit — UNIQUEMENT le fichier de specs
+5. Résumé des corrections, puis :
+   - **Re-review** → relance le MÊME devil, mêmes fichiers → Étape 3
+   - **Corriger** seul → demande validation à Romain
 
-```
-══════ CORRECTIONS APPLIQUEES ══════
+## Règles
 
-[N] issues adressees :
-  - [critical] [description courte] → [ce qui a change]
-  - [high] [description courte] → [ce qui a change]
-  - ...
-
-Fichier modifie : [path]
-```
-
-6. **Si "Re-review"** : relance le sous-agent avec les memes fichiers → retour a l'etape 3
-7. **Si "Corriger"** : demande a Romain s'il valide
-
-> Corrections appliquees. On continue le flow ?
-
-## Regles
-
-- Le sous-agent est TOUJOURS lance en **background** (Gemini peut prendre 10-30s)
-- Ne JAMAIS modifier le brainstorm — seulement les specs
-- Ne JAMAIS inventer du contenu — corriger en se basant sur les issues Antigravity + le brainstorm
-- Les issues `low` ne sont PAS corrigees sauf si Romain le demande explicitement
-- Maximum 2 cycles de re-review (si 2 rework consecutifs, demander a Romain de trancher)
+- Ne JAMAIS modifier le brainstorm — seulement les specs.
+- Ne JAMAIS inventer du contenu — corriger sur la base des issues + du brainstorm.
+- Les issues `low` ne sont PAS corrigées sauf demande explicite.
+- Maximum 2 cycles de re-review ; après 2 rework consécutifs, Romain tranche.
+- Le devil ne modifie rien : c'est toi qui corriges.
