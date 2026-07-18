@@ -1,6 +1,34 @@
 # Gotchas — erom-agence-devil
 
-> MàJ : 2026-07-18 (v0.2.0)
+> MàJ : 2026-07-18 (v0.3.0)
+
+## Masquage credentials = AFFICHAGE seulement (piège de transcription v0.3.0)
+- Le hook PII local réécrit les credentials (clé AWS `AKIAIOSFODNN7EXAMPLE`
+  → `[REDACTED:aws_key]`) dans TOUT ce qui s'affiche (tool results, diffs,
+  lectures) — mais le DISQUE est intact. Un `Write` de la vraie clé la stocke
+  littéralement ; `grep -E 'AKIA[0-9A-Z]{16}'` matche (exit 0) même si la
+  ligne s'affiche masquée.
+- Conséquence : NE JAMAIS juger la présence d'un secret/clé à l'œil. Vérifier
+  par `grep -c -F`, `grep -E -c`, ou `od -c`. Un plan/brief peut contenir la
+  vraie clé sur disque tout en s'affichant `[REDACTED]` (les fixtures scan
+  du plugin en dépendent). Piège attrapé par la revue adversariale du plan.
+
+## Working tree : untracked invisibles à `git diff HEAD` (gap review v0.3.0)
+- `git status --porcelain` COMPTE les fichiers non suivis (`??`), mais
+  `git diff HEAD` les EXCLUT. Une feature de fichiers neufs non ajoutés →
+  détectée « sale » mais diff vide → faux « rien à reviewer » ; changement
+  mixte → fichiers neufs droppés en silence.
+- Fix devil-code : inclure les untracked en LECTURE SEULE via
+  `git diff --no-index /dev/null <f>` (aucun `git add`, aucune mutation
+  d'index). Cette commande sort en CODE 1 dès qu'elle trouve une différence
+  (comparaison à /dev/null) — c'est normal, pas un échec.
+
+## jq `all(cond)` sur un tableau (réfutation d'une review devil)
+- `.issues | all(has("x") and …)` itère bien sur les ÉLÉMENTS du tableau et
+  vaut `true` si tous satisfont la condition (validé jq 1.8.1). Un devil a
+  affirmé cette forme « syntaxiquement invalide » — FAUX, réfuté par test.
+  Toujours vérifier une accusation de syntaxe jq par exécution avant de la
+  traiter comme un finding.
 
 ## Ollama cloud (contrainte dure, validée Romain 2026-07-18)
 - Les modèles `:cloud` (glm-5.2, deepseek-v4-pro) marchent DIRECTEMENT via

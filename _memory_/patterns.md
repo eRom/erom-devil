@@ -65,11 +65,20 @@
 - Packaging orchestrateur : DIFF jamais tronqué (> 1 Mo → refus), FILES
   budget 200 Ko (tri par lignes de diff, exclus listés), INTENT jamais
   auto-détecté (.specs interdit — arg explicite ou body PR).
-- Scan pré-vol AVANT tout envoi : globs d'exclusion + 9 regex figées
-  (biais faux positif assumé). Hit → STOP, Romain tranche
-  exclure/annuler/forcer.
+- Scan pré-vol AVANT tout envoi : les fichiers glob-exclus (.env*, *.pem…)
+  sont retirés de FILES ET du DIFF (ne partent pas au modèle) ; puis 9 regex
+  figées sur le reste (biais faux positif assumé ; résidu acté : secret non
+  quoté dans un fichier NON exclu de format non reconnu). Hit → STOP, Romain
+  tranche exclure/annuler/forcer.
 - Ancrage au retour : file:ligne vs plages de hunks ±3 ; hors périmètre →
   DÉCLASSÉE visible (jamais supprimée), exclue de la correction et du
   garde-fou.
 - Correction guidée UNIQUEMENT si le diff reviewé = working tree actuel
   (tree propre requis hors mode working tree).
+- Mode working tree : les fichiers non suivis sont inclus en LECTURE SEULE
+  (`git diff --no-index /dev/null <f>`, aucun `git add`) ; sinon `git diff
+  HEAD` les ignore alors que `git status --porcelain` les compte → feature
+  neuve invisible (gap review de branche, corrigé).
+- Sévérité `critical` DÉFINIE dans la mission (exploitable/fuite/secret) :
+  load-bearing car le garde-fou swarm ne se déclenche que sur
+  critical/security ancrée. Ne pas laisser la sévérité au hasard du modèle.
