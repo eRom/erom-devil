@@ -1,6 +1,6 @@
 ---
 name: devil-brain
-description: "Interrogatoire socratique d'un doc de brainstorming par un avocat du diable au choix (Gemini par défaut, GLM, Deepseek) : les 5 questions les plus dangereuses jamais posées, sans score ni verdict. Triggers: /devil-brain, 'questionne le brainstorm', 'angles morts du brainstorming'."
+description: "Interrogatoire socratique d'un doc de brainstorming par un avocat du diable au choix (Gemini par défaut, GLM, Deepseek, Opus) : les 5 questions les plus dangereuses jamais posées, sans score ni verdict. Triggers: /devil-brain, 'questionne le brainstorm', 'angles morts du brainstorming'."
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Agent, AskUserQuestion, Edit
 ---
@@ -23,7 +23,7 @@ amendes le doc au fil de ses réponses.
 
 ## Étape 0 — Résoudre le devil et les chemins du plugin
 
-- Devil : l'argument s'il vaut `gemini`, `glm` ou `deepseek` ; sinon `gemini`.
+- Devil : l'argument s'il vaut `gemini`, `glm`, `opus`  ou `deepseek` ; sinon `gemini`.
 - Racine du plugin : deux niveaux au-dessus du « Base directory for this
   skill » injecté ci-dessus. Résous en absolu :
   - `SCHEMA_FILE` = `<racine>/scripts/devil-brain-schema.json`

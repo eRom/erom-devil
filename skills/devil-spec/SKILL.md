@@ -1,6 +1,6 @@
 ---
 name: devil-spec
-description: "Review critique de specs tech par un avocat du diable au choix (Gemini par défaut, GLM, Deepseek). Compare specs au brainstorm pour dérives/manques/incohérences. Triggers: /devil-spec, 'contre spec', 'review spec', 'critique les specs'."
+description: "Review critique de specs tech par un avocat du diable au choix (Gemini par défaut, GLM, Deepseek, Opus). Compare specs au brainstorm pour dérives/manques/incohérences. Triggers: /devil-spec, 'contre spec', 'review spec', 'critique les specs'."
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Agent, AskUserQuestion, Edit
 ---
@@ -23,7 +23,7 @@ rapport et guides les corrections.
 
 ## Étape 0 — Résoudre le devil et les chemins du plugin
 
-- Devil : le dernier argument s'il vaut `gemini`, `glm` ou `deepseek` ; sinon
+- Devil : le dernier argument s'il vaut `gemini`, `glm`, `opus` ou `deepseek` ; sinon
   `gemini` par défaut.
 - Racine du plugin : deux niveaux au-dessus du « Base directory for this
   skill » injecté ci-dessus. Résous en absolu :
@@ -59,7 +59,7 @@ Attends la confirmation de Romain (« oui », « go », « lance »).
 
 ## Étape 2 — Lancer le sous-agent
 
-Spawn l'agent du devil choisi — `devil:devil-gemini`, `devil:devil-glm` ou
+Spawn l'agent du devil choisi — `devil:devil-gemini`, `devil:devil-glm`, `devil:devil-opus` ou
 `devil:devil-deepseek` ; si ce type est introuvable (plugin non chargé),
 retente sans préfixe, ex. `devil-glm` :
 
