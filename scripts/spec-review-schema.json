@@ -10,8 +10,8 @@
     },
     "verdict": {
       "type": "string",
-      "enum": ["approve", "rework"],
-      "description": "approve si score >= 80, rework sinon"
+      "enum": ["approve", "rework", "reject"],
+      "description": "approve si score >= 80, rework si 50-79, reject si < 50"
     },
     "summary": {
       "type": "string",
