@@ -1,6 +1,6 @@
 # Gotchas — erom-agence-devil
 
-> MàJ : 2026-07-18
+> MàJ : 2026-07-18 (v0.2.0)
 
 ## Ollama cloud (contrainte dure, validée Romain 2026-07-18)
 - Les modèles `:cloud` (glm-5.2, deepseek-v4-pro) marchent DIRECTEMENT via
@@ -10,42 +10,54 @@
 - Env : `ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_BASE_URL=http://localhost:11434
   ANTHROPIC_API_KEY="" CLAUDE_CODE_EFFORT_LEVEL=max` + `--dangerously-skip-permissions`.
 
-## claude -p headless — hermétisme (flags validés live 2026-07-18)
+## claude -p headless — hermétisme (flags validés live)
 - `--strict-mcp-config --tools "" --setting-sources "" --no-session-persistence`
-  → run hermétique (zéro MCP, zéro tool, pas de settings/CLAUDE.md user parasites).
-- `-p --output-format json` : stdout = JSON PUR. La review est dans `.result`.
-  Le warning « connectors are disabled » part sur STDERR → toujours capturer
-  stdout seul (`2>fichier`).
-- Parsing : `jq -r '.result'` puis `sed '/^```/d'` (strip fences éventuelles)
-  puis `jq -c`.
+  → run hermétique. `-p --output-format json` : stdout = JSON PUR, review dans
+  `.result`. Warning « connectors are disabled » = bruit STDERR constant.
+- Parsing : `jq -r '.result'` puis `sed '/^```/d'` puis `jq -c`.
 
 ## Detail d'erreur : ne PAS remonter le bruit stderr
-- Sur échec, le detail diagnostique est `[.api_error_status] + .result` de RAW
-  (souvent présents même si `.is_error=true`), PAS le warning « connectors »
-  de stderr (bruit constant, trompeur → ferait croire à un pb d'auth au lieu
-  d'un modèle absent). Vérifié : modèle bidon → `[404] ... model may not exist`.
+- Sur échec, detail = `[.api_error_status] + .result` de RAW, PAS stderr.
+  Vérifié (v0.1.0 ET re-vérifié v0.2.0) : modèle bidon → `[404] ... may not exist`.
+
+## Mise à jour d'un plugin installé (appris à la livraison v0.2.0)
+- `claude plugin install <déjà-installé>` = NO-OP (« already installed »),
+  ne re-tire PAS le cache. `claude plugin update devil` (nom nu) ÉCHOUE
+  (« not found »). La voie fiable : `claude plugin uninstall devil` PUIS
+  `claude plugin install devil@erom-marketplace` (après `marketplace update`).
+- Les nouvelles skills/agents n'apparaissent dans une session déjà ouverte
+  qu'après REDÉMARRAGE de la session.
 
 ## Manifest de plugin Claude Code
-- Clé `"agents": string` REJETÉE par le schéma (« agents: Invalid input »).
-  Retirer → agents auto-découverts depuis `agents/`. `"skills": string` OK.
-- `--plugin-dir` est un flag GLOBAL : il PRÉCÈDE la sous-commande `plugin`
-  (`claude --plugin-dir <path> plugin details devil`).
+- Clé `"agents": string` REJETÉE par le schéma. Retirer → auto-découverte
+  depuis `agents/`. `--plugin-dir` est un flag GLOBAL (précède la sous-commande).
 
 ## agy (devil gemini)
-- `--print` DERNIER flag avant le prompt (parseur Go consomme le token suivant).
-- `< /dev/null` obligatoire (sinon blocage hors TTY).
-- Review lue depuis un FICHIER écrit par agy (write_file), jamais stdout
-  (bug amont #76 : stdout peut être vide alors que le modèle a répondu).
+- `--print` DERNIER flag avant le prompt ; `< /dev/null` obligatoire ;
+  review lue depuis un FICHIER écrit par agy (bug amont #76, stdout parfois vide).
+
+## sed glm→deepseek
+- MODÈLE d'abord (`glm-5\.2:cloud` avant `glm`), sinon chimère
+  `deepseek-5.2:cloud`. Contrôle post-gen OBLIGATOIRE : `grep -ci 'glm'` = 0
+  (exit 1 = succès) + présence `deepseek-v4-pro:cloud`. Note : `Glob` ne
+  contient pas `glm` (g-l-o-b), pas de faux positif.
+
+## Greps de non-présence
+- exit 1 = SUCCÈS attendu (rien trouvé). Ne jamais partir en fix sur ce code
+  retour ; lire la sortie. (Piège récurrent pour agents/wrappers d'exécution.)
+
+## Hook rtk local
+- Réécrit les sorties git/grep/ls même parfois avec `command` (ex. plage de
+  commits condensée) → pour un hash/état décisionnel, vérifier via
+  `git rev-parse` ciblé ou redirection fichier + Read. Un implémenteur a
+  rapporté une plage fausse (70afb04..) à cause de ça ; le commit réel était propre.
+
+## Teammates / agents nommés
+- Le canal de retour des agents NOMMÉS (mode teammate) est intermittent :
+  idle notification sans livrable = à traiter (redemander + fallback fichier
+  scratchpad). Les agents SANS nom retournent leur résultat de façon fiable
+  via task-notification. Pour du fan-out fiable : agents anonymes + fichier.
 
 ## Push / remote
-- `erom-agence-devil` : origin basculé SSH → HTTPS (SSH publickey denied dans
-  cet env ; la marketplace passait déjà en HTTPS). Retour SSH possible :
-  `git remote set-url origin git@github.com:eRom/erom-agence-devil.git`.
-
-## Bascule user-level → plugin
-- Anciennes versions trashées : `~/.claude/agents/devil-spec-reviewer.md` +
-  `~/.claude/skills/devil-spec/` (tuent la collision `/devil-spec`).
-- Après push : `claude plugin marketplace update erom-marketplace` PUIS
-  `claude plugin install devil@erom-marketplace` (le cache local était obsolète).
-- `~/.claude` est un repo git bruité (churn cache plugins) : committer un
-  changement ciblé en stageant SEULEMENT le fichier voulu, jamais `git add -A`.
+- Les 2 repos en HTTPS (SSH publickey denied dans cet env). Marketplace :
+  entrée devil à bump (version + description) EN PLUS de metadata.version.
