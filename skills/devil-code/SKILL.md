@@ -50,8 +50,9 @@ plugin corrompu.
 En mode working tree (et en mode auto « tree sale »), les fichiers non
 suivis (`git ls-files --others --exclude-standard`) sont AUSSI inclus, en
 lecture seule, chacun via `git diff --no-index /dev/null <fichier>` (produit
-un hunk « new file » `@@ -0,0 +1,N @@`, ancrable comme tout fichier neuf).
-Aucun `git add`, aucune mutation d'index.
+un hunk « new file » `@@ -0,0 +1,N @@`, ancrable comme tout fichier neuf ;
+cette commande sort en code 1 dès qu'elle trouve une différence — c'est le
+cas normal ici, pas un échec). Aucun `git add`, aucune mutation d'index.
 
 Gardes et cas limites (STOP = arrêt propre avec le message, AUCUN appel
 modèle) :
