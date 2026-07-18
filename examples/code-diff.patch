@@ -1,0 +1,79 @@
+diff --git a/src/db.ts b/src/db.ts
+index 3f1c2aa..9d4e7bb 100644
+--- a/src/db.ts
++++ b/src/db.ts
+@@ -11,8 +11,14 @@
+ export function getUser(id: number): User | null {
+   const row = db.prepare("SELECT * FROM users WHERE id = ?").get(id);
+   return row ? (row as User) : null;
+ }
++
++export function getUserByName(name: string): User | null {
++  const sql = "SELECT * FROM users WHERE name = '" + name + "'";
++  const row = db.prepare(sql).get();
++  return row ? (row as User) : null;
++}
+ 
+ export function getOrders(userId: number): { id: number; total: number }[] {
+   return db.prepare("SELECT * FROM orders WHERE user_id = ?").all(userId);
+ }
+diff --git a/src/auth.ts b/src/auth.ts
+new file mode 100644
+index 0000000..aa11bb2
+--- /dev/null
++++ b/src/auth.ts
+@@ -0,0 +1,21 @@
++import crypto from "node:crypto";
++import { getUserByName } from "./db";
++import { issueToken } from "./token";
++import { credentials } from "./store";
++
++export function login(name: string, password: string): string {
++  const user = getUserByName(name);
++  const hash = sha256hex(password);
++  if (hash !== credentials.get(user.id)) {
++    throw new Error(`invalid credentials for ${maskName(name)}`);
++  }
++  return issueToken(user.id, user.role);
++}
++
++function sha256hex(input: string): string {
++  return crypto.createHash("sha256").update(input).digest("hex");
++}
++
++function maskName(name: string): string {
++  return name.charAt(0) + "***";
++}
+diff --git a/src/report.ts b/src/report.ts
+new file mode 100644
+index 0000000..bb22cc3
+--- /dev/null
++++ b/src/report.ts
+@@ -0,0 +1,16 @@
++import { getUser, getOrders } from "./db";
++
++export function buildReport(userIds: number[]): string[] {
++  const lines: string[] = [];
++  for (const id of userIds) {
++    const user = getUser(id);
++    if (!user) continue;
++    const orders = getOrders(user.id);
++    lines.push(`${maskName(user.name)}: ${orders.length} commandes`);
++  }
++  return lines;
++}
++
++function maskName(name: string): string {
++  return name.charAt(0) + "***";
++}
+diff --git a/tests/auth.test.ts b/tests/auth.test.ts
+new file mode 100644
+index 0000000..cc33dd4
+--- /dev/null
++++ b/tests/auth.test.ts
+@@ -0,0 +1,5 @@
++import { login } from "../src/auth";
++
++test("login retourne un token", () => {
++  login("alice", "s3cret!");
++});
