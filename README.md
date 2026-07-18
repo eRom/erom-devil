@@ -1,8 +1,14 @@
-# devil — avocats du diable pour specs techniques
+# devil — avocats du diable pour la définition de besoins
 
-Plugin Claude Code. Trois reviewers critiques externes jugent une spec
-technique contre son brainstorm d'origine : dérives, manques, incohérences,
-AVANT implémentation.
+Plugin Claude Code. Trois reviewers critiques externes (Gemini, GLM,
+Deepseek) attaquent tes documents amont, AVANT implémentation, sous deux
+angles :
+
+- **devil-spec** : ils jugent une spec technique contre son brainstorm
+  d'origine (dérives, manques, incohérences), score et verdict à la clé.
+- **devil-brain** : ils interrogent un brainstorming seul et rendent les
+  questions les plus dangereuses jamais posées (angles morts, pans oubliés),
+  sans score ni verdict.
 
 ## Les devils
 
