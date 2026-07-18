@@ -10,6 +10,5 @@
   "repository": "https://github.com/eRom/erom-agence-devil",
   "license": "MIT",
   "keywords": ["review", "specs", "devils-advocate", "gemini", "glm", "deepseek", "swarm"],
-  "skills": "./skills/",
-  "agents": "./agents/"
+  "skills": "./skills/"
 }
