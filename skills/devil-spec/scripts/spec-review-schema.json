@@ -1,0 +1,104 @@
+{
+  "type": "object",
+  "required": ["score", "verdict", "summary", "criteria", "issues"],
+  "properties": {
+    "score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Score global de qualite des specs (0-100)"
+    },
+    "verdict": {
+      "type": "string",
+      "enum": ["approve", "rework"],
+      "description": "approve si score >= 80, rework sinon"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Resume en 2-3 phrases de l'evaluation globale"
+    },
+    "criteria": {
+      "type": "object",
+      "required": ["fidelity", "completeness", "consistency", "feasibility", "security", "clarity"],
+      "properties": {
+        "fidelity": {
+          "type": "object",
+          "required": ["score", "comment"],
+          "properties": {
+            "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "comment": { "type": "string" }
+          }
+        },
+        "completeness": {
+          "type": "object",
+          "required": ["score", "comment"],
+          "properties": {
+            "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "comment": { "type": "string" }
+          }
+        },
+        "consistency": {
+          "type": "object",
+          "required": ["score", "comment"],
+          "properties": {
+            "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "comment": { "type": "string" }
+          }
+        },
+        "feasibility": {
+          "type": "object",
+          "required": ["score", "comment"],
+          "properties": {
+            "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "comment": { "type": "string" }
+          }
+        },
+        "security": {
+          "type": "object",
+          "required": ["score", "comment"],
+          "properties": {
+            "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "comment": { "type": "string" }
+          }
+        },
+        "clarity": {
+          "type": "object",
+          "required": ["score", "comment"],
+          "properties": {
+            "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "comment": { "type": "string" }
+          }
+        }
+      }
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["severity", "category", "description", "suggestion", "source"],
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": ["critical", "high", "medium", "low"]
+          },
+          "category": {
+            "type": "string",
+            "enum": ["fidelity", "completeness", "consistency", "feasibility", "security", "clarity"]
+          },
+          "description": {
+            "type": "string",
+            "description": "Description du probleme identifie"
+          },
+          "suggestion": {
+            "type": "string",
+            "description": "Suggestion actionnable pour corriger"
+          },
+          "source": {
+            "type": "string",
+            "description": "Section du brainstorm ou des specs concernee"
+          }
+        }
+      }
+    }
+  }
+}
