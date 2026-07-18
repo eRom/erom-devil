@@ -5,7 +5,7 @@
 **Type** : Plugin Claude Code `devil` (v0.3.0), distribué par `erom-marketplace`.
 
 **Objectif** : « avocats du diable » externes sur les documents amont, AVANT
-implémentation. Deux exercices :
+implémentation. Trois exercices :
 - **spec** : juger une spec technique contre son brainstorm (score, verdict
   approve/rework/reject, issues) — unitaire ou swarm (VALABLE/MODIFS/JETABLE).
 - **brain** : interrogatoire socratique d'un brainstorming seul — les 5
@@ -20,12 +20,13 @@ implémentation. Deux exercices :
 (Antigravity CLI → Gemini) ; `claude -p` → ollama cloud (GLM/Deepseek) ;
 `trash`.
 
-**Les 3 agents = transport PUR** (ne connaissent pas l'exercice) :
+**Les 4 agents = transport PUR** (ne connaissent pas l'exercice) :
 | agent | modèle | transport |
 |---|---|---|
 | devil-gemini | Gemini 3.5 Flash (High) | agy (review par fichier, bug stdout #76) |
 | devil-glm | glm-5.2:cloud | claude -p ollama cloud (JSON stdout) |
 | devil-deepseek | deepseek-v4-pro:cloud | idem glm (jumeau sed) |
+| devil-opus | Opus 4.8 xHigh | claude -p (hors swarms, unitaire seulement) |
 
 L'exercice est porté par les SKILLS via le contrat de spawn :
 MISSION_FILE + SCHEMA_FILE + VALIDATE_JQ + INPUTS étiquetés (`LABEL:abs`).

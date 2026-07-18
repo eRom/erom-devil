@@ -1,8 +1,8 @@
 # devil — avocats du diable pour la définition de besoins
 
 Plugin Claude Code. Trois reviewers critiques externes (Gemini, GLM,
-Deepseek) attaquent tes documents amont, AVANT implémentation, sous deux
-angles :
+Deepseek), renforcés par Opus en review unitaire, attaquent tes documents
+amont, AVANT implémentation, sous trois angles :
 
 - **devil-spec** : ils jugent une spec technique contre son brainstorm
   d'origine (dérives, manques, incohérences), score et verdict à la clé.

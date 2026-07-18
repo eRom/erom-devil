@@ -3,7 +3,7 @@
 > MàJ : 2026-07-18 (v0.3.0)
 
 ## Manifest
-- `.claude-plugin/plugin.json` — name `devil`, version 0.2.0, `"skills":
+- `.claude-plugin/plugin.json` — name `devil`, version 0.3.0, `"skills":
   "./skills/"`. PAS de clé `agents` (voir gotchas.md « Manifest de plugin »).
 
 ## Contrats par exercice (scripts/)
@@ -25,6 +25,8 @@
   marqueurs `=== BEGIN LABEL ===` ; parse .result + strip fences.
 - `devil-deepseek.md` — jumeau sed de devil-glm (modèle d'abord). À régénérer
   par sed si glm change + contrôle post-gen (0 « glm » résiduel).
+- `devil-opus.md` — claude -p (Opus 4.8 xHigh) ; même contrat de transport ;
+  hors swarms, dispo en unitaire (`/devil-* opus`).
 - Contrat d'entrée commun : MISSION_FILE, SCHEMA_FILE, VALIDATE_JQ (posée en
   single quotes bash), INPUTS lignes `LABEL:abs` → variables IN1_/IN2_.
 
@@ -44,7 +46,7 @@
   voix, consolidation problème de fond, verdict table + garde-fou
   sécurité (critical security ancrée → jamais VALABLE), tri convergence
   puis sévérité.
-- Les 4 : spawn `devil:devil-<nom>` (fallback sans préfixe), chemins résolus
+- Les 6 : spawn `devil:devil-<nom>` (fallback sans préfixe), chemins résolus
   2 niveaux au-dessus du base dir, VALIDATE_JQ jumeaux byte-identiques
   unitaire/swarm.
 
@@ -59,9 +61,9 @@
   — design v0.2.0 complet, avec « Limites connues » (dogfood) et pistes v0.3.
 
 ## Ledger de chantier
-- `.superpowers/sdd/` — trace complète du chantier v0.2.0 : 7 task-briefs +
-  7 reports + 7 diffs de review + progress.md. Point d'entrée pour comprendre
-  comment la v0.2.0 a été menée.
+- `.superpowers/sdd/` — scratch du chantier courant (task-briefs, reports,
+  diffs de review, progress.md) ; la trace du chantier v0.2.0 est archivée
+  dans `.superpowers/sdd/archive-v0.2.0/`.
 
 ## Marketplace (repo séparé)
 - `/Users/recarnot/dev/erom-marketplace/.claude-plugin/marketplace.json` —
