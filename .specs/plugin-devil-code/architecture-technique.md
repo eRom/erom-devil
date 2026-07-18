@@ -112,7 +112,9 @@ FILES + INTENT assemblés.
 confirmation ; ses hunks restent dans le DIFF → le scan de contenu ci-dessous
 les couvre.
 
-**Regex haute valeur** (`grep -E -n -i` sauf mention, liste figée) :
+**Regex haute valeur** (`grep -E -n` ; `-i` UNIQUEMENT pour la ligne
+« affectations » — l'ajouter partout ferait des faux positifs sur les
+patterns sensibles à la casse comme `AKIA…`. Liste figée) :
 
 | Cible | Pattern |
 |---|---|
