@@ -37,6 +37,10 @@ il rend les questions que le brainstorming n'a jamais posées, formulées pour
 - **Pas de score, pas de verdict.** On ne note pas contre l'inconnu.
 - Le « verdict » émerge en creux : un devil qui rend 0 question dit
   « rien de dangereux, prêt à spécifier ».
+- Chaque question porte une criticité (clé de TRI des questions, pas un
+  jugement du doc) et chaque devil rend une `assessment` (impression de
+  contexte non évaluative, précieuse surtout à 0 question) : ni l'une ni
+  l'autre ne notent le doc.
 
 ## Décisions validées
 
@@ -82,3 +86,7 @@ brainstorming ──(devil brain)──> doc enrichi ──> specs ──(devil-
   `/devil-spec-swarm` (refactor interne uniquement).
 - Pas d'appel des devils sur un plan (décision v0.1.0 inchangée : les devils
   voient brainstorming et specs, jamais de secrets).
+- Pas d'avertissement de confidentialité à l'appel : les entrées transitent
+  par des fournisseurs externes, c'est le principe même d'avocats externes
+  (décision v0.1.0, assumée et tracée ici). Corollaire inchangé : jamais de
+  secrets dans un brainstorming ou une spec.

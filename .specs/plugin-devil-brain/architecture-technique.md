@@ -44,13 +44,35 @@ reste au millimètre celle de v0.1.0 :
   --setting-sources "" --no-session-persistence -p --output-format json`,
   parsing `.result` + strip fences, detail d'erreur depuis
   `[.api_error_status] + .result` (jamais stderr). Timeout + retry idem.
-- Enveloppe de retour inchangée :
+- Enveloppe de retour :
   `{"devil": "...", "model": "...", "status": "ok", "review": {…}}` ou
   `{"devil": "...", "model": "...", "status": "error", "error":
-  "CLI_FAILED|PARSE_ERROR|TIMEOUT", "detail": "..."}`.
+  "CLI_FAILED|PARSE_ERROR|SCHEMA_INVALID|TIMEOUT", "detail": "..."}`.
+  `SCHEMA_INVALID` (nouveau v0.2.0) : JSON syntaxiquement valide mais non
+  conforme au schéma (champ manquant, enum inconnue, plus de 5 questions).
+  Une non-conformité consomme une tentative (donc le retry unique) ; en
+  échec final, les champs fautifs sont nommés dans `detail`.
 - deepseek régénéré depuis glm :
   `sed -e 's/glm-5\.2:cloud/deepseek-v4-pro:cloud/g' -e 's/glm/deepseek/g'
-  -e 's/GLM/Deepseek/g'` (modèle d'abord).
+  -e 's/GLM/Deepseek/g'` (modèle d'abord). Contrôle post-génération
+  obligatoire : zéro occurrence résiduelle de `glm` dans le fichier produit
+  et présence de `deepseek-v4-pro:cloud`. Les versions de modèles sont
+  indicatives : à aligner sur la config ollama locale du moment.
+
+Robustesse et modèle de confiance (assumé, hérité de v0.1.0) :
+
+- Chaque run travaille dans un TMP_DIR unique (`mktemp -d`) : prompt
+  assemblé, stderr, fichier de review agy. Aucune collision entre les voix
+  parallèles du swarm ; nettoyage via `trash`.
+- Entrées = fichiers locaux écrits par Romain ou Claude : confiance locale
+  assumée, pas de sanitization anti-injection.
+- `--dangerously-skip-permissions` est sans effet dangereux ici : le run est
+  headless, hermétique et sans AUCUN outil (`--tools ""`) ; le flag ne fait
+  que supprimer les prompts interactifs d'un process qui ne peut rien
+  toucher.
+- Pas de gestion de taille d'entrée : un dépassement de contexte modèle se
+  solde par une erreur franche du transport (enveloppe `error`), assumé (un
+  doc de brainstorming pèse quelques Ko).
 
 Appels par exercice :
 
@@ -98,18 +120,27 @@ Interdictions dures :
 `questions` : 0 à 5 items (maxItems 5). Valeurs d'enum en anglais (cohérence
 avec `approve|rework|reject` du schéma spec), contenus en français.
 
+Réconciliation avec le non-but « ni score ni verdict » : `criticality` est
+une clé de tri des questions, pas un jugement du doc ; `assessment` est une
+impression de contexte non évaluative, précieuse quand `questions` est vide.
+Le seul « verdict » reste le creux : 0 question.
+
 ## 4. Skills brain
 
 ### `/devil-brain [devil] [fichier]` (unitaire)
 
 1. Résolution : devil (défaut gemini), doc (arg explicite >
-   `.specs/*/brainstorming.md` le plus récent > demander).
+   `.specs/*/brainstorming.md` le plus récent > demander). Fichier
+   introuvable ou vide → la skill s'arrête et demande, aucun appel modèle.
 2. Chemins mission/schéma résolus en absolu depuis la racine plugin (deux
    niveaux au-dessus du base dir, comme v0.1.0).
-3. Spawn `devil:devil-<devil>` (fallback sans préfixe) avec le contrat § 2.
+3. Spawn `devil:devil-<devil>` avec le contrat § 2 ; si ce type d'agent est
+   introuvable (plugin non chargé), retenter avec `devil-<devil>` sans
+   préfixe.
 4. Restitution : tableau trié (criticité), avec risque par question, puis
    Q&A ciblé : Romain écarte, on traite les retenues une par une, le doc de
-   brainstorming est amendé au fil de l'eau.
+   brainstorming est amendé au fil de l'eau. Les questions écartées peuvent
+   devenir des non-buts explicites du doc (même règle qu'en swarm).
 5. Si `questions` est vide : « rien de dangereux à signaler, prêt à
    spécifier » + assessment. Pas de Q&A forcé.
 
@@ -118,9 +149,13 @@ avec `approve|rework|reject` du schéma spec), contenus en français.
 1. Résolution du doc, puis spawn des 3 agents en UN SEUL message (parallèle).
 2. Tolérance aux voix absentes comme spec-swarm : 2 voix = OK annoncé,
    1 voix = dégradé annoncé, 0 voix = échec franc.
-3. Consolidation : regroupement SÉMANTIQUE des questions équivalentes (même
-   angle mort formulé différemment), badge convergence 3/3, 2/3, 1/3. La
-   criticité retenue pour un groupe = la plus haute parmi les voix groupées.
+3. Consolidation, opérée par le Claude orchestrateur de la skill (capacité
+   LLM native, comme la convergence des issues de spec-swarm : aucun
+   algorithme, embedding ou seuil à coder). Deux questions sont équivalentes
+   si elles visent le même angle mort ou nomment le même risque, même
+   formulées différemment. Badge convergence 3/3, 2/3, 1/3 ; les singletons
+   gardent leur badge 1/3 dans le tableau. La criticité retenue pour un
+   groupe = la plus haute parmi les voix groupées.
 4. **Tri : criticité PUIS convergence** (différence assumée avec spec-swarm :
    une bloquante 1/3 vaut plus qu'une exploratoire 3/3 ; la convergence
    départage à criticité égale).
@@ -133,11 +168,19 @@ avec `approve|rework|reject` du schéma spec), contenus en français.
 
 Aucune mécanique dédiée : si le doc n'existe pas encore, Claude fige d'abord
 un draft (fichier réel dans `.specs/<chantier>/brainstorming.md`), puis
-invoque la skill normalement. Les questions retenues nourrissent la suite du
-Q&A de brainstorming.
+invoque la skill normalement. Patron concret : en plein Q&A, Romain dit
+« appelle les devils » → Claude écrit l'état courant de la compréhension
+dans `.specs/<chantier>/brainstorming.md` → invoque `/devil-brain-swarm` sur
+ce fichier → les questions retenues nourrissent la suite du Q&A. Non-but
+rappelé : aucun re-passage automatique après amendement du doc, le re-appel
+est toujours manuel.
 
 ## 5. Migration devil-spec (refactor interne, surfaces intactes)
 
+- Préalable : diff des fichiers agents v0.1.0 contre `devil-mission.md` ;
+  tout contenu de rôle ou d'exercice porté par les agents (et pas par la
+  mission) est fusionné dans `devil-spec-mission.md` avant la
+  généralisation, pour qu'aucune sémantique spec ne se perde en route.
 - `skills/devil-spec/SKILL.md` + `skills/devil-spec-swarm/SKILL.md` : spawn
   `devil:devil-{gemini,glm,deepseek}`, chemins `devil-spec-mission.md` /
   `devil-spec-schema.json`, INPUTS `BRAINSTORMING:` + `SPECS:`.
