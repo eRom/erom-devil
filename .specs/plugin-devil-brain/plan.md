@@ -22,6 +22,7 @@
 - Surfaces `/devil-spec` et `/devil-spec-swarm` : syntaxe, verdicts, seuils, synthèse et boucle de correction INCHANGÉS.
 - Sorties de commande pilotant une décision : préfixer `command` (hook rtk réécrit git/grep/ls).
 - Commits : trailers `Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>` + `Claude-Session: https://claude.ai/code/session_013zG81zFmmGeLihXvXSxQ6u`.
+- Greps de non-présence (vérifs anti-références) : `grep` renvoie exit 1 quand il ne trouve rien — c'est le SUCCÈS attendu, jamais un échec de tâche. Ne pas partir en fix sur un exit non-zéro : lire la sortie (0 occurrence / aucune ligne = OK).
 
 ## Contrat de spawn agent (interface commune, référencée par les tâches 2 à 6 et 8 à 9)
 
@@ -502,7 +503,7 @@ Nouveau :
 
 - [ ] **Step 2: `skills/devil-spec/SKILL.md` — étape 2, remplacer le bloc de spawn**
 
-Ancien (bloc complet, du titre « ## Étape 2 — Lancer le sous-agent » jusqu'à la ligne d'annonce incluse) :
+Ancien (du paragraphe « Spawn l'agent du devil choisi… » jusqu'au bloc `Agent(...)` fermant inclus ; la ligne d'annonce « Review en cours… » qui suit reste hors périmètre) :
 ```
 Spawn l'agent du devil choisi — `devil:devil-spec-gemini`,
 `devil:devil-spec-glm` ou `devil:devil-spec-deepseek` (si le nom préfixé
@@ -551,7 +552,10 @@ Et remplacer le bloc prompt :
 ```
 prompt: "BRAINSTORM_FILE=<abs>\nSPECS_FILE=<abs>\nSCHEMA_FILE=<abs>\nMISSION_FILE=<abs>\n\nExécute la procédure de review."
 ```
-par le MÊME prompt que Step 2 de cette task (MISSION_FILE, SCHEMA_FILE, VALIDATE_JQ spec, INPUTS BRAINSTORMING + SPECS, « Exécute la procédure de transport. »).
+par ce bloc LITTÉRAL (identique caractère pour caractère au prompt du Step 2 — le VALIDATE_JQ spec ne doit JAMAIS diverger entre les deux surfaces jumelles) :
+```
+prompt: "MISSION_FILE=<abs>\nSCHEMA_FILE=<abs>\nVALIDATE_JQ=has(\"score\") and has(\"verdict\") and has(\"summary\") and has(\"criteria\") and has(\"issues\") and (.verdict | IN(\"approve\",\"rework\",\"reject\"))\nINPUTS:\nBRAINSTORMING:<abs brainstorm>\nSPECS:<abs specs>\n\nExécute la procédure de transport."
+```
 
 - [ ] **Step 5: Vérifier zéro référence obsolète dans les deux skills**
 
@@ -762,10 +766,17 @@ Confirmation :
 ## Étape 2 — Spawner les 3 devils EN PARALLÈLE
 
 IMPORTANT : les 3 appels Agent partent dans UN SEUL message (c'est ce qui
-les fait tourner en parallèle). Même prompt que /devil-brain étape 2 (même
-MISSION_FILE, SCHEMA_FILE, VALIDATE_JQ, INPUTS `BRAINSTORMING:<abs>`), seul
-le subagent_type change : `devil:devil-gemini`, `devil:devil-glm`,
-`devil:devil-deepseek` (si un type est introuvable, fallback sans préfixe).
+les fait tourner en parallèle). Prompt IDENTIQUE pour les trois — le même
+qu'à /devil-brain étape 2, VALIDATE_JQ compris ; seul le subagent_type
+change : `devil:devil-gemini`, `devil:devil-glm`, `devil:devil-deepseek`
+(si un type est introuvable, fallback sans préfixe) :
+
+```
+Agent(
+  subagent_type: "devil:devil-<devil>",
+  prompt: "MISSION_FILE=<abs>\nSCHEMA_FILE=<abs>\nVALIDATE_JQ=has(\"assessment\") and has(\"questions\") and (.questions|type==\"array\" and length<=5) and (.questions|all(has(\"question\") and has(\"domain\") and has(\"risk\") and (.criticality|IN(\"blocking\",\"important\",\"exploratory\"))))\nINPUTS:\nBRAINSTORMING:<abs>\n\nExécute la procédure de transport."
+)
+```
 
 ## Étape 3 — Collecte et quorum
 
@@ -987,7 +998,7 @@ BRAINSTORMING:/Users/recarnot/dev/erom-agence-devil/examples/brainstorming.md
 SPECS:/Users/recarnot/dev/erom-agence-devil/examples/specs.md
 ```
 et fichiers scratchpad `smoke-spec-<devil>.json`.
-Attendu : 3 enveloppes `ok`, les 3 verdicts `reject` (référence v0.1.0 : gemini 15, glm 22, deepseek 12), les 6 défauts plantés retrouvés dans les issues consolidées (SaaS, OpenAI distant, clé en clair, SQLite vs JSON, export manquant, ni tests ni erreurs).
+CRITÈRE DE PASSAGE : les 3 enveloppes `ok` avec `verdict:"reject"`, et les 6 défauts plantés retrouvés dans les issues (SaaS, OpenAI distant, clé en clair, SQLite vs JSON, export manquant, ni tests ni erreurs). Les scores v0.1.0 (gemini 15, glm 22, deepseek 12) sont une RÉFÉRENCE indicative, pas une reproduction exacte attendue : le prompt littéral change légèrement en v0.2.0 (label `BRAINSTORMING` au lieu de `BRAINSTORM`, « avant de travailler » au lieu de « avant de juger »), donc des scores voisins mais différents sont normaux tant que le verdict reste `reject`.
 
 - [ ] **Step 4: Si un smoke échoue** — diagnostiquer avec l'enveloppe error (jamais stderr seul), corriger le fichier agent ou skill concerné, committer le fix (`fix(agents): …`), relancer le smoke concerné. Ne jamais passer à la Task 9 avec un smoke rouge.
 
