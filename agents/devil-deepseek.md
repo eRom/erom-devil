@@ -70,7 +70,7 @@ Ligne de base validée par Romain + flags d'hermétisme validés le 2026-07-18 :
 ```bash
 RAW=$(cd "$TMP_DIR" && ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_BASE_URL=http://localhost:11434 \
   ANTHROPIC_API_KEY="" CLAUDE_CODE_EFFORT_LEVEL=max \
-  claude --model deepseek-v4-pro:cloud --dangerously-skip-permissions \
+  claude --model deepseek-v4-pro:cloud[1m] --dangerously-skip-permissions \
   --strict-mcp-config --tools "" --setting-sources "" --no-session-persistence \
   -p --output-format json < "$PROMPT_FILE" 2>"$TMP_DIR/stderr.log")
 ```
