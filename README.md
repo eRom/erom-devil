@@ -1,8 +1,8 @@
 # devil — avocats du diable pour la définition de besoins
 
 Plugin Claude Code. Trois reviewers critiques externes (Gemini, GLM,
-Deepseek), renforcés par Opus en review unitaire, attaquent tes documents
-amont, AVANT implémentation, sous trois angles :
+Deepseek), renforcés par Opus et Kimi en review unitaire, attaquent tes
+documents amont, AVANT implémentation, sous trois angles :
 
 - **devil-spec** : ils jugent une spec technique contre son brainstorm
   d'origine (dérives, manques, incohérences), score et verdict à la clé.
@@ -18,9 +18,13 @@ amont, AVANT implémentation, sous trois angles :
 | Devil | Modèle | Transport | Swarms |
 |---|---|---|---|
 | gemini | Gemini 3.5 Flash (High) | Antigravity CLI (agy) | oui |
-| glm | glm-5.2:cloud | claude CLI → ollama cloud | oui |
-| deepseek | deepseek-v4-pro:cloud | claude CLI → ollama cloud | oui |
+| glm | glm-5.2:cloud[1m] | claude CLI → ollama cloud | oui |
+| deepseek | deepseek-v4-pro:cloud[1m] | claude CLI → ollama cloud | oui |
 | opus | Opus 4.8 xHigh | claude CLI | non (unitaire seulement) |
+| kimi | kimi-k3:cloud[1m] | claude CLI → ollama cloud | non (unitaire seulement) |
+
+Opus et Kimi sont des juges indépendants : ils ne siègent pas aux tribunaux
+et s'appellent unitairement, pour un second avis hors consensus du swarm.
 
 ## Usage
 
@@ -34,6 +38,7 @@ amont, AVANT implémentation, sous trois angles :
 /devil-code                          # review du changement courant (auto)
 /devil-code 123 glm                  # review d'une PR GitHub
 /devil-code main intent.md           # branche vs main, avec doc d'intention
+/devil-code main kimi                # second avis d'un juge indépendant
 /devil-code-swarm HEAD~1             # tribunal sur le dernier commit
 ```
 
@@ -53,7 +58,8 @@ de commits, working tree), packagé en DIFF + fichiers modifiés + intention
 optionnelle. Scan anti-fuite de secrets AVANT tout envoi (STOP sur hit).
 Sortie par devil : JSON strict (score 0-100, verdict approve/rework/reject,
 6 critères code, issues ancrées file:ligne avec scénario d'échec
-obligatoire). Le swarm (gemini + glm + deepseek, opus exclu) consolide par
+obligatoire). Le swarm (gemini + glm + deepseek, opus et kimi exclus)
+consolide par
 problème de fond : VALABLE, MODIFICATIONS REQUISES ou JETABLE, avec
 garde-fou sécurité (une critical security ancrée interdit VALABLE).
 
@@ -61,7 +67,10 @@ garde-fou sécurité (une critical security ancrée interdit VALABLE).
 
 - `agy` (Antigravity CLI) authentifié, pour le devil gemini.
 - `claude` CLI + ollama local avec accès aux modèles cloud (`glm-5.2:cloud`,
-  `deepseek-v4-pro:cloud`), pour glm et deepseek.
+  `deepseek-v4-pro:cloud`, `kimi-k3:cloud`), pour glm, deepseek et kimi.
+- `kimi-k3:cloud` n'est pas inclus dans les forfaits Ollama : il consomme de
+  l'extra usage. Sans solde, l'appel retourne `402` et le devil rend un
+  `CLI_FAILED` (crédit sur https://ollama.com/settings).
 - `jq`, `trash`.
 
 ## Installation

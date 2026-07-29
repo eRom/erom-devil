@@ -7,8 +7,8 @@ allowed-tools: Read, Glob, Grep, Bash, Agent, AskUserQuestion, Edit
 
 # /devil-code-swarm — Le tribunal du code
 
-Les 3 devils (gemini + glm + deepseek — opus n'est pas convoqué au
-tribunal, choix acté) jugent le MÊME changement EN PARALLÈLE. Toi
+Les 3 devils (gemini + glm + deepseek — ni opus ni kimi ne sont convoqués
+au tribunal, choix acté) jugent le MÊME changement EN PARALLÈLE. Toi
 (l'orchestrateur) tu consolides : ancrage par voix, convergences, verdict
 avec garde-fou sécurité.
 
@@ -144,7 +144,8 @@ silencieusement).
   Étape 8 (modes autorisés, low ignorées, non-ancrées exclues, le devil
   ne modifie jamais rien).
 - Maximum 1 re-swarm ; ensuite Romain tranche.
-- opus ne siège pas au tribunal (dispo en unitaire : /devil-code opus).
+- opus et kimi ne siègent pas au tribunal : ce sont des juges indépendants,
+  appelés unitairement (/devil-code opus, /devil-code kimi).
 - `trash "$TMP_DIR"` en fin de run.
 - Coût : 3 modèles en parallèle ≈ la durée du plus lent. C'est un gate de
   commit/merge, pas un lint : pas sur un diff de deux lignes.

@@ -1,6 +1,6 @@
 ---
 name: devil-code
-description: "Review critique d'un changement de code par un avocat du diable au choix (Gemini par défaut, GLM, Deepseek, Opus) : PR GitHub, branche vs base, range de commits ou working tree. Score, verdict approve/rework/reject, issues ancrées file:ligne avec scénario d'échec. Triggers: /devil-code, 'review code', 'critique le code', 'devil sur le code'."
+description: "Review critique d'un changement de code par un avocat du diable au choix (Gemini par défaut, GLM, Deepseek, Opus, Kimi) : PR GitHub, branche vs base, range de commits ou working tree. Score, verdict approve/rework/reject, issues ancrées file:ligne avec scénario d'échec. Triggers: /devil-code, 'review code', 'critique le code', 'devil sur le code'."
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Bash, Agent, AskUserQuestion, Edit
 ---
@@ -23,9 +23,9 @@ qu'il voit est packagé par toi (l'orchestrateur) en inputs étiquetés.
 /devil-code 123 intent.md glm     # PR + doc d'intention + devil
 ```
 
-Parsing des arguments : le dernier s'il vaut `gemini`, `glm`, `deepseek` ou
-`opus` → devil (défaut `gemini`) ; un argument `*.md` existant → INTENT ;
-le reste → target.
+Parsing des arguments : le dernier s'il vaut `gemini`, `glm`, `deepseek`,
+`opus` ou `kimi` → devil (défaut `gemini`) ; un argument `*.md` existant →
+INTENT ; le reste → target.
 
 ## Étape 0 — Chemins du plugin
 

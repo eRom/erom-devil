@@ -13,20 +13,26 @@ implémentation. Trois exercices :
   0 question = prêt à spécifier (signal faible, limite actée).
 - **code** : review d'un CHANGEMENT (PR/branche/range/working tree) packagé
   hermétiquement (DIFF + FILES + INTENT opt.), scan anti-fuite pré-vol,
-  ancrage file:ligne vérifié au retour, garde-fou sécurité en swarm (opus
-  exclu du tribunal, dispo en unitaire).
+  ancrage file:ligne vérifié au retour, garde-fou sécurité en swarm (opus et
+  kimi exclus du tribunal, dispo en unitaire).
 
 **Stack** : agents + skills en markdown ; bash + `jq` + `sed` ; `agy`
 (Antigravity CLI → Gemini) ; `claude -p` → ollama cloud (GLM/Deepseek) ;
 `trash`.
 
-**Les 4 agents = transport PUR** (ne connaissent pas l'exercice) :
+**Les 5 agents = transport PUR** (ne connaissent pas l'exercice) :
 | agent | modèle | transport |
 |---|---|---|
 | devil-gemini | Gemini 3.5 Flash (High) | agy (review par fichier, bug stdout #76) |
-| devil-glm | glm-5.2:cloud | claude -p ollama cloud (JSON stdout) |
-| devil-deepseek | deepseek-v4-pro:cloud | idem glm (jumeau sed) |
+| devil-glm | glm-5.2:cloud[1m] | claude -p ollama cloud (JSON stdout) |
+| devil-deepseek | deepseek-v4-pro:cloud[1m] | idem glm (jumeau sed) |
 | devil-opus | Opus 4.8 xHigh | claude -p (hors swarms, unitaire seulement) |
+| devil-kimi | kimi-k3:cloud[1m] | idem glm (jumeau sed) ; hors swarms, unitaire |
+
+Le suffixe `[1m]` (contexte 1M) est porté par les 3 transports ollama, dans
+la ligne d'appel ET dans le champ `model` de l'enveloppe. Il DOIT être quoté
+dans le bash : le Bash tool tourne sous zsh, où `[1m]` non quoté est un glob
+`nomatch` qui avorte la commande avant tout appel (voir gotchas.md).
 
 L'exercice est porté par les SKILLS via le contrat de spawn :
 MISSION_FILE + SCHEMA_FILE + VALIDATE_JQ + INPUTS étiquetés (`LABEL:abs`).
@@ -35,7 +41,7 @@ Ajouter un exercice = 1 mission + 1 schéma + 2 skills, agents inchangés.
 **Arborescence** :
 ```
 .claude-plugin/plugin.json      manifest 0.3.0 (PAS de clé agents)
-agents/devil-{gemini,glm,deepseek,opus}.md transport pur (opus hors swarms)
+agents/devil-{gemini,glm,deepseek,opus,kimi}.md transport pur (opus+kimi hors swarms)
 skills/devil-spec{,-swarm}/     exercice spec (2 inputs BRAINSTORMING+SPECS)
 skills/devil-brain{,-swarm}/    exercice brain (1 input BRAINSTORMING)
 skills/devil-code{,-swarm}/     exercice code (DIFF + FILES/INTENT opt.)

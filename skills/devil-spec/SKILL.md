@@ -1,14 +1,14 @@
 ---
 name: devil-spec
-description: "Review critique de specs tech par un avocat du diable au choix (Gemini par défaut, GLM, Deepseek, Opus). Compare specs au brainstorm pour dérives/manques/incohérences. Triggers: /devil-spec, 'contre spec', 'review spec', 'critique les specs'."
+description: "Review critique de specs tech par un avocat du diable au choix (Gemini par défaut, GLM, Deepseek, Opus, Kimi). Compare specs au brainstorm pour dérives/manques/incohérences. Triggers: /devil-spec, 'contre spec', 'review spec', 'critique les specs'."
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Agent, AskUserQuestion, Edit
 ---
 
 # /devil-spec — Review critique de specs par un avocat du diable
 
-Un devil externe (Gemini via agy, ou GLM/Deepseek via claude CLI sur ollama
-cloud) juge des specs techniques contre leur brainstorm d'origine. L'agent
+Un devil externe (Gemini via agy, ou GLM/Deepseek/Kimi via claude CLI sur
+ollama cloud) juge des specs techniques contre leur brainstorm d'origine. L'agent
 wrapper gère l'appel et le parsing ; toi (l'orchestrateur) tu présentes le
 rapport et guides les corrections.
 
@@ -23,8 +23,8 @@ rapport et guides les corrections.
 
 ## Étape 0 — Résoudre le devil et les chemins du plugin
 
-- Devil : le dernier argument s'il vaut `gemini`, `glm`, `opus` ou `deepseek` ; sinon
-  `gemini` par défaut.
+- Devil : le dernier argument s'il vaut `gemini`, `glm`, `deepseek`, `opus`
+  ou `kimi` ; sinon `gemini` par défaut.
 - Racine du plugin : deux niveaux au-dessus du « Base directory for this
   skill » injecté ci-dessus. Résous en absolu :
   - `SCHEMA_FILE` = `<racine>/scripts/devil-spec-schema.json`
@@ -59,9 +59,9 @@ Attends la confirmation de Romain (« oui », « go », « lance »).
 
 ## Étape 2 — Lancer le sous-agent
 
-Spawn l'agent du devil choisi — `devil:devil-gemini`, `devil:devil-glm`, `devil:devil-opus` ou
-`devil:devil-deepseek` ; si ce type est introuvable (plugin non chargé),
-retente sans préfixe, ex. `devil-glm` :
+Spawn l'agent du devil choisi — `devil:devil-gemini`, `devil:devil-glm`,
+`devil:devil-deepseek`, `devil:devil-opus` ou `devil:devil-kimi` ; si ce type
+est introuvable (plugin non chargé), retente sans préfixe, ex. `devil-glm` :
 
 ```
 Agent(

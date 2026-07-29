@@ -1,6 +1,6 @@
 ---
 name: devil-glm
-description: Transport GLM des avocats du diable — assemble mission + inputs étiquetés, appelle claude CLI sur ollama cloud (glm-5.2:cloud), retourne l'enveloppe JSON. L'exercice est porté par la mission fournie.
+description: Transport GLM des avocats du diable — assemble mission + inputs étiquetés, appelle claude CLI sur ollama cloud (glm-5.2:cloud[1m]), retourne l'enveloppe JSON. L'exercice est porté par la mission fournie.
 color: red
 tools: Bash, Read, Glob, Grep
 model: sonnet
@@ -28,8 +28,8 @@ VALIDATE_JQ en bash entre single quotes.
 ## Sortie (contrat strict)
 
 Ton message final est UN objet JSON sur une ligne, rien d'autre :
-- succès : `{"devil":"glm","model":"glm-5.2:cloud","status":"ok","review":{…}}`
-- échec  : `{"devil":"glm","model":"glm-5.2:cloud","status":"error","error":"CLI_FAILED|PARSE_ERROR|SCHEMA_INVALID|TIMEOUT","detail":"≤ 500 chars"}`
+- succès : `{"devil":"glm","model":"glm-5.2:cloud[1m]","status":"ok","review":{…}}`
+- échec  : `{"devil":"glm","model":"glm-5.2:cloud[1m]","status":"error","error":"CLI_FAILED|PARSE_ERROR|SCHEMA_INVALID|TIMEOUT","detail":"≤ 500 chars"}`
 
 ## Procédure
 
@@ -70,7 +70,7 @@ Ligne de base validée par Romain + flags d'hermétisme validés le 2026-07-18 :
 ```bash
 RAW=$(cd "$TMP_DIR" && ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_BASE_URL=http://localhost:11434 \
   ANTHROPIC_API_KEY="" CLAUDE_CODE_EFFORT_LEVEL=max \
-  claude --model glm-5.2:cloud[1m] --dangerously-skip-permissions \
+  claude --model "glm-5.2:cloud[1m]" --dangerously-skip-permissions \
   --strict-mcp-config --tools "" --setting-sources "" --no-session-persistence \
   -p --output-format json < "$PROMPT_FILE" 2>"$TMP_DIR/stderr.log")
 ```
@@ -108,7 +108,7 @@ DETAIL=$(printf '%s' "${API_STATUS:+[$API_STATUS] }${ERR_MSG:-$(head -c 500 "$TM
 ### Step 4 — Enveloppe et nettoyage
 
 ```bash
-command jq -n -c --argjson review "$REVIEW" '{devil:"glm",model:"glm-5.2:cloud",status:"ok",review:$review}'
+command jq -n -c --argjson review "$REVIEW" '{devil:"glm",model:"glm-5.2:cloud[1m]",status:"ok",review:$review}'
 trash "$TMP_DIR" 2>/dev/null || true
 ```
 

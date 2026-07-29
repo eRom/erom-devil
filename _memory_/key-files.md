@@ -3,7 +3,7 @@
 > MàJ : 2026-07-18 (v0.3.0)
 
 ## Manifest
-- `.claude-plugin/plugin.json` — name `devil`, version 0.3.0, `"skills":
+- `.claude-plugin/plugin.json` — name `devil`, version 0.4.0, `"skills":
   "./skills/"`. PAS de clé `agents` (voir gotchas.md « Manifest de plugin »).
 
 ## Contrats par exercice (scripts/)
@@ -27,6 +27,13 @@
   par sed si glm change + contrôle post-gen (0 « glm » résiduel).
 - `devil-opus.md` — claude -p (Opus 4.8 xHigh) ; même contrat de transport ;
   hors swarms, dispo en unitaire (`/devil-* opus`).
+- `devil-kimi.md` — jumeau sed de devil-glm (kimi-k3:cloud[1m]) ; hors
+  swarms comme opus, juge indépendant en unitaire (`/devil-* kimi`).
+  Modèle hors forfait Ollama : 402 sans extra usage (voir gotchas.md).
+- Les 3 transports ollama portent `[1m]` aux 5 mêmes emplacements (desc,
+  enveloppe ok, enveloppe error, ligne d'appel, jq final) et sont
+  byte-identiques après normalisation nom+tag. Le tag DOIT être quoté dans
+  la ligne d'appel (glob zsh, voir gotchas.md).
 - Contrat d'entrée commun : MISSION_FILE, SCHEMA_FILE, VALIDATE_JQ (posée en
   single quotes bash), INPUTS lignes `LABEL:abs` → variables IN1_/IN2_.
 
@@ -42,7 +49,7 @@
   ref/auto), packaging TMP_DIR (DIFF jamais tronqué, FILES budget 200 Ko,
   INTENT opt.), scan pré-vol AVANT envoi (STOP sur hit), ancrage
   file:ligne ±3 sur les hunks, correction guidée selon mode (table).
-- `devil-code-swarm/SKILL.md` — tribunal code (opus exclu) ; ancrage par
+- `devil-code-swarm/SKILL.md` — tribunal code (opus et kimi exclus) ; ancrage par
   voix, consolidation problème de fond, verdict table + garde-fou
   sécurité (critical security ancrée → jamais VALABLE), tri convergence
   puis sévérité.

@@ -30,6 +30,33 @@
   Toujours vérifier une accusation de syntaxe jq par exécution avant de la
   traiter comme un finding.
 
+## Suffixe `[1m]` : TOUJOURS quoter (bug silencieux 2026-07-24 → 07-29)
+- Le Bash tool tourne sous `/bin/zsh`, où l'option `nomatch` est active :
+  `[1m]` non quoté est lu comme une CLASSE DE CARACTÈRES glob. `claude
+  --model glm-5.2:cloud[1m]` → `zsh: no matches found` et la commande n'est
+  JAMAIS exécutée. En bash le pattern passerait littéralement — d'où un bug
+  invisible pour qui teste hors harnais.
+- Symptôme trompeur : en substitution `RAW=$(… )`, la subshell sort en 1,
+  `RAW` est vide, le transport conclut `CLI_FAILED` avec un detail de panne
+  réseau alors qu'AUCUN appel modèle n'a eu lieu. Le retry échoue pareil.
+- Introduit par le commit `ab4886f` (ajout du `[1m]`), il a cassé glm ET
+  deepseek pendant 5 jours sans que rien ne le signale. Forme correcte :
+  `claude --model "glm-5.2:cloud[1m]"`. Vérif : le `modelUsage` du JSON de
+  sortie doit contenir le tag AVEC son suffixe.
+- Sans danger dans une valeur JSON de programme `jq` (`model:"…[1m]"`,
+  testé exit 0) : le piège est le shell, pas jq.
+
+## Kimi (kimi-k3:cloud) — hors forfait Ollama
+- Tag exact `kimi-k3:cloud` (2.8T params, MXFP4, `context_length` 1048576 →
+  le `[1m]` est justifié). `kimi-3:cloud` et `kimi-k2:cloud` n'existent pas ;
+  `kimi-k2-thinking:cloud` répond 410 (retiré).
+- Double suffixe = 400 : `API Error: 400 use either :local or :cloud, not
+  both`. Piège classique du sed de clonage glm→kimi.
+- Le modèle est en **extra usage only**, PAS inclus dans le forfait : sans
+  solde, `402 … extra usage balance is empty` (crédit sur
+  ollama.com/settings). Le transport est correct, le refus vient du compte —
+  ne pas partir en debug de la ligne d'appel sur ce code.
+
 ## Ollama cloud (contrainte dure, validée Romain 2026-07-18)
 - Les modèles `:cloud` (glm-5.2, deepseek-v4-pro) marchent DIRECTEMENT via
   `claude` pointé sur `localhost:11434`. PAS de `ollama pull`, PAS de préflight
