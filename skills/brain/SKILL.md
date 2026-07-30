@@ -1,11 +1,11 @@
 ---
-name: devil-brain
-description: "Interrogatoire socratique d'un doc de brainstorming par un avocat du diable au choix (Gemini par défaut, GLM, Deepseek, Opus, Kimi) : les 5 questions les plus dangereuses jamais posées, sans score ni verdict. Triggers: /devil-brain, 'questionne le brainstorm', 'angles morts du brainstorming'."
+name: brain
+description: "Interrogatoire socratique d'un doc de brainstorming par un avocat du diable au choix (Gemini par défaut, GLM, Deepseek, Opus, Kimi) : les 5 questions les plus dangereuses jamais posées, sans score ni verdict. Triggers: /erom-devil:brain, 'questionne le brainstorm', 'angles morts du brainstorming'."
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Agent, AskUserQuestion, Edit
 ---
 
-# /devil-brain — L'interrogatoire socratique du brainstorming
+# /erom-devil:brain — L'interrogatoire socratique du brainstorming
 
 Un devil externe lit un doc de brainstorming (définition de besoins) et rend
 les questions les PLUS DANGEREUSES jamais posées — 5 max, sans score ni
@@ -15,10 +15,10 @@ amendes le doc au fil de ses réponses.
 ## Syntaxe
 
 ```
-/devil-brain                          # auto-detect, devil gemini
-/devil-brain glm                      # auto-detect, devil glm
-/devil-brain chemin/brainstorming.md  # fichier explicite, gemini
-/devil-brain chemin/brainstorming.md deepseek
+/erom-devil:brain                          # auto-detect, devil gemini
+/erom-devil:brain glm                      # auto-detect, devil glm
+/erom-devil:brain chemin/brainstorming.md  # fichier explicite, gemini
+/erom-devil:brain chemin/brainstorming.md deepseek
 ```
 
 ## Étape 0 — Résoudre le devil et les chemins du plugin
@@ -48,12 +48,12 @@ Confirmation avant lancement :
 
 ## Étape 2 — Lancer le sous-agent
 
-Spawn `devil:devil-<devil>` ; si ce type est introuvable (plugin non
-chargé), retente `devil-<devil>` sans préfixe :
+Spawn `erom-devil:<devil>` ; si ce type est introuvable (plugin non
+chargé), retente `<devil>` sans préfixe :
 
 ```
 Agent(
-  subagent_type: "devil:devil-<devil>",
+  subagent_type: "erom-devil:<devil>",
   prompt: "MISSION_FILE=<abs>\nSCHEMA_FILE=<abs>\nVALIDATE_JQ=has(\"assessment\") and has(\"questions\") and (.questions|type==\"array\" and length<=5) and (.questions|all(has(\"question\") and has(\"domain\") and has(\"risk\") and (.criticality|IN(\"blocking\",\"important\",\"exploratory\"))))\nINPUTS:\nBRAINSTORMING:<abs>\n\nExécute la procédure de transport."
 )
 ```
@@ -73,8 +73,8 @@ review|error+detail}`.
 Devil : <devil> (<model>)
 Erreur : <error> — <detail>
 
-→ Relance (/devil-brain <devil>), autre devil (/devil-brain glm|deepseek|gemini),
-  ou les trois voix (/devil-brain-swarm).
+→ Relance (/erom-devil:brain <devil>), autre devil (/erom-devil:brain glm|deepseek|gemini),
+  ou les trois voix (/erom-devil:brain-swarm).
 ```
 
 ### Si `status: "ok"` et `questions` vide
@@ -114,5 +114,5 @@ BLOQUANTE / IMPORTANTE / EXPLORATOIRE.
 - Tu ne modifies QUE le doc de brainstorming, et uniquement avec les
   réponses de Romain — jamais tes propres réponses aux questions.
 - Pas de re-passage automatique après amendement : le re-appel est toujours
-  manuel (/devil-brain ou /devil-brain-swarm).
+  manuel (/erom-devil:brain ou /erom-devil:brain-swarm).
 - Le devil ne modifie rien : c'est toi qui amendes.

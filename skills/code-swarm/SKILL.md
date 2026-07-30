@@ -1,23 +1,23 @@
 ---
-name: devil-code-swarm
-description: "Tribunal du code : Gemini + GLM + Deepseek reviewent le même changement en parallèle, consolidation par problème de fond, verdict VALABLE / MODIFICATIONS REQUISES / JETABLE avec garde-fou sécurité. Triggers: /devil-code-swarm, 'swarm sur le code', 'tribunal du code'."
+name: code-swarm
+description: "Tribunal du code : Gemini + GLM + Deepseek reviewent le même changement en parallèle, consolidation par problème de fond, verdict VALABLE / MODIFICATIONS REQUISES / JETABLE avec garde-fou sécurité. Triggers: /erom-devil:code-swarm, 'swarm sur le code', 'tribunal du code'."
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Bash, Agent, AskUserQuestion, Edit
 ---
 
-# /devil-code-swarm — Le tribunal du code
+# /erom-devil:code-swarm — Le tribunal du code
 
 Les 3 devils (gemini + glm + deepseek — ni opus ni kimi ne sont convoqués
 au tribunal, choix acté) jugent le MÊME changement EN PARALLÈLE. Toi
 (l'orchestrateur) tu consolides : ancrage par voix, convergences, verdict
 avec garde-fou sécurité.
 
-## Étapes 0 à 4 — identiques à /devil-code
+## Étapes 0 à 4 — identiques à /erom-devil:code
 
 Chemins plugin, résolution du target (mêmes formes, gardes et cas
 limites), packaging (mêmes règles DIFF/FILES/INTENT, un SEUL TMP_DIR
 partagé en lecture par les 3 spawns), scan pré-vol (obligatoire, jamais
-sauté) : déroule les Étapes 0 à 4 de `skills/devil-code/SKILL.md`, à une
+sauté) : déroule les Étapes 0 à 4 de `skills/code/SKILL.md`, à une
 différence près — l'annonce :
 
 > **Tribunal du code :** gemini + glm + deepseek en parallèle (jusqu'à
@@ -27,12 +27,12 @@ différence près — l'annonce :
 
 IMPORTANT : les 3 appels Agent partent dans UN SEUL message. Prompt
 IDENTIQUE pour les trois, seul le subagent_type change :
-`devil:devil-gemini`, `devil:devil-glm`, `devil:devil-deepseek` (fallback
+`erom-devil:gemini`, `erom-devil:glm`, `erom-devil:deepseek` (fallback
 sans préfixe si un type est introuvable) :
 
 ```
 Agent(
-  subagent_type: "devil:devil-<devil>",
+  subagent_type: "erom-devil:<devil>",
   prompt: "MISSION_FILE=<abs>\nSCHEMA_FILE=<abs>\nVALIDATE_JQ=has(\"score\") and has(\"verdict\") and has(\"summary\") and has(\"criteria\") and has(\"issues\") and (.score|type==\"number\" and .>=0 and .<=100) and (.verdict|IN(\"approve\",\"rework\",\"reject\")) and (.criteria|has(\"correctness\") and has(\"architecture\") and has(\"security\") and has(\"performance\") and has(\"tests\") and has(\"maintainability\")) and ([.criteria.correctness,.criteria.architecture,.criteria.security,.criteria.performance,.criteria.tests,.criteria.maintainability]|all(type==\"object\" and has(\"score\") and has(\"comment\") and (.score|type==\"number\" and .>=0 and .<=100))) and (.issues|type==\"array\" and all(has(\"severity\") and has(\"category\") and has(\"file\") and has(\"description\") and has(\"failure_scenario\") and has(\"suggestion\") and (.severity|IN(\"critical\",\"high\",\"medium\",\"low\")) and (.category|IN(\"correctness\",\"architecture\",\"security\",\"performance\",\"tests\",\"maintainability\",\"intent\"))))\nINPUTS:\nDIFF:<abs diff>\nFILES:<abs files>\nINTENT:<abs intent>\n\nExécute la procédure de transport."
 )
 ```
@@ -46,14 +46,14 @@ unitaire.)
 - 2 voix `ok` → continue, le rapport OUVRE sur la voix absente :
   « ⚠ <devil> muet (<error> — <detail court>). Synthèse sur 2 voix. »
 - ≤ 1 voix `ok` → PAS de verdict. Rapport d'échec, proposer : relancer le
-  swarm, ou l'unitaire (/devil-code <target> <devil>).
+  swarm, ou l'unitaire (/erom-devil:code <target> <devil>).
 
 Un retour qui n'est pas une enveloppe JSON valide compte comme voix
 absente (ne JAMAIS interpréter un texte d'erreur comme une review).
 
 ## Étape 7 — Ancrage par voix, puis consolidation
 
-D'abord l'ancrage de /devil-code Étape 6, appliqué PAR VOIX (les
+D'abord l'ancrage de /erom-devil:code Étape 6, appliqué PAR VOIX (les
 DÉCLASSÉES d'une voix sortent de sa contribution avant consolidation, et
 restent listées en « Non ancrées » avec leur devil).
 
@@ -140,12 +140,12 @@ silencieusement).
 
 ## Règles
 
-- Correction guidée : mêmes règles et même séquence que /devil-code
+- Correction guidée : mêmes règles et même séquence que /erom-devil:code
   Étape 8 (modes autorisés, low ignorées, non-ancrées exclues, le devil
   ne modifie jamais rien).
 - Maximum 1 re-swarm ; ensuite Romain tranche.
 - opus et kimi ne siègent pas au tribunal : ce sont des juges indépendants,
-  appelés unitairement (/devil-code opus, /devil-code kimi).
+  appelés unitairement (/erom-devil:code opus, /erom-devil:code kimi).
 - `trash "$TMP_DIR"` en fin de run.
 - Coût : 3 modèles en parallèle ≈ la durée du plus lent. C'est un gate de
   commit/merge, pas un lint : pas sur un diff de deux lignes.

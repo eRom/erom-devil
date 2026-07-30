@@ -1,4 +1,4 @@
-# Gotchas — erom-agence-devil
+# Gotchas — erom-devil (dossier local : erom-agence-devil)
 
 > MàJ : 2026-07-18 (v0.3.0)
 
@@ -18,7 +18,7 @@
   `git diff HEAD` les EXCLUT. Une feature de fichiers neufs non ajoutés →
   détectée « sale » mais diff vide → faux « rien à reviewer » ; changement
   mixte → fichiers neufs droppés en silence.
-- Fix devil-code : inclure les untracked en LECTURE SEULE via
+- Fix skill `code` : inclure les untracked en LECTURE SEULE via
   `git diff --no-index /dev/null <f>` (aucun `git add`, aucune mutation
   d'index). Cette commande sort en CODE 1 dès qu'elle trouve une différence
   (comparaison à /dev/null) — c'est normal, pas un échec.

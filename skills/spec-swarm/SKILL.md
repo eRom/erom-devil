@@ -1,11 +1,11 @@
 ---
-name: devil-spec-swarm
-description: "Tribunal des avocats du diable : Gemini + GLM + Deepseek reviewent les specs en parallèle, synthèse consolidée avec verdict VALABLE / MODIFICATIONS REQUISES / JETABLE. Triggers: /devil-spec-swarm, 'swarm de review', 'tribunal des specs'."
+name: spec-swarm
+description: "Tribunal des avocats du diable : Gemini + GLM + Deepseek reviewent les specs en parallèle, synthèse consolidée avec verdict VALABLE / MODIFICATIONS REQUISES / JETABLE. Triggers: /erom-devil:spec-swarm, 'swarm de review', 'tribunal des specs'."
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Agent, AskUserQuestion, Edit
 ---
 
-# /devil-spec-swarm — Le tribunal des trois devils
+# /erom-devil:spec-swarm — Le tribunal des trois devils
 
 Les 3 avocats du diable (Gemini via agy, GLM et Deepseek via ollama cloud)
 jugent les mêmes specs EN PARALLÈLE. Toi (l'orchestrateur) tu consolides :
@@ -13,13 +13,13 @@ convergences, dissonances, verdict final argumenté.
 
 ## Étape 0 — Chemins du plugin
 
-Identique à /devil-spec : racine = deux niveaux au-dessus du base directory
+Identique à /erom-devil:spec : racine = deux niveaux au-dessus du base directory
 injecté ; résous `SCHEMA_FILE` = `<racine>/scripts/devil-spec-schema.json`
 et `MISSION_FILE` = `<racine>/scripts/devil-spec-mission.md`, vérifie l'existence.
 
 ## Étape 1 — Fichiers d'entrée
 
-Même détection, mêmes règles et même confirmation que /devil-spec (paths en
+Même détection, mêmes règles et même confirmation que /erom-devil:spec (paths en
 argument sinon auto-detect `.specs/`), avec l'annonce :
 
 > **Tribunal convoqué :** gemini + glm + deepseek en parallèle (jusqu'à 9 min).
@@ -29,8 +29,8 @@ argument sinon auto-detect `.specs/`), avec l'annonce :
 
 IMPORTANT : les 3 appels Agent partent dans UN SEUL message (c'est ce qui les
 fait tourner en parallèle). Même prompt pour les trois, seul le
-subagent_type change : `devil:devil-gemini`, `devil:devil-glm`,
-`devil:devil-deepseek` (si le type est introuvable, fallback sans préfixe) :
+subagent_type change : `erom-devil:gemini`, `erom-devil:glm`,
+`erom-devil:deepseek` (si le type est introuvable, fallback sans préfixe) :
 
 ```
 prompt: "MISSION_FILE=<abs>\nSCHEMA_FILE=<abs>\nVALIDATE_JQ=has(\"score\") and has(\"verdict\") and has(\"summary\") and has(\"criteria\") and has(\"issues\") and (.verdict | IN(\"approve\",\"rework\",\"reject\"))\nINPUTS:\nBRAINSTORMING:<abs brainstorm>\nSPECS:<abs specs>\n\nExécute la procédure de transport."
@@ -45,7 +45,7 @@ Chaque retour est une enveloppe `{devil, model, status, review|error}`.
   « ⚠ <devil> n'a pas rendu son verdict (<error> — <detail court>). Synthèse
   sur 2 voix. »
 - ≤ 1 voix `ok` → PAS de verdict. Rapport d'échec avec le détail des erreurs,
-  proposer : relancer le swarm, ou basculer en unitaire (/devil-spec <devil>).
+  proposer : relancer le swarm, ou basculer en unitaire (/erom-devil:spec <devil>).
 
 Un retour qui n'est pas une enveloppe JSON valide compte comme voix absente
 (ne JAMAIS interpréter un texte d'erreur comme une review).
@@ -127,7 +127,7 @@ Puis la section « Voix dissonante » si applicable.
 ## Règles
 
 - Ne JAMAIS modifier le brainstorm.
-- Corrections : mêmes règles que /devil-spec (Edit specs uniquement, low
+- Corrections : mêmes règles que /erom-devil:spec (Edit specs uniquement, low
   ignorées, pas d'invention).
 - Maximum 1 re-swarm ; ensuite Romain tranche.
 - Coût : 3 modèles en parallèle ≈ la durée du plus lent. C'est un gate de

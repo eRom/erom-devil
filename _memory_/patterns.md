@@ -1,4 +1,4 @@
-# Patterns & conventions — erom-agence-devil
+# Patterns & conventions — erom-devil (dossier local : erom-agence-devil)
 
 > MàJ : 2026-07-18 (v0.3.0)
 
@@ -54,8 +54,13 @@
   fallback fichier scratchpad (canal teammate intermittent).
 
 ## Nommage & git
-- Exercices préfixés : `devil-spec-*` / `devil-brain-*` pour missions,
-  schémas, skills ; agents SANS exercice (`devil-<modèle>`).
+- Convention 2026-07-30 : plugin `erom-devil` (= nom du repo GitHub), skills
+  et agents SANS préfixe de domaine (`spec`, `brain`, `code`, `*-swarm` ;
+  `gemini`, `glm`, `deepseek`, `opus`, `kimi`). Invocation
+  `/erom-devil:<skill>`, spawn `erom-devil:<agent>`.
+- Les fichiers de `scripts/` gardent le préfixe historique `devil-` :
+  `devil-{spec,brain,code}-{mission.md,schema.json}` sont des CHEMINS
+  internes, pas des identifiants exposés — ne pas les renommer.
 - Feature branch puis merge ff sur main ; commits fréquents avec trailers.
 - Tri d'affichage : criticités en français (BLOQUANTE/IMPORTANTE/EXPLORATOIRE),
   enums machine en anglais.

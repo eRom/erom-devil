@@ -1,11 +1,11 @@
 ---
-name: devil-spec
-description: "Review critique de specs tech par un avocat du diable au choix (Gemini par défaut, GLM, Deepseek, Opus, Kimi). Compare specs au brainstorm pour dérives/manques/incohérences. Triggers: /devil-spec, 'contre spec', 'review spec', 'critique les specs'."
+name: spec
+description: "Review critique de specs tech par un avocat du diable au choix (Gemini par défaut, GLM, Deepseek, Opus, Kimi). Compare specs au brainstorm pour dérives/manques/incohérences. Triggers: /erom-devil:spec, 'contre spec', 'review spec', 'critique les specs'."
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Agent, AskUserQuestion, Edit
 ---
 
-# /devil-spec — Review critique de specs par un avocat du diable
+# /erom-devil:spec — Review critique de specs par un avocat du diable
 
 Un devil externe (Gemini via agy, ou GLM/Deepseek/Kimi via claude CLI sur
 ollama cloud) juge des specs techniques contre leur brainstorm d'origine. L'agent
@@ -15,10 +15,10 @@ rapport et guides les corrections.
 ## Syntaxe
 
 ```
-/devil-spec                                    # auto-detect, devil gemini
-/devil-spec glm                                # auto-detect, devil glm
-/devil-spec brainstorm.md specs.md             # paths explicites, gemini
-/devil-spec brainstorm.md specs.md deepseek    # paths + devil
+/erom-devil:spec                                    # auto-detect, devil gemini
+/erom-devil:spec glm                                # auto-detect, devil glm
+/erom-devil:spec brainstorm.md specs.md             # paths explicites, gemini
+/erom-devil:spec brainstorm.md specs.md deepseek    # paths + devil
 ```
 
 ## Étape 0 — Résoudre le devil et les chemins du plugin
@@ -59,13 +59,13 @@ Attends la confirmation de Romain (« oui », « go », « lance »).
 
 ## Étape 2 — Lancer le sous-agent
 
-Spawn l'agent du devil choisi — `devil:devil-gemini`, `devil:devil-glm`,
-`devil:devil-deepseek`, `devil:devil-opus` ou `devil:devil-kimi` ; si ce type
-est introuvable (plugin non chargé), retente sans préfixe, ex. `devil-glm` :
+Spawn l'agent du devil choisi — `erom-devil:gemini`, `erom-devil:glm`,
+`erom-devil:deepseek`, `erom-devil:opus` ou `erom-devil:kimi` ; si ce type
+est introuvable (plugin non chargé), retente sans préfixe, ex. `glm` :
 
 ```
 Agent(
-  subagent_type: "devil:devil-<devil>",
+  subagent_type: "erom-devil:<devil>",
   prompt: "MISSION_FILE=<abs>\nSCHEMA_FILE=<abs>\nVALIDATE_JQ=has(\"score\") and has(\"verdict\") and has(\"summary\") and has(\"criteria\") and has(\"issues\") and (.verdict | IN(\"approve\",\"rework\",\"reject\"))\nINPUTS:\nBRAINSTORMING:<abs brainstorm>\nSPECS:<abs specs>\n\nExécute la procédure de transport."
 )
 ```
@@ -85,8 +85,8 @@ review|error+detail}`.
 Devil : <devil> (<model>)
 Erreur : <error> — <detail>
 
-→ Relance (/devil-spec <devil>), ou essaie un autre devil
-  (/devil-spec glm|deepseek|gemini), ou review manuelle.
+→ Relance (/erom-devil:spec <devil>), ou essaie un autre devil
+  (/erom-devil:spec glm|deepseek|gemini), ou review manuelle.
 ```
 
 ### Si `status: "ok"`

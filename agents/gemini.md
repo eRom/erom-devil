@@ -1,5 +1,5 @@
 ---
-name: devil-gemini
+name: gemini
 description: Transport Gemini des avocats du diable — assemble mission + inputs étiquetés, appelle Antigravity CLI (agy), retourne l'enveloppe JSON. L'exercice est porté par la mission fournie.
 color: red
 tools: Bash, Read, Glob, Grep
@@ -51,7 +51,7 @@ Exemple à 2 inputs — adapte le nombre de lignes `IN*` à tes INPUTS :
 ```bash
 IN1_ABS=$(realpath "$IN1_PATH"); IN2_ABS=$(realpath "$IN2_PATH")
 SCHEMA=$(tr -d '\n' < "${SCHEMA_FILE}")
-TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/devil-gemini-XXXXXX")
+TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/gemini-XXXXXX")
 OUT_FILE="$TMP_DIR/review.json"
 PROMPT_FILE="$TMP_DIR/prompt.txt"
 {

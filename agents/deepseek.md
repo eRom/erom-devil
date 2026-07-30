@@ -1,5 +1,5 @@
 ---
-name: devil-deepseek
+name: deepseek
 description: Transport Deepseek des avocats du diable — assemble mission + inputs étiquetés, appelle claude CLI sur ollama cloud (deepseek-v4-pro:cloud[1m]), retourne l'enveloppe JSON. L'exercice est porté par la mission fournie.
 color: red
 tools: Bash, Read, Glob, Grep
@@ -48,7 +48,7 @@ adapte le nombre de blocs à tes INPUTS :
 ```bash
 IN1_ABS=$(realpath "$IN1_PATH"); IN2_ABS=$(realpath "$IN2_PATH")
 SCHEMA=$(tr -d '\n' < "${SCHEMA_FILE}")
-TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/devil-deepseek-XXXXXX")
+TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/deepseek-XXXXXX")
 PROMPT_FILE="$TMP_DIR/prompt.txt"
 {
   cat "${MISSION_FILE}"

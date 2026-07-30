@@ -1,11 +1,11 @@
 ---
-name: devil-code
-description: "Review critique d'un changement de code par un avocat du diable au choix (Gemini par défaut, GLM, Deepseek, Opus, Kimi) : PR GitHub, branche vs base, range de commits ou working tree. Score, verdict approve/rework/reject, issues ancrées file:ligne avec scénario d'échec. Triggers: /devil-code, 'review code', 'critique le code', 'devil sur le code'."
+name: code
+description: "Review critique d'un changement de code par un avocat du diable au choix (Gemini par défaut, GLM, Deepseek, Opus, Kimi) : PR GitHub, branche vs base, range de commits ou working tree. Score, verdict approve/rework/reject, issues ancrées file:ligne avec scénario d'échec. Triggers: /erom-devil:code, 'review code', 'critique le code', 'devil sur le code'."
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Bash, Agent, AskUserQuestion, Edit
 ---
 
-# /devil-code — Review critique d'un changement de code
+# /erom-devil:code — Review critique d'un changement de code
 
 Un devil externe juge un CHANGEMENT de code (jamais un stock) : bugs,
 architecture, sécurité, performance, tests, maintenabilité — et alignement
@@ -15,12 +15,12 @@ qu'il voit est packagé par toi (l'orchestrateur) en inputs étiquetés.
 ## Syntaxe
 
 ```
-/devil-code                       # auto : working tree sale, sinon branche vs base
-/devil-code 123                   # PR GitHub (gh)
-/devil-code main                  # branche courante vs main
-/devil-code abc12..def34          # entre 2 commits
-/devil-code HEAD~1                # le dernier commit
-/devil-code 123 intent.md glm     # PR + doc d'intention + devil
+/erom-devil:code                       # auto : working tree sale, sinon branche vs base
+/erom-devil:code 123                   # PR GitHub (gh)
+/erom-devil:code main                  # branche courante vs main
+/erom-devil:code abc12..def34          # entre 2 commits
+/erom-devil:code HEAD~1                # le dernier commit
+/erom-devil:code 123 intent.md glm     # PR + doc d'intention + devil
 ```
 
 Parsing des arguments : le dernier s'il vaut `gemini`, `glm`, `deepseek`,
@@ -73,7 +73,7 @@ fichier temp) → absent. Pas d'auto-detect `.specs/`.
 
 ## Étape 2 — Packaging hermétique
 
-`TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/devil-code-XXXXXX")`, trois fichiers :
+`TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/code-XXXXXX")`, trois fichiers :
 
 - **`$TMP_DIR/diff.patch` (DIFF)** — le diff unifié brut, jamais tronqué.
   S'il dépasse 1 Mo → STOP et suggère de découper (range plus petit).
@@ -166,13 +166,13 @@ Attends la confirmation de Romain (« oui », « go », « lance »).
 
 ## Étape 5 — Lancer le sous-agent
 
-Spawn `devil:devil-<devil>` ; si ce type est introuvable (plugin non
-chargé), retente `devil-<devil>` sans préfixe. INPUTS : `DIFF:` toujours ;
+Spawn `erom-devil:<devil>` ; si ce type est introuvable (plugin non
+chargé), retente `<devil>` sans préfixe. INPUTS : `DIFF:` toujours ;
 `FILES:` et `INTENT:` seulement si les fichiers existent :
 
 ```
 Agent(
-  subagent_type: "devil:devil-<devil>",
+  subagent_type: "erom-devil:<devil>",
   prompt: "MISSION_FILE=<abs>\nSCHEMA_FILE=<abs>\nVALIDATE_JQ=has(\"score\") and has(\"verdict\") and has(\"summary\") and has(\"criteria\") and has(\"issues\") and (.score|type==\"number\" and .>=0 and .<=100) and (.verdict|IN(\"approve\",\"rework\",\"reject\")) and (.criteria|has(\"correctness\") and has(\"architecture\") and has(\"security\") and has(\"performance\") and has(\"tests\") and has(\"maintainability\")) and ([.criteria.correctness,.criteria.architecture,.criteria.security,.criteria.performance,.criteria.tests,.criteria.maintainability]|all(type==\"object\" and has(\"score\") and has(\"comment\") and (.score|type==\"number\" and .>=0 and .<=100))) and (.issues|type==\"array\" and all(has(\"severity\") and has(\"category\") and has(\"file\") and has(\"description\") and has(\"failure_scenario\") and has(\"suggestion\") and (.severity|IN(\"critical\",\"high\",\"medium\",\"low\")) and (.category|IN(\"correctness\",\"architecture\",\"security\",\"performance\",\"tests\",\"maintainability\",\"intent\"))))\nINPUTS:\nDIFF:<abs diff>\nFILES:<abs files>\nINTENT:<abs intent>\n\nExécute la procédure de transport."
 )
 ```
@@ -191,7 +191,7 @@ Le retour est UNE ligne JSON : `{devil, model, status, review|error+detail}`.
 Devil : <devil> (<model>)
 Erreur : <error> — <detail>
 
-→ Relance (/devil-code <target> <devil>), autre devil, ou review manuelle.
+→ Relance (/erom-devil:code <target> <devil>), autre devil, ou review manuelle.
 ```
 
 ### Si `status: "ok"` — ancrage d'abord

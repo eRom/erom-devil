@@ -1,8 +1,9 @@
-# Architecture — erom-agence-devil
+# Architecture — erom-devil (dossier local : erom-agence-devil)
 
 > MàJ : 2026-07-18 (v0.3.0)
 
-**Type** : Plugin Claude Code `devil` (v0.3.0), distribué par `erom-marketplace`.
+**Type** : Plugin Claude Code `erom-devil` (renommé le 2026-07-30, ex-`devil`),
+distribué par `erom-marketplace`.
 
 **Objectif** : « avocats du diable » externes sur les documents amont, AVANT
 implémentation. Trois exercices :
@@ -23,11 +24,11 @@ implémentation. Trois exercices :
 **Les 5 agents = transport PUR** (ne connaissent pas l'exercice) :
 | agent | modèle | transport |
 |---|---|---|
-| devil-gemini | Gemini 3.5 Flash (High) | agy (review par fichier, bug stdout #76) |
-| devil-glm | glm-5.2:cloud[1m] | claude -p ollama cloud (JSON stdout) |
-| devil-deepseek | deepseek-v4-pro:cloud[1m] | idem glm (jumeau sed) |
-| devil-opus | Opus 4.8 xHigh | claude -p (hors swarms, unitaire seulement) |
-| devil-kimi | kimi-k3:cloud[1m] | idem glm (jumeau sed) ; hors swarms, unitaire |
+| gemini | Gemini 3.5 Flash (High) | agy (review par fichier, bug stdout #76) |
+| glm | glm-5.2:cloud[1m] | claude -p ollama cloud (JSON stdout) |
+| deepseek | deepseek-v4-pro:cloud[1m] | idem glm (jumeau sed) |
+| opus | Opus 4.8 xHigh | claude -p (hors swarms, unitaire seulement) |
+| kimi | kimi-k3:cloud[1m] | idem glm (jumeau sed) ; hors swarms, unitaire |
 
 Le suffixe `[1m]` (contexte 1M) est porté par les 3 transports ollama, dans
 la ligne d'appel ET dans le champ `model` de l'enveloppe. Il DOIT être quoté
@@ -41,17 +42,17 @@ Ajouter un exercice = 1 mission + 1 schéma + 2 skills, agents inchangés.
 **Arborescence** :
 ```
 .claude-plugin/plugin.json      manifest 0.3.0 (PAS de clé agents)
-agents/devil-{gemini,glm,deepseek,opus,kimi}.md transport pur (opus+kimi hors swarms)
-skills/devil-spec{,-swarm}/     exercice spec (2 inputs BRAINSTORMING+SPECS)
-skills/devil-brain{,-swarm}/    exercice brain (1 input BRAINSTORMING)
-skills/devil-code{,-swarm}/     exercice code (DIFF + FILES/INTENT opt.)
+agents/{gemini,glm,deepseek,opus,kimi}.md transport pur (opus+kimi hors swarms)
+skills/spec{,-swarm}/           exercice spec (2 inputs BRAINSTORMING+SPECS)
+skills/brain{,-swarm}/          exercice brain (1 input BRAINSTORMING)
+skills/code{,-swarm}/           exercice code (DIFF + FILES/INTENT opt.)
 scripts/devil-{spec,brain,code}-{mission.md,schema.json}
 examples/                       fixtures veilleur (6 défauts) + code (5 défauts + secret)
 .specs/plugin-devil{,-brain,-code}/  designs v0.1.0, v0.2.0, v0.3.0
 ```
 
 **Flux** : skill résout mission/schéma/inputs → spawn agent(s)
-`devil:devil-<nom>` → enveloppe `{devil, model, status, review|error}` →
+`erom-devil:<nom>` → enveloppe `{devil, model, status, review|error}` →
 skill restitue (spec : rapport scoré ; brain : tableau questions puis tri +
 Q&A qui amende le doc de brainstorming).
 
