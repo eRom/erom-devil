@@ -1,10 +1,15 @@
 # Fichiers clés — erom-devil (dossier local : erom-agence-devil)
 
-> MàJ : 2026-07-18 (v0.3.0)
+> MàJ : 2026-08-01 (v0.5.1)
+
+> Tous les chemins ci-dessous sont relatifs à `plugin/` (racine du plugin
+> livrable, tirée par la marketplace en `git-subdir`). `.specs/`, `_memory_/`
+> et `examples/` restent à la racine du repo, hors plugin.
 
 ## Manifest
-- `.claude-plugin/plugin.json` — name `erom-devil`, version 0.5.0, `"skills":
-  "./skills/"`. PAS de clé `agents` (voir gotchas.md « Manifest de plugin »).
+- `plugin/.claude-plugin/plugin.json` — name `erom-devil`, version 0.5.1,
+  `"skills": "./skills/"`. PAS de clé `agents` (voir gotchas.md « Manifest de
+  plugin »).
 
 ## Contrats par exercice (scripts/)
 - `devil-spec-mission.md` + `devil-spec-schema.json` — exercice spec :

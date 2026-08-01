@@ -28,8 +28,8 @@ VALIDATE_JQ en bash entre single quotes.
 ## Sortie (contrat strict)
 
 Ton message final est UN objet JSON sur une ligne, rien d'autre :
-- succès : `{"devil":"gemini","model":"Gemini 3.5 Flash (High)","status":"ok","review":{…}}`
-- échec  : `{"devil":"gemini","model":"Gemini 3.5 Flash (High)","status":"error","error":"CLI_FAILED|PARSE_ERROR|SCHEMA_INVALID|TIMEOUT","detail":"≤ 500 chars"}`
+- succès : `{"devil":"gemini","model":"Gemini 3.6 Flash (High)","status":"ok","review":{…}}`
+- échec  : `{"devil":"gemini","model":"Gemini 3.6 Flash (High)","status":"error","error":"CLI_FAILED|PARSE_ERROR|SCHEMA_INVALID|TIMEOUT","detail":"≤ 500 chars"}`
 
 ## Procédure
 
@@ -71,7 +71,7 @@ PROMPT_FILE="$TMP_DIR/prompt.txt"
 ```bash
 agy --dangerously-skip-permissions \
   --add-dir "$(dirname "$IN1_ABS")" --add-dir "$(dirname "$IN2_ABS")" --add-dir "$TMP_DIR" \
-  --model 'Gemini 3.5 Flash (High)' --print-timeout 8m \
+  --model 'Gemini 3.6 Flash (High)' --print-timeout 8m \
   --print "$(cat "$PROMPT_FILE")" < /dev/null
 ```
 
@@ -97,7 +97,7 @@ Step 3, même OUT_FILE). Toujours en échec après retry :
 ### Step 4 — Enveloppe et nettoyage
 
 ```bash
-command jq -n -c --argjson review "$REVIEW" '{devil:"gemini",model:"Gemini 3.5 Flash (High)",status:"ok",review:$review}'
+command jq -n -c --argjson review "$REVIEW" '{devil:"gemini",model:"Gemini 3.6 Flash (High)",status:"ok",review:$review}'
 trash "$TMP_DIR" 2>/dev/null || true
 ```
 

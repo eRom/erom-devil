@@ -24,7 +24,7 @@ implémentation. Trois exercices :
 **Les 5 agents = transport PUR** (ne connaissent pas l'exercice) :
 | agent | modèle | transport |
 |---|---|---|
-| gemini | Gemini 3.5 Flash (High) | agy (review par fichier, bug stdout #76) |
+| gemini | Gemini 3.6 Flash (High) | agy (review par fichier, bug stdout #76) |
 | glm | glm-5.2:cloud[1m] | claude -p ollama cloud (JSON stdout) |
 | deepseek | deepseek-v4-pro:cloud[1m] | idem glm (jumeau sed) |
 | opus | Opus 4.8 xHigh | claude -p (hors swarms, unitaire seulement) |
@@ -39,16 +39,20 @@ L'exercice est porté par les SKILLS via le contrat de spawn :
 MISSION_FILE + SCHEMA_FILE + VALIDATE_JQ + INPUTS étiquetés (`LABEL:abs`).
 Ajouter un exercice = 1 mission + 1 schéma + 2 skills, agents inchangés.
 
-**Arborescence** :
+**Arborescence** (depuis v0.5.1 : le plugin livrable vit sous `plugin/`, la
+marketplace le tire en `source: git-subdir` + `path: plugin` pour que `.specs/`
+et `_memory_/` ne soient pas clonés dans le harnais) :
 ```
-.claude-plugin/plugin.json      manifest 0.3.0 (PAS de clé agents)
-agents/{gemini,glm,deepseek,opus,kimi}.md transport pur (opus+kimi hors swarms)
-skills/spec{,-swarm}/           exercice spec (2 inputs BRAINSTORMING+SPECS)
-skills/brain{,-swarm}/          exercice brain (1 input BRAINSTORMING)
-skills/code{,-swarm}/           exercice code (DIFF + FILES/INTENT opt.)
-scripts/devil-{spec,brain,code}-{mission.md,schema.json}
+plugin/.claude-plugin/plugin.json  manifest (PAS de clé agents)
+plugin/agents/{gemini,glm,deepseek,opus,kimi}.md transport pur (opus+kimi hors swarms)
+plugin/skills/spec{,-swarm}/    exercice spec (2 inputs BRAINSTORMING+SPECS)
+plugin/skills/brain{,-swarm}/   exercice brain (1 input BRAINSTORMING)
+plugin/skills/code{,-swarm}/    exercice code (DIFF + FILES/INTENT opt.)
+plugin/scripts/devil-{spec,brain,code}-{mission.md,schema.json}
+plugin/README.md
 examples/                       fixtures veilleur (6 défauts) + code (5 défauts + secret)
-.specs/plugin-devil{,-brain,-code}/  designs v0.1.0, v0.2.0, v0.3.0
+.specs/plugin-devil{,-brain,-code}/  designs v0.1.0, v0.2.0, v0.3.0 (hors plugin)
+_memory_/                       cette mémoire (hors plugin)
 ```
 
 **Flux** : skill résout mission/schéma/inputs → spawn agent(s)

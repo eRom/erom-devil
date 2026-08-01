@@ -17,7 +17,7 @@ documents amont, AVANT implémentation, sous trois angles :
 
 | Devil | Modèle | Transport | Swarms |
 |---|---|---|---|
-| gemini | Gemini 3.5 Flash (High) | Antigravity CLI (agy) | oui |
+| gemini | Gemini 3.6 Flash (High) | Antigravity CLI (agy) | oui |
 | glm | glm-5.2:cloud[1m] | claude CLI → ollama cloud | oui |
 | deepseek | deepseek-v4-pro:cloud[1m] | claude CLI → ollama cloud | oui |
 | opus | Opus 4.8 xHigh | claude CLI | non (unitaire seulement) |
