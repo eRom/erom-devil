@@ -1,8 +1,8 @@
 # erom-devil — avocats du diable pour la définition de besoins
 
 Plugin Claude Code. Trois reviewers critiques externes (Gemini, GLM,
-Deepseek), renforcés par Opus et Kimi en review unitaire, attaquent tes
-documents amont, AVANT implémentation, sous trois angles :
+Deepseek), renforcés par Opus et Kimi en review unitaire, attaquent ton
+travail sous quatre angles, du document amont à la porte de merge :
 
 - **spec** : ils jugent une spec technique contre son brainstorm
   d'origine (dérives, manques, incohérences), score et verdict à la clé.
@@ -12,6 +12,10 @@ documents amont, AVANT implémentation, sous trois angles :
 - **code** : ils jugent un changement de code (PR, branche, range de
   commits ou working tree) — bugs, architecture, sécurité, performance,
   tests, maintenabilité — avec scan anti-fuite de secrets avant tout envoi.
+- **review** : la porte de merge complète : porte déterministe, chasse à
+  l'intention, grille de stack optionnelle, review devil, vérification
+  contradictoire par l'orchestrateur, verdict GO/NO-GO, rapport persistant
+  dans `docs/reviews/`.
 
 ## Les devils
 
@@ -40,6 +44,10 @@ et s'appellent unitairement, pour un second avis hors consensus du swarm.
 /erom-devil:code main intent.md           # branche vs main, avec doc d'intention
 /erom-devil:code main kimi                # second avis d'un juge indépendant
 /erom-devil:code-swarm HEAD~1             # tribunal sur le dernier commit
+/erom-devil:review                        # porte de merge, devil gemini
+/erom-devil:review main glm               # branche vs main, devil glm
+/erom-devil:review main stack=none        # sans grille de stack
+/erom-devil:review-swarm main             # tribunal de merge + vérification
 ```
 
 **spec** — entrées : 2 fichiers (brainstorming + specs). Sortie par
@@ -62,6 +70,18 @@ obligatoire). Le swarm (gemini + glm + deepseek, opus et kimi exclus)
 consolide par
 problème de fond : VALABLE, MODIFICATIONS REQUISES ou JETABLE, avec
 garde-fou sécurité (une critical security ancrée interdit VALABLE).
+
+**review** : entrée : un changement (mêmes cibles que code), plus une porte
+déterministe (`bun run check` si le script existe, STOP si rouge), une
+chasse à l'intention (arg, body PR, `.specs/`, `docs/superpowers/specs/`),
+et une grille de stack optionnelle (`scripts/stacks/nextjs.md`,
+auto-détectée). Sortie par devil : même JSON que code. Ensuite
+l'orchestrateur vérifie chaque critical/high contre le code réel
+(Confirmée / Réfutée / Hypothèse, preuve exigée), balaye quatre frontières
+que les reviews scopées au diff ratent, tranche GO / GO AVEC RÉSERVES /
+NO-GO, et écrit un rapport persistant dans `docs/reviews/` du repo reviewé.
+Répartition des rôles : `code` est la critique rapide et jetable à chaque
+phase ; `review` est la porte avant merge to main.
 
 ## Prérequis
 

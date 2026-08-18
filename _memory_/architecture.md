@@ -1,12 +1,12 @@
 # Architecture — erom-devil (dossier local : erom-agence-devil)
 
-> MàJ : 2026-07-18 (v0.3.0)
+> MàJ : 2026-08-18 (v0.7.0)
 
 **Type** : Plugin Claude Code `erom-devil` (renommé le 2026-07-30, ex-`devil`),
 distribué par `erom-marketplace`.
 
 **Objectif** : « avocats du diable » externes sur les documents amont, AVANT
-implémentation. Trois exercices :
+implémentation. Quatre exercices :
 - **spec** : juger une spec technique contre son brainstorm (score, verdict
   approve/rework/reject, issues) — unitaire ou swarm (VALABLE/MODIFS/JETABLE).
 - **brain** : interrogatoire socratique d'un brainstorming seul — les 5
@@ -16,6 +16,12 @@ implémentation. Trois exercices :
   hermétiquement (DIFF + FILES + INTENT opt.), scan anti-fuite pré-vol,
   ancrage file:ligne vérifié au retour, garde-fou sécurité en swarm (opus et
   kimi exclus du tribunal, dispo en unitaire).
+- **review** : porte de merge complète (4e exercice, v0.7.0) : porte
+  déterministe avant tout appel modèle, chasse à l'intention, input STACK
+  (grille `scripts/stacks/nextjs.md`), passe de vérification orchestrateur
+  (Confirmée/Réfutée/Hypothèse + balayage frontières), verdict GO/NO-GO,
+  rapport persistant `docs/reviews/`. Skills review{,-swarm} par référence
+  aux étapes de code{,-swarm} ; mission/schéma propres ; agents inchangés.
 
 **Stack** : agents + skills en markdown ; bash + `jq` + `sed` ; `agy`
 (Antigravity CLI → Gemini) ; `claude -p` → ollama cloud (GLM/Deepseek) ;
@@ -48,6 +54,9 @@ plugin/agents/{gemini,glm,deepseek,opus,kimi}.md transport pur (opus+kimi hors s
 plugin/skills/spec{,-swarm}/    exercice spec (2 inputs BRAINSTORMING+SPECS)
 plugin/skills/brain{,-swarm}/   exercice brain (1 input BRAINSTORMING)
 plugin/skills/code{,-swarm}/    exercice code (DIFF + FILES/INTENT opt.)
+plugin/scripts/devil-review-{mission.md,schema.json}  exercice review
+plugin/scripts/stacks/nextjs.md                       grille de stack Next 16 / Prisma 7
+plugin/skills/review{,-swarm}/                        porte de merge (unitaire, tribunal)
 plugin/scripts/devil-{spec,brain,code}-{mission.md,schema.json}
 plugin/README.md
 examples/                       fixtures veilleur (6 défauts) + code (5 défauts + secret)

@@ -1,13 +1,13 @@
 # Fichiers clés — erom-devil (dossier local : erom-agence-devil)
 
-> MàJ : 2026-08-01 (v0.5.1)
+> MàJ : 2026-08-18 (v0.7.0)
 
 > Tous les chemins ci-dessous sont relatifs à `plugin/` (racine du plugin
 > livrable, tirée par la marketplace en `git-subdir`). `.specs/`, `_memory_/`
 > et `examples/` restent à la racine du repo, hors plugin.
 
 ## Manifest
-- `plugin/.claude-plugin/plugin.json` — name `erom-devil`, version 0.5.1,
+- `plugin/.claude-plugin/plugin.json` : name `erom-devil`, version 0.7.0,
   `"skills": "./skills/"`. PAS de clé `agents` (voir gotchas.md « Manifest de
   plugin »).
 
@@ -22,6 +22,8 @@
   issues {severity, category (6+intent), file "chemin:ligne",
   failure_scenario obligatoire, suggestion}. VALIDATE_JQ borne scores ET
   critères (testée jq 1.8.1).
+- `plugin/scripts/devil-review-mission.md` : mission porte de merge (STACK, axe intent, anti-bruit renforcé)
+- `plugin/scripts/stacks/nextjs.md` : grille de stack liante (autorisation DAL, pièges Prisma 7 / Zod 4 / Next 16, tests)
 
 ## Agents (agents/) — transport pur, Sonnet, color red, tools Bash/Read/Glob/Grep
 - `gemini.md` — agy ; inputs passés en CHEMINS (agy lit) ; review lue
@@ -58,7 +60,9 @@
   voix, consolidation problème de fond, verdict table + garde-fou
   sécurité (critical security ancrée → jamais VALABLE), tri convergence
   puis sévérité.
-- Les 6 : spawn `erom-devil:<nom>` (fallback sans préfixe), chemins résolus
+- `plugin/skills/review/SKILL.md` : porte de merge unitaire (étapes 0 à 12, verdict GO/NO-GO, rapport docs/reviews/)
+- `plugin/skills/review-swarm/SKILL.md` : tribunal de merge (3 voix + vérification orchestrateur)
+- Les 8 : spawn `erom-devil:<nom>` (fallback sans préfixe), chemins résolus
   2 niveaux au-dessus du base dir, VALIDATE_JQ jumeaux byte-identiques
   unitaire/swarm.
 

@@ -1,14 +1,14 @@
 {
   "$schema": "https://www.schemastore.org/claude-code-plugin-manifest.json",
   "name": "erom-devil",
-  "description": "Avocats du diable : reviews critiques de specs (score, verdict, issues), interrogatoire socratique de brainstormings (les questions jamais posées) et review de changements de code (PR, branche, range, working tree), par Gemini, GLM, Deepseek, Opus et Kimi, unitaires ou en swarm.",
-  "version": "0.6.0",
+  "description": "Avocats du diable : reviews critiques de specs (score, verdict, issues), interrogatoire socratique de brainstormings (les questions jamais posées), review de changements de code (PR, branche, range, working tree) et porte de merge complète (porte déterministe, intention, grille de stack, vérification contradictoire, verdict GO/NO-GO, rapport persistant), par Gemini, GLM, Deepseek, Opus et Kimi, unitaires ou en swarm.",
+  "version": "0.7.0",
   "author": {
     "name": "Romain Ecarnot",
     "url": "https://github.com/eRom"
   },
   "repository": "https://github.com/eRom/erom-devil",
   "license": "MIT",
-  "keywords": ["review", "specs", "brainstorming", "code-review", "devils-advocate", "socratic", "gemini", "glm", "deepseek", "opus", "kimi", "swarm"],
+  "keywords": ["review", "specs", "brainstorming", "code-review", "merge-gate", "devils-advocate", "socratic", "gemini", "glm", "deepseek", "opus", "kimi", "swarm"],
   "skills": "./skills/"
 }

@@ -87,3 +87,11 @@
 - Sévérité `critical` DÉFINIE dans la mission (exploitable/fuite/secret) :
   load-bearing car le garde-fou swarm ne se déclenche que sur
   critical/security ancrée. Ne pas laisser la sévérité au hasard du modèle.
+
+- **Passe de vérification post-devils (review)** : chaque critical/high
+  ancrée est vérifiée contre le code réel avant verdict (Confirmée avec
+  preuve / Réfutée en annexe / Hypothèse avec confiance) ; leçon spec-swarm
+  institutionnalisée. Le garde-fou sécurité tombe UNIQUEMENT sur réfutation
+  prouvée.
+- **Porte déterministe avant modèle (review)** : `bun run check` d'abord,
+  STOP si rouge ; les devils ne paient jamais ce que tsc dit gratuitement.
