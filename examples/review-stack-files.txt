@@ -1,0 +1,19 @@
+=== FILE: src/app/actions.ts ===
+"use server";
+
+import { z } from "zod";
+import { db } from "@/lib/db";
+
+const schema = z.object({
+  noteId: z.string(),
+  email: z.string().email(),
+});
+
+export async function updateNoteEmail(formData: FormData) {
+  const input = schema.parse(Object.fromEntries(formData));
+  await db.note.update({
+    where: { id: input.noteId },
+    data: { contactEmail: input.email },
+  });
+  return { ok: true };
+}
