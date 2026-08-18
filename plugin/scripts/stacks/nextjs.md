@@ -25,8 +25,9 @@ le DIFF introduit ou touche.
   refus de validation (P1012). La connexion Migrate vit dans
   `prisma.config.ts`, `PrismaClient` reçoit un adapter (`@prisma/adapter-pg`).
   Aucune API du moteur Rust (supprimé en v7), aucune API Prisma 8 (RC).
-- Zod 4 : `z.email()` et `z.url()` au top-level ; `z.string().email()` et
-  `z.string().url()` n'existent plus.
+- Zod 4 : `z.email()` et `z.url()` au top-level. `z.string().email()` et
+  `z.string().url()` sont dépréciés : ils valident encore en 4.x, la
+  suppression arrive en v5. Leur présence dans le diff est une issue.
 - Next 16 : types de route globaux (`LayoutProps<"/">`, `PageProps<...>`).
   Pages Router, `getServerSideProps`, `getStaticProps` et `next/head` sont
   interdits.
