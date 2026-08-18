@@ -1,10 +1,10 @@
 ---
 status: proposed
 date: 2026-08-18
-chantier: plugin-devil-review (erom-devil v0.6.0)
+chantier: plugin-devil-review (erom-devil v0.7.0)
 ---
 
-# Architecture technique - devil review (plugin erom-devil v0.6.0)
+# Architecture technique - devil review (plugin erom-devil v0.7.0)
 
 > 2026-08-18. Complète `brainstorming.md` (les décisions produit y font foi).
 > Tout ce qui n'est pas redéfini ici suit `skills/code/SKILL.md` et le
@@ -22,7 +22,7 @@ plugin/skills/review-swarm/SKILL.md               NOUVEAU : tribunal gemini+glm+
 plugin/README.md                                  MàJ : table exercices, rôles code vs review
 ```
 
-Versioning : `plugin.json` 0.6.0 ; marketplace bump ; uninstall + install.
+Versioning : `plugin.json` 0.7.0 ; marketplace bump ; uninstall + install.
 Le schéma review démarre en copie conforme du schéma code : fichier séparé
 par contrat d'architecture (un schéma par exercice), divergence future libre.
 VALIDATE_JQ : la même ligne que `code`, pointée sur `devil-review-schema.json`.
@@ -365,5 +365,5 @@ puis Non vérifiées (sév décroissante) ; badges de convergence en swarm,
 8. **Dogfood méta** : `/erom-devil:review-swarm main` sur la branche
    d'implémentation de review elle-même, avant son merge. Le premier
    rapport de `docs/reviews/` du repo devil sera le sien.
-9. README + `_memory_` (architecture, key-files, patterns), bump 0.6.0,
+9. README + `_memory_` (architecture, key-files, patterns), bump 0.7.0,
    marketplace, uninstall + install, smoke via plugin installé.

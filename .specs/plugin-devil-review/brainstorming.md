@@ -1,10 +1,10 @@
 ---
 status: proposed
 date: 2026-08-18
-chantier: plugin-devil-review (erom-devil v0.6.0)
+chantier: plugin-devil-review (erom-devil v0.7.0)
 ---
 
-# Brainstorming - devil review (plugin erom-devil v0.6.0)
+# Brainstorming - devil review (plugin erom-devil v0.7.0)
 
 > Validé le 2026-08-18 (session Fable 5, effort max). Décisions issues du
 > Q&A Romain x Claude du même jour.
@@ -113,7 +113,7 @@ Répartition des rôles actée : `code` reste la critique gratuite et jetable
 
 ## Points d'attention livraison
 
-- Bump 0.6.0, marketplace via /plugin-release, uninstall + install.
+- Bump 0.7.0, marketplace via /plugin-release, uninstall + install.
 - README plugin : table des exercices + clarification des rôles
   (`code` = critique jetable, `review` = porte de merge).
 - `_memory_` du repo à mettre à jour à l'implémentation.
