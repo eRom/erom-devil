@@ -22,13 +22,16 @@ merge vers main.
 /erom-devil:review 123 glm             # PR GitHub, devil glm
 /erom-devil:review main intent.md      # intention explicite
 /erom-devil:review main stack=none     # débrayer la grille de stack
-/erom-devil:review main no-gates       # sauter la porte déterministe (tracé)
+/erom-devil:review main no-gates       # une porte rouge n'arrête plus (tracé)
 ```
 
 Tokens reconnus et retirés dans cet ordre, le reste = target :
-1. `no-gates` (littéral) : saute la porte déterministe, tracé au rapport.
-2. `stack=<nom>` : force le pack (`stack=none` = aucun). Nom sans fichier
-   `scripts/stacks/<nom>.md` correspondant : STOP avec la liste des packs.
+1. `no-gates` (littéral) : la porte tourne quand même si elle est
+   applicable, mais un rouge n'arrête plus le run. Tracé au rapport.
+2. `stack=<nom>` : force le pack. `stack=none` est reconnu littéralement et
+   signifie « aucun pack », sans lecture de fichier. Tout AUTRE nom sans
+   fichier `scripts/stacks/<nom>.md` correspondant : STOP avec la liste des
+   packs.
 3. dernier argument dans {gemini, glm, deepseek, opus, kimi} : devil
    (défaut `gemini`).
 4. argument `*.md` existant : INTENT explicite (court-circuite la chasse).
@@ -49,16 +52,21 @@ Identique à `skills/code/SKILL.md` Étape 1 (mêmes formes, mêmes gardes et
 cas limites, mêmes règles pour les fichiers non suivis), avec UNE exclusion
 en plus : `docs/reviews/` sort du périmètre. Ajoute
 `':(exclude)docs/reviews/'` au pathspec des commandes git de diff ; en mode
-PR, retire du texte du diff les sections `diff --git` de ces chemins. Sans
-cette exclusion, le rapport d'une review précédente entre dans le diff de
-la suivante.
+PR, retire du texte du diff les sections `diff --git` de ces chemins ; et
+écarte `docs/reviews/` de la collecte des fichiers non suivis, que le
+pathspec n'atteint pas. Sans ces trois gestes, le rapport d'une review
+précédente, jamais commité, entre dans le diff de la suivante.
+
+La règle INTENT de `code` Étape 1 (« pas d'auto-detect `.specs/` ») ne
+s'applique PAS ici : l'Étape 3 la remplace par une chasse explicite.
 
 ## Étape 2 - Porte déterministe
 
-Applicable seulement si le diff reviewé correspond à l'arbre courant :
-mêmes modes que la colonne « Correction guidée : oui » de la table FILES de
-`code` Étape 2. Sinon : porte « non applicable (diff différent de l'arbre
-courant) », mentionnée au rapport, continue.
+Applicable si l'arbre courant porte le code du diff reviewé : modes working
+tree, branche vs base, range courant (`b` = HEAD) et PR checkoutée, arbre
+propre ou sale. Non applicable sur un range historique (`b` different de
+HEAD) ou une PR non checkoutée : porte « non applicable (le diff reviewé
+n'est pas dans l'arbre courant) », mentionnée au rapport, continue.
 
 1. `package.json` à la racine avec un script `check` : lance
    `bun run check` (timeout Bash 120000) et capture la sortie. Timeout
@@ -69,8 +77,10 @@ courant) », mentionnée au rapport, continue.
    pour le rapport (recopiées, jamais résumées).
 4. Rouge : STOP. « Porte rouge : corrige avant de convoquer une review ;
    les devils ne paient pas pour ce que tsc dit gratuitement. » Sortie
-   brute affichée. `no-gates` outrepasse ; le rapport portera « porte :
-   SAUTÉE sur décision » en tête de couverture.
+   brute affichée. Avec `no-gates` le run continue, et le rapport porte
+   « porte : ROUGE, outrepassée sur décision » en tête de couverture, la
+   sortie brute en annexe : une porte rouge ne se maquille jamais en porte
+   sautée.
 5. Arbre sale en mode branche (porte applicable mais l'arbre n'est pas
    exactement le diff reviewé) : une ligne au rapport, rien de plus.
 
@@ -78,7 +88,8 @@ courant) », mentionnée au rapport, continue.
 
 INTENT par priorité, premier trouvé gagne :
 1. arg `*.md` explicite ;
-2. body de la PR (mode PR), écrit dans un fichier temp ;
+2. body de la PR (mode PR), écrit par redirection shell dans un fichier
+   `mktemp` qui lui est propre (`TMP_DIR` n'existe qu'à l'Étape 4) ;
 3. `.specs/<branche>/` ou `.specs/<slug proche>/` : un `*.md` de spec ;
 4. `docs/superpowers/specs/*.md` dont le nom matche la branche ou le sujet ;
 5. question à Romain (« aucune » accepté).
@@ -111,9 +122,9 @@ sauté.
 
 > **Porte de merge :**
 > - Mode : <PR 123 / branche vs main / range a..b / working tree>
-> - Fichiers : <N> (±<lignes>) · FILES <complet / tronqué : n exclus / omis>
-> - Porte : <verte (`bun run check`) / sautée (no-gates) / sautée (aucune
->   commande) / non applicable>
+> - Fichiers : <N> (±<lignes>) · dont <U> non suivis · FILES <complet / tronqué : n exclus / omis>
+> - Porte : <verte (`bun run check`) / rouge outrepassée (no-gates) /
+>   sautée (aucune commande) / non applicable>
 > - Intent : <chemin / body PR / aucune>
 > - Stack : <nextjs / aucun>
 > - Scan : <clean / forcé> · Correction guidée : <disponible / rapport seul>
@@ -137,8 +148,13 @@ Agent(
 )
 ```
 
-Enveloppe `error` : gabarit d'échec de `code` Étape 6 (relance, autre
-devil, review manuelle).
+Enveloppe `error` : gabarit d'échec de `code` Étape 6, dont tu réécris la
+dernière ligne pour cette skill : « Relance
+(`/erom-devil:review <target> <devil>`), autre devil, ou review manuelle. »
+Puis FIN DE RUN : pas de passe de vérification, pas de verdict, AUCUN
+rapport écrit dans `docs/reviews/`, et `trash "$TMP_DIR"`. Une porte de
+merge sans voix de devil ne certifie rien : elle ne laisse jamais un GO
+derrière elle.
 
 ## Étape 8 - Ancrage
 
@@ -185,12 +201,19 @@ les reviews scopées au diff ratent :
 4. copy user-visible qui ne matche plus le comportement.
 
 Chaque finding frontière : étiquette « frontière (Claude) », Confirmée par
-construction (tu l'as lue, cite file:ligne), mêmes règles de verdict.
+construction (tu l'as lue, cite file:ligne), et une sévérité que tu
+attribues avec la MÊME grille que les devils, celle de la mission
+(`scripts/devil-review-mission.md`, section « Sévérité de chaque issue »).
+Sans sévérité, un finding frontière ne peut pas entrer dans la table de
+l'Étape 10. Mêmes règles de verdict ensuite.
 
 ## Étape 10 - Verdict
 
 Sur les issues ancrées et vérifiées (devil + frontières ; Réfutées
 exclues) :
+
+Première ligne qui matche gagne : la table se lit de haut en bas et
+s'arrête à la première situation vraie.
 
 | Situation | Verdict |
 |---|---|
@@ -213,7 +236,7 @@ re-review comprise : suffixe `-2`, `-3`). Avant d'écrire : dans tout
 matériau recopié (issues des devils, sortie de la porte, body de PR),
 remplace chaque tiret cadratin par un tiret simple ; le hook du dépôt
 refuse un Write de `.md` qui en contient. La substitution est mentionnée
-une fois en fin de rapport. Elle ne touche que ce caractère : le reste du
+en une ligne dans la section Couverture. Elle ne touche que ce caractère : le reste du
 matériau reste recopié, jamais résumé. En français. Ne committe pas : le
 commit rejoint le flux de merge. Structure exacte :
 
@@ -223,7 +246,7 @@ date: <YYYY-MM-DD>
 target: <mode et cible>
 range: <base_sha>..<head_sha>
 devils: <devil (modèle)>
-porte: <bun run check : verte | sautée (no-gates) | aucune commande | non applicable>
+porte: <bun run check : verte | rouge outrepassée (no-gates) | aucune commande | non applicable>
 intent: <source | aucune>
 stack: <nextjs | aucun>
 verdict: <GO | GO AVEC RÉSERVES | NO-GO | NO-GO LEVÉ>
@@ -278,13 +301,20 @@ ignorées sauf demande ; non-ancrées et Réfutées exclues ; le devil ne
 modifie jamais rien, c'est toi qui édites). Ordre de passage : Confirmées
 par sévérité décroissante, puis Hypothèses hautes. Après corrections :
 re-review possible (max 2, même devil, mêmes target / intent / stack), la
-porte est rejouée, chaque run produit son rapport suffixé.
+porte est rejouée, chaque run produit son rapport suffixé. En mode branche,
+range ou PR, les corrections doivent être COMMITÉES avant la re-review :
+sinon le diff reviewé est inchangé et le devil rendra mot pour mot les
+mêmes issues. En mode working tree, elles sont prises telles quelles.
 
 ## Règles
 
 - Le devil ne modifie JAMAIS rien ; le rapport est écrit par toi.
 - La passe de vérification ne mute JAMAIS l'arbre.
 - Scan anti-fuite obligatoire, jamais sauté.
+- Tout fichier écrit par cette skill AVANT le rapport final (paquet, body
+  de PR, temporaires) s'écrit par redirection shell, jamais par l'outil
+  Write : le hook du dépôt refuse un `.md` ou un `.txt` portant un tiret
+  cadratin, et les entrées en portent souvent.
 - `trash "$TMP_DIR"` en fin de run (succès comme échec).
 - Un NO-GO levé se trace dans le rapport, jamais dans le seul chat.
 - C'est une porte de merge, pas un lint : pas sur un diff de deux lignes
