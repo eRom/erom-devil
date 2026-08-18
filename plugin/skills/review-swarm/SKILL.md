@@ -63,7 +63,12 @@ Par référence à `skills/code-swarm/SKILL.md` Étapes 6 et 7 :
   aussi comme voix absente (ne JAMAIS interpréter un texte d'erreur comme
   une review) ;
 - ancrage PAR VOIX (les DÉCLASSÉES sortent avant consolidation, listées en
-  « Non ancrées » avec leur devil) ;
+  « Non ancrées » avec leur devil), AVEC l'exception de ré-ancre de
+  `/erom-devil:review` Étape 8 : toute DÉCLASSÉE `critical` ou `high` est
+  relue une fois, et si son problème de fond vit dans le diff alors que
+  seule l'ancre est fausse, elle est ré-ancrée et rejoint la consolidation.
+  Une faille réelle ne doit pas sortir du verdict sur une erreur de
+  pointage, pas plus à trois voix qu'à une ;
 - consolidation par PROBLÈME DE FOND (mêmes heuristiques : équivalence par
   fichier + plages voisines à `±10` + même fond ; en cas de doute NE PAS
   fusionner ; badges de convergence SUR LES VOIX EXPRIMÉES, donc 3/3, 2/3

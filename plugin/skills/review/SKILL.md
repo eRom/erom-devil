@@ -171,7 +171,10 @@ Exception, avant de passer à la suite : toute DÉCLASSÉE de sévérité
 dans le diff et que seule l'ancre est fausse (le devil a cité la fonction
 appelée au lieu du site d'appel), RÉ-ANCRE-la sur la bonne ligne et remets-la
 au périmètre. Sinon elle reste en annexe. Une faille réelle ne doit pas
-sortir du verdict sur une erreur de pointage.
+sortir du verdict sur une erreur de pointage. Toute ré-ancre est TRACÉE au
+rapport, dans la ligne Findings de l'issue : « ré-ancrée par l'orchestrateur
+depuis <ancre d'origine> ». C'est ton geste, pas celui du devil, et il peut
+faire basculer le verdict.
 
 ## Étape 9 - Passe de vérification (ton travail, pas celui du devil)
 
@@ -182,9 +185,12 @@ d'E2E).
 Périmètre : toutes les issues `critical` et `high` ancrées. Budget
 ~2 minutes par issue : la vérification décisive la moins chère.
 
-SOURCE DE LECTURE, même condition que la porte de l'Étape 2. Modes working
-tree, branche vs base, range courant et PR checkoutée : l'arbre courant
-porte le code reviewé, tu lis les fichiers directement. Range historique
+SOURCE DE LECTURE, même condition que la porte de l'Étape 2. Mode working
+tree : l'arbre courant EST le diff reviewé, tu lis les fichiers
+directement. Modes branche vs base, range courant et PR checkoutée : tu
+lis directement SI l'arbre est propre ; s'il est sale, lis par
+`git show HEAD:chemin`, jamais le checkout, sinon tu jugerais un correctif
+local que le diff reviewé ne contient pas. Range historique
 (`b` différent de HEAD) : lis par `git show b:chemin`, jamais le checkout.
 PR NON checkoutée : tu n'as PAS l'état final des fichiers, seulement le
 DIFF. Dans ce mode, l'étiquette **Réfutée** est INTERDITE : une issue non
