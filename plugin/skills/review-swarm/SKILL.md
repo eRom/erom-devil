@@ -21,10 +21,18 @@ TMP_DIR, partagé en lecture par les 3 spawns), à une différence près,
 l'annonce de confirmation :
 
 > **Tribunal de merge :** gemini + glm + deepseek en parallèle (jusqu'à
-> 9 min). Porte : <état> · Intent : <source> · Stack : <pack> ·
-> Cible : <mode/cible>. Je lance ?
+> 9 min).
+> - Cible : <mode/cible>
+> - Fichiers : <N> (±<lignes>) [· dont <U> non suivis] · FILES <complet / tronqué : n exclus / omis>
+> - Porte : <état> · Intent : <source> · Stack : <pack>
+> - Scan : <clean / forcé> · Correction guidée : <disponible / rapport seul>
+>
+> Je lance ?
 
-Pas d'argument devil : le tribunal est fixe. `stack=`, `no-gates` et
+Pas d'argument devil : le tribunal est fixe. Un nom de devil passé quand
+même (`review-swarm main opus`) n'est PAS traité comme un target : STOP avec
+« le tribunal est fixe (gemini + glm + deepseek) ; pour un second avis
+indépendant : `/erom-devil:review <target> opus` ». `stack=`, `no-gates` et
 `intent.md` s'appliquent comme en unitaire.
 
 ## Étape 7 - Spawner les 3 devils EN PARALLÈLE
@@ -46,15 +54,22 @@ Par référence à `skills/code-swarm/SKILL.md` Étapes 6 et 7 :
   chat seulement, qui propose une relance ou un passage en unitaire. Un
   tribunal à une voix ne certifie rien : il ne laisse pas de rapport
   derrière lui ;
-- un retour qui n'est pas une enveloppe JSON valide compte comme voix
-  absente (ne JAMAIS interpréter un texte d'erreur comme une review) ;
+- une enveloppe `status: "error"` compte comme UNE VOIX ABSENTE, pas comme
+  une fin de run : au tribunal, le quorum ci-dessus remplace la garde de
+  terminaison de `/erom-devil:review` Étape 7, qui ne vaut que pour un
+  devil unique. Deux voix pleines et une en erreur donnent un run à 2 voix,
+  pas un run mort ;
+- un retour qui n'est pas une enveloppe JSON valide du tout compte lui
+  aussi comme voix absente (ne JAMAIS interpréter un texte d'erreur comme
+  une review) ;
 - ancrage PAR VOIX (les DÉCLASSÉES sortent avant consolidation, listées en
   « Non ancrées » avec leur devil) ;
 - consolidation par PROBLÈME DE FOND (mêmes heuristiques : équivalence par
-  fichier + plages voisines + même fond ; en cas de doute NE PAS
-  fusionner ; badges 3/3, 2/3, 1/3 ; sévérité du groupe = la plus haute ;
-  suggestion la plus actionnable conservée ; tri par convergence puis
-  sévérité).
+  fichier + plages voisines à `±10` + même fond ; en cas de doute NE PAS
+  fusionner ; badges de convergence SUR LES VOIX EXPRIMÉES, donc 3/3, 2/3
+  et 1/3 à trois voix, 2/2 et 1/2 à deux ; sévérité du groupe = la plus
+  haute ; suggestion la plus actionnable conservée ; tri par convergence
+  puis sévérité).
 
 ## Étape 9 - Passe de vérification
 
@@ -69,25 +84,36 @@ JETABLE de `code-swarm` Étape 8, scores par devil + moyenne indicative,
 voix dissonante jamais écrasée (reject isolé, écart > 30 sur un critère :
 qui, sur quoi, son argument).
 
-Garde-fou sécurité, version vérifiée : une issue `critical` / `security`
-ANCRÉE vaut NO-GO si Confirmée ou Hypothèse ; si RÉFUTÉE avec preuve, le
-garde-fou tombe et la réfutation figure en annexe du rapport.
-
 Puis le verdict process : la table de `/erom-devil:review` Étape 10,
 appliquée aux groupes vérifiés.
+
+Garde-fou sécurité EN DERNIER, version vérifiée : une issue de sévérité
+`critical` ET de catégorie `security`, ANCRÉE, vaut NO-GO si Confirmée ou
+Hypothèse. Il s'applique APRÈS la table et ne peut que DURCIR le verdict,
+jamais l'adoucir : un NO-GO reste NO-GO, un GO ou un GO AVEC RÉSERVES
+devient NO-GO. Si l'issue est RÉFUTÉE, le garde-fou tombe et la réfutation
+figure en annexe du rapport ; mais une réfutation qui fait tomber CE
+garde-fou doit citer une sortie de commande recopiée ou un file:ligne
+réellement lu, jamais un raisonnement seul. C'est la seule chose qui puisse
+lever un blocage sécurité, et elle est produite par un juge unique : elle
+se paie en preuve.
 
 ## Étape 11 - Rapport, correction, clôture
 
 Rapport : même gabarit que `/erom-devil:review` Étape 11, enrichi swarm :
 - frontmatter `devils: gemini + glm + deepseek` (voix absente notée) ;
-- colonne `Conv` (badge de convergence) dans le tableau Findings ;
+- colonne `Conv` (badge de convergence) dans le tableau Findings ; un
+  finding frontière, qui n'a pas de voix devil, y porte `Claude` ;
 - annexe « Voix dissonantes » ;
-- annexe « Scores devils » : grille par devil + moyenne indicative.
+- annexe « Scores devils » : grille par devil + moyenne indicative. Elle
+  REMPLACE l'annexe « Critères du devil » du gabarit unitaire, qui n'a pas
+  de sens à trois voix.
 
 Affichage chat : verdict, comptes par statut, chemin du rapport.
 
 Correction guidée : mêmes règles que `/erom-devil:review` Étape 12, ordre
-de passage : groupes convergents (3/3, 2/3) Confirmés d'abord, puis
+de passage : groupes convergents (unanimes puis majoritaires sur les voix
+exprimées) Confirmés d'abord, puis
 critical / high isolées Confirmées, puis Hypothèses hautes. Re-swarm max 1,
 porte rejouée, rapport suffixé. `trash "$TMP_DIR"` en fin de run.
 
