@@ -53,8 +53,9 @@ cas limites, mêmes règles pour les fichiers non suivis), avec UNE exclusion
 en plus : `docs/reviews/` sort du périmètre. Ajoute
 `':(exclude)docs/reviews/'` au pathspec des commandes git de diff ; en mode
 PR, retire du texte du diff les sections `diff --git` de ces chemins ; et
-écarte `docs/reviews/` de la collecte des fichiers non suivis, que le
-pathspec n'atteint pas. Sans ces trois gestes, le rapport d'une review
+écarte `docs/reviews/` de la collecte des fichiers non suivis (le même
+pathspec fonctionne sur `git ls-files --others`). Sans ces trois gestes,
+le rapport d'une review
 précédente, jamais commité, entre dans le diff de la suivante.
 
 La règle INTENT de `code` Étape 1 (« pas d'auto-detect `.specs/` ») ne
@@ -64,7 +65,7 @@ s'applique PAS ici : l'Étape 3 la remplace par une chasse explicite.
 
 Applicable si l'arbre courant porte le code du diff reviewé : modes working
 tree, branche vs base, range courant (`b` = HEAD) et PR checkoutée, arbre
-propre ou sale. Non applicable sur un range historique (`b` different de
+propre ou sale. Non applicable sur un range historique (`b` différent de
 HEAD) ou une PR non checkoutée : porte « non applicable (le diff reviewé
 n'est pas dans l'arbre courant) », mentionnée au rapport, continue.
 
@@ -81,8 +82,9 @@ n'est pas dans l'arbre courant) », mentionnée au rapport, continue.
    « porte : ROUGE, outrepassée sur décision » en tête de couverture, la
    sortie brute en annexe : une porte rouge ne se maquille jamais en porte
    sautée.
-5. Arbre sale en mode branche (porte applicable mais l'arbre n'est pas
-   exactement le diff reviewé) : une ligne au rapport, rien de plus.
+5. Arbre sale en mode branche, range courant ou PR checkoutée (porte
+   applicable mais l'arbre n'est pas exactement le diff reviewé) : une
+   ligne au rapport, rien de plus.
 
 ## Étape 3 - Chasse à l'intention
 
@@ -122,7 +124,7 @@ sauté.
 
 > **Porte de merge :**
 > - Mode : <PR 123 / branche vs main / range a..b / working tree>
-> - Fichiers : <N> (±<lignes>) · dont <U> non suivis · FILES <complet / tronqué : n exclus / omis>
+> - Fichiers : <N> (±<lignes>) [· dont <U> non suivis] · FILES <complet / tronqué : n exclus / omis>
 > - Porte : <verte (`bun run check`) / rouge outrepassée (no-gates) /
 >   sautée (aucune commande) / non applicable>
 > - Intent : <chemin / body PR / aucune>
@@ -217,7 +219,7 @@ s'arrête à la première situation vraie.
 
 | Situation | Verdict |
 |---|---|
-| >= 1 critical Confirmée | **NO-GO** (corriger avant merge) |
+| >= 1 critical Confirmée | **NO-GO** non levable (corriger avant merge) |
 | >= 1 critical Hypothèse | **NO-GO**, levable par décision explicite tracée ; catégorie security : non levable tant que ni réfutée ni corrigée |
 | >= 1 high Confirmée | **NO-GO**, levable par décision explicite tracée |
 | high Hypothèse ou medium présentes (vérifiées ou non) | **GO AVEC RÉSERVES** (listées) |
@@ -235,10 +237,10 @@ frontmatter passe à `NO-GO LEVÉ`.
 re-review comprise : suffixe `-2`, `-3`). Avant d'écrire : dans tout
 matériau recopié (issues des devils, sortie de la porte, body de PR),
 remplace chaque tiret cadratin par un tiret simple ; le hook du dépôt
-refuse un Write de `.md` qui en contient. La substitution est mentionnée
-en une ligne dans la section Couverture. Elle ne touche que ce caractère : le reste du
-matériau reste recopié, jamais résumé. En français. Ne committe pas : le
-commit rejoint le flux de merge. Structure exacte :
+refuse un Write de `.md` qui en contient. La substitution est mentionnée en
+une ligne dans la section Couverture. Elle ne touche que ce caractère : le
+reste du matériau reste recopié, jamais résumé. En français. Ne committe
+pas : le commit rejoint le flux de merge. Structure exacte :
 
 ```markdown
 ---
@@ -264,7 +266,8 @@ date et raison de Romain.>
 <fichiers et lignes reviewés ; FILES complet / tronqué / omis ; ce qui n'a
 PAS été couvert : E2E non relancés, exclusions du scan, budget FILES ;
 « review sans intention fournie » le cas échéant ; arbre sale le cas
-échéant.>
+échéant ; « porte : ROUGE, outrepassée sur décision » le cas échéant ;
+la mention de substitution des tirets cadratins le cas échéant.>
 
 ## Findings
 
