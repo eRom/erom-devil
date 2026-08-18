@@ -83,4 +83,5 @@
 
 ## Marketplace (repo séparé)
 - `/Users/recarnot/dev/erom-marketplace/.claude-plugin/marketplace.json` —
-  metadata 0.9.0, entrée `erom-devil` version 0.5.0 (URL github erom-devil).
+  metadata 0.18.3, entrée `erom-devil` version 0.6.0 (URL github erom-devil).
+  Lu le 2026-08-18 : la 0.7.0 n'y est PAS encore, la livraison la portera.

@@ -91,7 +91,10 @@ n'est pas dans l'arbre courant) », mentionnée au rapport, continue.
 INTENT par priorité, premier trouvé gagne :
 1. arg `*.md` explicite ;
 2. body de la PR (mode PR), écrit par redirection shell dans un fichier
-   `mktemp` qui lui est propre (`TMP_DIR` n'existe qu'à l'Étape 4) ;
+   `mktemp` qui lui est propre (`TMP_DIR` n'existe qu'à l'Étape 4). Dès que
+   `TMP_DIR` existe, l'Étape 4 le déplace dedans (`mv` vers
+   `$TMP_DIR/intent.md`) : sans ce geste il échappe au `trash` de clôture et
+   chaque run en mode PR laisse un orphelin dans `$TMPDIR` ;
 3. `.specs/<branche>/` ou `.specs/<slug proche>/` : un `*.md` de spec ;
 4. `docs/superpowers/specs/*.md` dont le nom matche la branche ou le sujet ;
 5. question à Romain (« aucune » accepté).

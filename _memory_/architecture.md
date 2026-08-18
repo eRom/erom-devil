@@ -5,8 +5,8 @@
 **Type** : Plugin Claude Code `erom-devil` (renommé le 2026-07-30, ex-`devil`),
 distribué par `erom-marketplace`.
 
-**Objectif** : « avocats du diable » externes sur les documents amont, AVANT
-implémentation. Quatre exercices :
+**Objectif** : « avocats du diable » externes sur le travail, du document
+amont à la porte de merge. Quatre exercices :
 - **spec** : juger une spec technique contre son brainstorm (score, verdict
   approve/rework/reject, issues) — unitaire ou swarm (VALABLE/MODIFS/JETABLE).
 - **brain** : interrogatoire socratique d'un brainstorming seul — les 5
@@ -54,13 +54,14 @@ plugin/agents/{gemini,glm,deepseek,opus,kimi}.md transport pur (opus+kimi hors s
 plugin/skills/spec{,-swarm}/    exercice spec (2 inputs BRAINSTORMING+SPECS)
 plugin/skills/brain{,-swarm}/   exercice brain (1 input BRAINSTORMING)
 plugin/skills/code{,-swarm}/    exercice code (DIFF + FILES/INTENT opt.)
-plugin/scripts/devil-review-{mission.md,schema.json}  exercice review
-plugin/scripts/stacks/nextjs.md                       grille de stack Next 16 / Prisma 7
-plugin/skills/review{,-swarm}/                        porte de merge (unitaire, tribunal)
-plugin/scripts/devil-{spec,brain,code}-{mission.md,schema.json}
+plugin/skills/review{,-swarm}/  porte de merge (DIFF + FILES/INTENT/STACK opt.)
+plugin/scripts/devil-{spec,brain,code,review}-{mission.md,schema.json}
+plugin/scripts/stacks/nextjs.md grille de stack Next 16 / Prisma 7 (input STACK)
 plugin/README.md
-examples/                       fixtures veilleur (6 défauts) + code (5 défauts + secret)
-.specs/plugin-devil{,-brain,-code}/  designs v0.1.0, v0.2.0, v0.3.0 (hors plugin)
+examples/                       fixtures veilleur (6 défauts), code (5 défauts
+                                + secret), review-stack (3 violations de grille)
+.specs/plugin-devil{,-brain,-code,-review}/  designs v0.1.0, v0.2.0, v0.3.0,
+                                v0.7.0 (hors plugin)
 _memory_/                       cette mémoire (hors plugin)
 ```
 

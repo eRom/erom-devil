@@ -1,6 +1,6 @@
 # Patterns & conventions — erom-devil (dossier local : erom-agence-devil)
 
-> MàJ : 2026-07-18 (v0.3.0)
+> MàJ : 2026-08-18 (v0.7.0)
 
 ## Contrat de spawn (tous exercices → tous agents)
 - Prompt : `MISSION_FILE=` / `SCHEMA_FILE=` / `VALIDATE_JQ=` puis `INPUTS:`
