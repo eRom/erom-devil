@@ -1,0 +1,108 @@
+{
+  "type": "object",
+  "required": ["score", "verdict", "summary", "criteria", "issues"],
+  "properties": {
+    "score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Score global du changement (0-100)"
+    },
+    "verdict": {
+      "type": "string",
+      "enum": ["approve", "rework", "reject"],
+      "description": "approve si score >= 80, rework si 50-79, reject si < 50"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Résumé en 2-3 phrases de l'évaluation globale"
+    },
+    "criteria": {
+      "type": "object",
+      "required": ["correctness", "architecture", "security", "performance", "tests", "maintainability"],
+      "properties": {
+        "correctness": {
+          "type": "object",
+          "required": ["score", "comment"],
+          "properties": {
+            "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "comment": { "type": "string" }
+          }
+        },
+        "architecture": {
+          "type": "object",
+          "required": ["score", "comment"],
+          "properties": {
+            "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "comment": { "type": "string" }
+          }
+        },
+        "security": {
+          "type": "object",
+          "required": ["score", "comment"],
+          "properties": {
+            "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "comment": { "type": "string" }
+          }
+        },
+        "performance": {
+          "type": "object",
+          "required": ["score", "comment"],
+          "properties": {
+            "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "comment": { "type": "string" }
+          }
+        },
+        "tests": {
+          "type": "object",
+          "required": ["score", "comment"],
+          "properties": {
+            "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "comment": { "type": "string" }
+          }
+        },
+        "maintainability": {
+          "type": "object",
+          "required": ["score", "comment"],
+          "properties": {
+            "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "comment": { "type": "string" }
+          }
+        }
+      }
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["severity", "category", "file", "description", "failure_scenario", "suggestion"],
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": ["critical", "high", "medium", "low"]
+          },
+          "category": {
+            "type": "string",
+            "enum": ["correctness", "architecture", "security", "performance", "tests", "maintainability", "intent"]
+          },
+          "file": {
+            "type": "string",
+            "description": "chemin/fichier.ext:ligne — ligne de l'état final du fichier"
+          },
+          "description": {
+            "type": "string",
+            "description": "Le problème identifié"
+          },
+          "failure_scenario": {
+            "type": "string",
+            "description": "Conséquence concrète et située : entrées → résultat faux (runtime), ou coût futur nommé + déclencheur (structurel)"
+          },
+          "suggestion": {
+            "type": "string",
+            "description": "Correction actionnable"
+          }
+        }
+      }
+    }
+  }
+}
