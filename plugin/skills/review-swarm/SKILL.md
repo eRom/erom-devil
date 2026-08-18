@@ -94,9 +94,11 @@ jamais l'adoucir : un NO-GO reste NO-GO, un GO ou un GO AVEC RÉSERVES
 devient NO-GO. Si l'issue est RÉFUTÉE, le garde-fou tombe et la réfutation
 figure en annexe du rapport ; mais une réfutation qui fait tomber CE
 garde-fou doit citer une sortie de commande recopiée ou un file:ligne
-réellement lu, jamais un raisonnement seul. C'est la seule chose qui puisse
-lever un blocage sécurité, et elle est produite par un juge unique : elle
-se paie en preuve.
+réellement lu DANS L'ARBRE QUI PORTE LE CODE REVIEWÉ (Étape 9), jamais un
+raisonnement seul et jamais un fichier lu au mauvais arbre. En mode PR non
+checkoutée, aucune réfutation n'est recevable : le garde-fou ne tombe pas.
+C'est la seule chose qui puisse lever un blocage sécurité, et elle est
+produite par un juge unique : elle se paie en preuve.
 
 ## Étape 11 - Rapport, correction, clôture
 
@@ -105,9 +107,10 @@ Rapport : même gabarit que `/erom-devil:review` Étape 11, enrichi swarm :
 - colonne `Conv` (badge de convergence) dans le tableau Findings ; un
   finding frontière, qui n'a pas de voix devil, y porte `Claude` ;
 - annexe « Voix dissonantes » ;
-- annexe « Scores devils » : grille par devil + moyenne indicative. Elle
-  REMPLACE l'annexe « Critères du devil » du gabarit unitaire, qui n'a pas
-  de sens à trois voix.
+- annexe « Scores devils » : grille par devil + moyenne indicative, ET le
+  commentaire de chaque devil sur chaque critère (18 lignes courtes) : les
+  scores seuls ne s'expliquent pas. Elle REMPLACE l'annexe « Critères du
+  devil » du gabarit unitaire, qui n'a pas de sens à trois voix.
 
 Affichage chat : verdict, comptes par statut, chemin du rapport.
 

@@ -58,7 +58,8 @@ Règles dures (anti-bruit) :
 - Un même problème présent en plusieurs endroits = UNE issue, les autres
   localisations listées dans la description.
 - Ne flagge pas ce que la porte déterministe du repo applique déjà (types,
-  lint, format) : elle a tourné avant toi.
+  lint, format) QUAND elle a tourné : l'orchestrateur te le dit dans le
+  paquet. Si rien ne l'indique, ne présume pas qu'elle a tourné.
 - Les fichiers de test modifiés se jugent au titre du critère `tests`, pas
   comme du code de production.
 - Si le changement est excellent, dis-le : `issues` peut être vide.

@@ -166,6 +166,13 @@ plages (tolérance ±3 ; fichier supprimé : ancrage au fichier seul). Les
 DÉCLASSÉES vont en annexe « Non ancrées », jamais supprimées en silence,
 exclues de la vérification, du verdict et de la correction guidée.
 
+Exception, avant de passer à la suite : toute DÉCLASSÉE de sévérité
+`critical` ou `high` est relue une fois. Si son problème de fond vit bien
+dans le diff et que seule l'ancre est fausse (le devil a cité la fonction
+appelée au lieu du site d'appel), RÉ-ANCRE-la sur la bonne ligne et remets-la
+au périmètre. Sinon elle reste en annexe. Une faille réelle ne doit pas
+sortir du verdict sur une erreur de pointage.
+
 ## Étape 9 - Passe de vérification (ton travail, pas celui du devil)
 
 Lecture seule stricte : aucune mutation de l'arbre, commandes en lecture et
@@ -174,6 +181,16 @@ d'E2E).
 
 Périmètre : toutes les issues `critical` et `high` ancrées. Budget
 ~2 minutes par issue : la vérification décisive la moins chère.
+
+SOURCE DE LECTURE, même condition que la porte de l'Étape 2. Modes working
+tree, branche vs base, range courant et PR checkoutée : l'arbre courant
+porte le code reviewé, tu lis les fichiers directement. Range historique
+(`b` différent de HEAD) : lis par `git show b:chemin`, jamais le checkout.
+PR NON checkoutée : tu n'as PAS l'état final des fichiers, seulement le
+DIFF. Dans ce mode, l'étiquette **Réfutée** est INTERDITE : une issue non
+confirmée par le diff seul reste **Hypothèse**, et le garde-fou sécurité ne
+peut donc pas tomber. Un fichier lu au mauvais arbre ressemble à une preuve
+et n'en est pas.
 
 Pour chaque issue du périmètre :
 1. relis le code réel au point ancré (Read, contexte large) et trace ce que
@@ -248,7 +265,7 @@ date: <YYYY-MM-DD>
 target: <mode et cible>
 range: <base_sha>..<head_sha>
 devils: <devil (modèle)>
-porte: <bun run check : verte | rouge outrepassée (no-gates) | aucune commande | non applicable>
+porte: <commande réellement lancée : verte | rouge outrepassée (no-gates) | aucune commande | non applicable>
 intent: <source | aucune>
 stack: <nextjs | aucun>
 verdict: <GO | GO AVEC RÉSERVES | NO-GO | NO-GO LEVÉ>

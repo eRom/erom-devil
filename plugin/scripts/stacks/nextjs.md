@@ -2,7 +2,10 @@ Grille de standards LIANTE pour ce repo (stack : Next 16, Prisma 7,
 Postgres, Zod 4, next-safe-action, Vitest, Playwright, Biome). Chaque
 violation est une issue normale : ancrée file:ligne, failure_scenario
 concret, sévérité et catégorie indiquées par la règle. Ne flagge que ce que
-le DIFF introduit ou touche.
+le DIFF introduit ou touche. Les chemins cités (`src/lib/dal.ts`,
+`src/lib/safe-action.ts`, `src/env.ts`) sont les conventions du
+web-stack-starter : si le repo reviewé place ces responsabilités ailleurs,
+juge l'équivalent local et ne flagge pas l'absence du chemin littéral.
 
 ## Autorisation (violation : severity critical, category security)
 
@@ -17,7 +20,9 @@ le DIFF introduit ou touche.
 - Toute Server Action est un endpoint POST public : aucune sans
   `actionClient` (next-safe-action, `src/lib/safe-action.ts`).
 - Un fichier ne transite jamais par une Server Action : URL présignée,
-  upload direct du client vers le stockage objet.
+  upload direct du client vers le stockage objet. Violation : severity
+  high, category architecture (pas critical/security : le risque est la
+  charge et le couplage, pas une exploitation).
 
 ## Pièges de version (violation : severity high, category correctness)
 
