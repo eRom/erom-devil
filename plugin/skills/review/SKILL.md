@@ -174,9 +174,23 @@ Exception, avant de passer à la suite : toute DÉCLASSÉE de sévérité
 dans le diff et que seule l'ancre est fausse (le devil a cité la fonction
 appelée au lieu du site d'appel), RÉ-ANCRE-la sur la bonne ligne et remets-la
 au périmètre. Sinon elle reste en annexe. Une faille réelle ne doit pas
-sortir du verdict sur une erreur de pointage. Toute ré-ancre est TRACÉE au
-rapport, dans la ligne Findings de l'issue : « ré-ancrée par l'orchestrateur
-depuis <ancre d'origine> ». C'est ton geste, pas celui du devil, et il peut
+sortir du verdict sur une erreur de pointage.
+
+Deux conditions à cette ré-ancre, dans cet ordre :
+- **Doublon d'abord** : si une issue déjà ancrée porte le même problème de
+  fond, la DÉCLASSÉE n'est PAS ré-ancrée. Sa localisation rejoint la
+  description de l'issue ancrée, et elle reste en annexe notée « doublon de
+  <issue> ». Deux entrées pour un seul problème gonflent le verdict sans
+  rien ajouter.
+- **Ligne d'activation ensuite** : pour ré-ancrer, nomme la ligne `+` ou `-`
+  du diff qui rend le problème atteignable (une garde retirée, un nouvel
+  appelant, un argument changé qui alimente le sink). Si tu ne peux pas la
+  nommer, le problème est pré-existant et hors périmètre : l'issue reste en
+  annexe.
+
+Toute ré-ancre est TRACÉE au rapport, dans la ligne Findings de l'issue :
+« ré-ancrée par l'orchestrateur depuis <ancre d'origine>, activée par
+<file:ligne du diff> ». C'est ton geste, pas celui du devil, et il peut
 faire basculer le verdict.
 
 ## Étape 9 - Passe de vérification (ton travail, pas celui du devil)
@@ -185,8 +199,12 @@ Lecture seule stricte : aucune mutation de l'arbre, commandes en lecture et
 tests unitaires existants uniquement (jamais de migration, de seed ni
 d'E2E).
 
-Périmètre : toutes les issues `critical` et `high` ancrées. Budget
-~2 minutes par issue : la vérification décisive la moins chère.
+Périmètre : toutes les issues `critical` et `high` ancrées, PLUS toute issue
+de catégorie `security` ancrée, quelle que soit sa sévérité. Ce second
+morceau est la contrepartie du rappel élargi que la mission demande sur
+l'axe sécurité : un candidat rendu à confiance moindre doit rencontrer son
+juge, sinon il entre au rapport sans filet. Budget ~2 minutes par issue :
+la vérification décisive la moins chère.
 
 SOURCE DE LECTURE, même condition que la porte de l'Étape 2. Mode working
 tree : l'arbre courant EST le diff reviewé, tu lis les fichiers
@@ -215,8 +233,62 @@ Pour chaque issue du périmètre :
    - **Hypothèse** : pas tranchable à coût raisonnable ; confiance
      haute / moyenne / basse + ce qui la trancherait.
 
-Les issues hors périmètre (`medium`, `low`) gardent l'étiquette
-**Non vérifiée** : elles restent au rapport, jamais promues ni supprimées.
+Les issues hors périmètre (`medium` et `low` d'une autre catégorie que
+`security`) gardent l'étiquette **Non vérifiée** : elles restent au rapport,
+jamais promues ni supprimées.
+
+**Grille de réfutation.** La polarité par défaut est la SURVIE : « Réfutée »
+exige une preuve citée, jamais l'absence de preuve du contraire. Sans cette
+preuve, l'étiquette est Hypothèse. Sur une issue de catégorie `security`, le
+premier geste est de nommer l'attaquant (qui contrôle l'entrée) et la
+victime (qui subit) : réfute si la seule victime est l'attaquant sur sa
+propre machine ; garde si l'attaquant est un utilisateur légitime mais que
+l'impact atteint un autre principal, l'infra partagée ou des ressources
+serveur.
+
+Huit motifs de réfutation sont recevables, chacun appuyé sur un file:ligne
+réellement lu ou une sortie recopiée :
+
+1. **Pré-existant** : le code cité n'est touché par le diff ni en `+` ni en
+   `-` ; c'est du contexte inchangé dans un fichier modifié par ailleurs.
+   Les lignes `-` comptent autant que les `+` : une garde SUPPRIMÉE
+   n'apparaît sur aucune ligne `+`, et la réfuter comme pré-existante
+   laisserait passer exactement la régression de contrôle que la mission
+   demande de chercher.
+2. **Garde en amont** : un validateur, un sanitizer ou un contrôle d'accès
+   situé sur le chemin empêche le scénario décrit.
+3. **Sink inoffensif** : décodeur à schéma typé (et non une désérialisation
+   arbitraire), URL à hôte constant dont seuls des paramètres non-chemin
+   varient, valeur statiquement numérique ou booléenne.
+4. **Pas de frontière de privilège** : l'entrée vient d'une variable
+   d'environnement, d'un argument de CLI, d'un dotfile du HOME ou d'une
+   préférence utilisateur, et le process tourne au même privilège que celui
+   qui écrit cette source. Cinq exceptions ci-dessous.
+5. **Garde frontend doublée** : le contrôle assoupli est côté client et le
+   serveur l'applique indépendamment.
+6. **Validation déléguée** : la valeur non validée part immédiatement vers
+   un amont qui la valide.
+7. **Code jetable** : tous les fichiers touchés vivent sous `scripts/`,
+   `dev/`, `examples/`, `fixtures/`, ou derrière une garde de développement.
+8. **Contrôle déplacé** : le diff retire un contrôle ET monte une dépendance
+   qui documente le fournir. Le contrôle est délégué, pas supprimé.
+
+Les cinq exceptions au motif 4, où « pas de frontière de privilège » est
+irrecevable :
+- sink réseau sortant : une requête vers un hôte influençable sort de la
+  machine, quel que soit celui qui a écrit l'entrée ;
+- garde de capacité d'un agent LLM (hook, allowlist de commandes, prison de
+  chemin) : le modèle est l'attaquant, l'utilisateur la victime ;
+- fuite de données (secret en log, PII, contenu client) : la question est
+  qui LIT le sink, pas qui contrôle l'entrée ;
+- config de répertoire de travail (`.claude/settings*`, `.vscode/`, scripts
+  de `package.json`) : l'auteur du dépôt n'est pas celui qui le clone ;
+- source inter-process (métadonnées d'un autre process, `/proc`) : un autre
+  propriétaire est un autre principal.
+
+Le motif retenu est nommé dans l'annexe « Réfutées » du rapport. Une
+réfutation qui ne relève d'aucun de ces huit motifs, ou qui n'apporte pas sa
+preuve, n'est pas une réfutation : c'est une Hypothèse.
 
 **Balayage frontières** : une passe sur le DIFF ENTIER, quatre angles que
 les reviews scopées au diff ratent :

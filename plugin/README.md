@@ -76,8 +76,9 @@ déterministe (`bun run check` si le script existe, STOP si rouge), une
 chasse à l'intention (arg, body PR, `.specs/`, `docs/superpowers/specs/`),
 et une grille de stack optionnelle (`scripts/stacks/nextjs.md`,
 auto-détectée). Sortie par devil : même JSON que code. Ensuite
-l'orchestrateur vérifie chaque critical/high contre le code réel
-(Confirmée / Réfutée / Hypothèse, preuve exigée), balaye quatre frontières
+l'orchestrateur vérifie chaque critical/high et chaque issue de sécurité
+contre le code réel (Confirmée / Réfutée / Hypothèse, preuve exigée, huit
+motifs de réfutation recevables), balaye quatre frontières
 que les reviews scopées au diff ratent, tranche GO / GO AVEC RÉSERVES /
 NO-GO, et écrit un rapport persistant dans `docs/reviews/` du repo reviewé.
 Répartition des rôles : `code` est la critique rapide et jetable à chaque
