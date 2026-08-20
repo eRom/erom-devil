@@ -144,8 +144,26 @@
   - `CLAUDE_CODE_EFFORT_LEVEL=low` : rend en **166 s**, `is_error:false`,
     `stop_reason:end_turn`, JSON conforme au schéma.
 - Ce n'est ni le modèle ni le volume seuls : à effort max, un prompt
-  minimal répond en **719 ms** (`is_error:false`). C'est la combinaison
-  effort max + gros contexte.
+  minimal répond en **719 ms** (`is_error:false`).
+- **ATTRIBUTION NON ÉTABLIE, lire avant d'agir sur ce gotcha.** Tous les
+  runs ci-dessous pilotent l'effort par la variable
+  `CLAUDE_CODE_EFFORT_LEVEL`, et rien ne prouve qu'elle soit lue sur ce
+  transport (ollama via `ANTHROPIC_BASE_URL`). Mesuré le 2026-08-20 sur un
+  problème demandant un calcul : `thinking_tokens` vaut **0** dans les
+  trois cas, sans rien / avec la variable à max / avec le flag
+  `--effort max`, alors que le flag est le mécanisme officiel et qu'il
+  fonctionne (2 s, `is_error:false`). Le seul marqueur d'effort exposé par
+  la sortie JSON est donc inutilisable ici. Si la variable n'a aucun effet,
+  les deux runs comparés tournaient au MÊME effort et l'écart entre 166 s
+  et rien du tout vient d'ailleurs, cause inconnue.
+- Ce qui reste vrai quoi qu'il en soit : un paquet de 101 Ko est passé en
+  166 s dans un run, et n'est jamais revenu dans un autre. Le fait est
+  solide, son explication ne l'est pas.
+- Test qui trancherait : rejouer le paquet de 101 Ko deux fois en pilotant
+  l'effort par le FLAG `--effort` (low puis max), pas par la variable. Le
+  commit fa9ff98 (2026-08-20, Romain) ayant ajouté `--effort max` en flag
+  aux trois agents ollama, le prochain run réel de la porte de merge est
+  ce test.
 - **Ce qui est mesuré, et par qui.** Les deux runs à effort low et le run
   minimal à max sont des mesures directes de la session mère. Le run
   « complet + max » vient du subagent devil, récupéré dans son transcript
