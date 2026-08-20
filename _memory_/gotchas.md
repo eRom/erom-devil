@@ -121,6 +121,30 @@
   scratchpad). Les agents SANS nom retournent leur résultat de façon fiable
   via task-notification. Pour du fan-out fiable : agents anonymes + fichier.
 
+## Effort max + gros paquet = TIMEOUT systématique du devil
+- Mesuré 2026-08-20, dogfood de `/erom-devil:review` sur son propre diff.
+  Même prompt (101 415 octets : mission 10 Ko + DIFF 19 Ko + FILES 52 Ko +
+  INTENT 15 Ko + schéma), même modèle `deepseek-v4-pro:cloud[1m]`, même
+  ligne d'appel. Seule variable changée, l'effort :
+  - `CLAUDE_CODE_EFFORT_LEVEL=max` : RAW vide, 0 octet, deux tentatives,
+    timeout des 540 s à chaque fois.
+  - `CLAUDE_CODE_EFFORT_LEVEL=low` : rend en **166 s**, `is_error:false`,
+    `stop_reason:end_turn`, JSON conforme au schéma.
+- Ce n'est ni le modèle ni le volume seuls : un prompt minimal répond en
+  1,1 s à effort max. C'est la combinaison effort max + gros contexte.
+- Les 5 agents (`glm`, `deepseek`, `kimi`, et par symétrie les autres)
+  posent `CLAUDE_CODE_EFFORT_LEVEL=max` en dur dans leur Step 2. Sur un
+  paquet de review réaliste, la porte de merge ne peut donc pas rendre.
+  Non corrigé à ce jour : l'arbitrage qualité contre latence appartient à
+  Romain (baisser l'effort dégrade la critique).
+- Re-jouer la mesure : reconstruire le prompt hermétique, lancer deux fois
+  la ligne de `agents/deepseek.md` Step 2 en ne changeant que l'effort.
+- Piège de diagnostic : le stderr porte
+  `[claude-code:unrecognized_model] {"model":"deepseek-v4-pro:cloud[1m]",
+  "query_source":"generate_session_title"}` **même quand l'appel
+  réussit**. C'est cosmétique (génération du titre de session), ce n'est
+  jamais la cause. Vérifié sur un appel minimal `is_error:false`.
+
 ## Push / remote
 - Les 2 repos en HTTPS (SSH publickey denied dans cet env). Marketplace :
   entrée devil à bump (version + description) EN PLUS de metadata.version.

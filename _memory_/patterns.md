@@ -95,3 +95,30 @@
   prouvée.
 - **Porte déterministe avant modèle (review)** : `bun run check` d'abord,
   STOP si rouge ; les devils ne paient jamais ce que tsc dit gratuitement.
+
+## Asymétrie rappel / précision sur l'axe sécurité (2026-08-20)
+- Repris de `security-guidance@claude-plugins-official` 2.0.7 (analyse
+  complète : `.claude/notes/recuperable-security-guidance.md`). Leur
+  différentiel n'est ni la taxonomie ni les regex : c'est la SÉPARATION du
+  rappel et de la précision en deux acteurs de polarités opposées.
+- Mission `devil-review-mission.md` : la barre « confiance élevée » tient
+  pour les 5 autres critères ; sur `security` le rappel prime, avec neuf
+  formes nommées portant chacune sa condition de NON-émission (c'est cette
+  moitié-là qui évite le bruit, pas la liste des vulnérabilités).
+- Contrepartie non négociable, `review` Étape 9 : le périmètre de
+  vérification inclut TOUTE issue `security` ancrée, sévérité indifférente.
+  Rappel élargi sans filet élargi = générateur de bruit. Les deux gestes ne
+  se séparent pas.
+- Grille de réfutation, `review` Étape 9 : polarité par défaut = SURVIE,
+  huit motifs recevables, cinq exceptions au motif « pas de frontière de
+  privilège » (dont : garde de capacité d'agent LLM, où le modèle est
+  l'attaquant et l'utilisateur la victime). Sans motif nommé et sans preuve
+  citée, une réfutation est une Hypothèse.
+- Ancrage, `review` Étape 8 : la ré-ancre d'une DÉCLASSÉE critical/high
+  exige de nommer la ligne `+`/`-` qui rend le problème atteignable, et le
+  test de doublon passe AVANT (à trois voix : sur les issues ancrées de
+  toutes les voix, sinon un même problème mal ancré entre trois fois).
+- À surveiller au premier dogfood : plus de candidats `critical`/`security`
+  en Hypothèse fait tomber le garde-fou sécurité en NO-GO non levable
+  (`review` Étape 10). Si des faux positifs bloquent, l'ajustement est dans
+  la table de verdict, pas dans le rappel.
