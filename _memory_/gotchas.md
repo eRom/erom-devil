@@ -134,15 +134,37 @@
   (`task_type: in_process_teammate`). Utiliser TaskStop, pas le protocole
   de shutdown.
 
-## Effort max + gros paquet = TIMEOUT systématique du devil
-- Mesuré 2026-08-20, dogfood de `/erom-devil:review` sur son propre diff.
-  Même prompt (101 415 octets : mission 10 Ko + DIFF 19 Ko + FILES 52 Ko +
-  INTENT 15 Ko + schéma), même modèle `deepseek-v4-pro:cloud[1m]`, même
-  ligne d'appel. Seule variable changée, l'effort :
-  - `CLAUDE_CODE_EFFORT_LEVEL=max` : RAW vide, 0 octet, deux tentatives,
-    timeout des 540 s à chaque fois.
-  - `CLAUDE_CODE_EFFORT_LEVEL=low` : rend en **166 s**, `is_error:false`,
-    `stop_reason:end_turn`, JSON conforme au schéma.
+## Effort max + gros paquet = réponse VIDE, facturée (PAS un timeout)
+- Mesure DIRECTE du 2026-08-20, même paquet (128 338 octets), même modèle
+  `deepseek-v4-pro:cloud[1m]`, même ligne d'appel, seule l'effort change :
+
+  | | `max` | `low` |
+  |---|---|---|
+  | durée | 194 s | 90 s |
+  | `stop_reason` | `stop_sequence` | `end_turn` |
+  | `num_turns` | 2 | 1 |
+  | `result` | **chaîne vide** | 5 667 caractères, JSON conforme |
+  | `usage.output_tokens` | **0** (279 côté `modelUsage`) | 15 683 |
+  | coût | **0,54 USD pour rien** | 0,79 USD |
+
+- **Le mot « timeout » était faux** et vient d'une interprétation du
+  subagent devil, reprise sans la vérifier. L'appel REND, en moins de
+  4 minutes, avec `is_error:false` et `api_error_status:null`. Il rend une
+  chaîne vide. Le modèle produit bien quelques centaines de tokens
+  (`modelUsage.outputTokens: 279`) puis s'interrompt sur une stop sequence
+  avant d'avoir écrit sa review. `ttft_ms` était de 74 s.
+- Conséquence pour le transport : un agent qui teste `RAW` vide ou
+  `is_error` ne voit RIEN d'anormal ici. C'est `.result` qui est vide, et
+  le `jq -c '.'` de l'étape 3 échoue ensuite, ce qui sort en
+  `PARSE_ERROR`. Ne pas chercher un TIMEOUT dans les logs : chercher un
+  `result` vide avec `stop_reason: stop_sequence`.
+- Corroboration : 3 échecs à max (2 tentatives du devil le soir même,
+  plus cette mesure directe), 2 succès à low sur des paquets comparables
+  (166 s sur 101 Ko, 90 s sur 128 Ko). La cause n'est pas identifiée au
+  delà de ça ; le fait, lui, est reproductible.
+- Qualité à low : review rendue avec un score de 84 et deux issues
+  réelles et ancrées. Baisser l'effort ne vide pas la critique de sa
+  substance sur ce modèle.
 - Ce n'est ni le modèle ni le volume seuls : à effort max, un prompt
   minimal répond en **719 ms** (`is_error:false`).
 - **L'effort atteint réellement le modèle : chaîne vérifiée de bout en
