@@ -44,7 +44,7 @@ amendes le doc au fil de ses réponses.
 
 Confirmation avant lancement :
 
-> **Interrogatoire :** <devil> questionne `<fichier>` (jusqu'à 9 min). Go ?
+> **Interrogatoire :** <devil> questionne `<fichier>` (jusqu'à 20 min). Go ?
 
 ## Étape 2 — Lancer le sous-agent
 
@@ -59,7 +59,7 @@ Agent(
 ```
 
 Annonce avant le spawn : « **Interrogatoire en cours…** <devil> cherche les
-questions jamais posées (jusqu'à 9 min). »
+questions jamais posées (jusqu'à 20 min). »
 
 ## Étape 3 — Parser l'enveloppe et restituer
 

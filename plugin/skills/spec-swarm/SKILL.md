@@ -22,7 +22,7 @@ et `MISSION_FILE` = `<racine>/scripts/devil-spec-mission.md`, vérifie l'existen
 Même détection, mêmes règles et même confirmation que /erom-devil:spec (paths en
 argument sinon auto-detect `.specs/`), avec l'annonce :
 
-> **Tribunal convoqué :** gemini + glm + deepseek en parallèle (jusqu'à 9 min).
+> **Tribunal convoqué :** gemini + glm + deepseek en parallèle (jusqu'à 20 min).
 > Fichiers : <brainstorm> vs <specs>. Je lance ?
 
 ## Étape 2 — Spawner les 3 devils EN PARALLÈLE

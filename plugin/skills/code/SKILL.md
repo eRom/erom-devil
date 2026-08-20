@@ -178,7 +178,7 @@ Agent(
 ```
 
 Annonce avant le spawn : « **Review en cours…** <devil> analyse le
-changement (jusqu'à 9 min). »
+changement (jusqu'à 20 min). »
 
 ## Étape 6 — Ancrage puis rapport
 

@@ -149,10 +149,25 @@
   | verdict rendu | 72, `rework`, **6 issues** | 84, `approve`, 2 issues |
 
 - **La cause est le timeout de la procédure de transport, pas l'effort.**
-  Les `agents/*.md` codent `timeout` Bash à 540 000 ms ; à max, ce paquet
-  demande 620 s. Le devil était tué 80 s avant la fin. Monter le timeout
-  suffit : c'est Romain qui l'a trouvé en le passant à 1200 s, après une
-  soirée où je l'avais pris pour une constante intouchable.
+  Les `agents/*.md` codaient `timeout` Bash à 540 000 ms ; à max, ce paquet
+  demande 620 s. Le devil était tué 80 s avant la fin. C'est Romain qui l'a
+  trouvé en passant à 1200 s, après une soirée où je l'avais pris pour une
+  constante intouchable.
+- **Monter le nombre dans les agents NE SUFFIT PAS** (doc Claude Code,
+  « Timeout and output limits », validée le 2026-08-20) : `timeout` est
+  une DEMANDE, plafonnée par `BASH_MAX_TIMEOUT_MS`, dont le défaut est
+  **10 minutes**. Les agents demandent 1 200 000 ms depuis ce soir, mais
+  tant que `BASH_MAX_TIMEOUT_MS` n'est pas relevé, tout run de plus de
+  600 s est tué. Le régler dans le bloc `env` d'un `settings.json`, ou
+  dans l'environnement de la session qui invoque la skill.
+  `BASH_DEFAULT_TIMEOUT_MS` (2 min) est l'autre borne, celle qui
+  s'applique quand aucun timeout n'est passé ; le plafond effectif est le
+  plus grand des deux.
+- Piège de validation, vécu le soir même : un run de contrôle a rendu en
+  345 s et j'ai failli en conclure que le plafond était levé. Il ne
+  prouvait rien, puisqu'il n'a jamais atteint 600 s. La variabilité est
+  large sur ce modèle (345 s et 620 s pour le même paquet) : un run court
+  ne teste pas une limite haute.
 - **À max la critique est franchement meilleure**, ce qui inverse
   l'arbitrage : 6 issues contre 2, dont une `high` réelle (asymétrie entre
   la borne de sévérité de l'Étape 8 et le périmètre catégoriel de

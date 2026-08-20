@@ -26,7 +26,7 @@ appel ; en pleine session sans fichier → écris d'abord le draft).
 Confirmation :
 
 > **Interrogatoire à trois voix :** gemini + glm + deepseek questionnent
-> `<fichier>` en parallèle (jusqu'à 9 min). Go ?
+> `<fichier>` en parallèle (jusqu'à 20 min). Go ?
 
 ## Étape 2 — Spawner les 3 devils EN PARALLÈLE
 

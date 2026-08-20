@@ -33,7 +33,7 @@ Ton message final est UN objet JSON sur une ligne, rien d'autre :
 
 ## Procédure
 
-IMPORTANT — passe un `timeout` explicite de **540000** ms (9 min) à chaque
+IMPORTANT — passe un `timeout` explicite de **1200000** ms (20 min) à chaque
 appel Bash qui lance le modèle : le défaut de 2 min couperait le run.
 Jamais de `ollama pull`, jamais de préflight de présence du modèle (les
 modèles `:cloud` ne sont pas listés par `/api/tags`, c'est normal et validé).
@@ -63,7 +63,7 @@ PROMPT_FILE="$TMP_DIR/prompt.txt"
 } > "$PROMPT_FILE"
 ```
 
-### Step 2 — Appeler GLM (timeout Bash 540000)
+### Step 2 — Appeler GLM (timeout Bash 1200000)
 
 Ligne de base validée par Romain + flags d'hermétisme validés le 2026-07-18 :
 

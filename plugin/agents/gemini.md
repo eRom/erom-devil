@@ -33,7 +33,7 @@ Ton message final est UN objet JSON sur une ligne, rien d'autre :
 
 ## Procédure
 
-IMPORTANT — passe un `timeout` explicite de **540000** ms (9 min) à ton appel
+IMPORTANT — passe un `timeout` explicite de **1200000** ms (20 min) à ton appel
 Bash qui lance agy : le défaut de 2 min couperait le run. Côté agy,
 `--print-timeout 8m` fait le plafond en dessous. Jamais de rm : `trash`.
 
@@ -64,7 +64,7 @@ PROMPT_FILE="$TMP_DIR/prompt.txt"
 } > "$PROMPT_FILE"
 ```
 
-### Step 2 — Appeler agy (timeout Bash 540000)
+### Step 2 — Appeler agy (timeout Bash 1200000)
 
 `--add-dir` pour le dossier de CHAQUE input, plus TMP_DIR :
 

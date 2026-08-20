@@ -21,7 +21,7 @@ sauté) : déroule les Étapes 0 à 4 de `skills/code/SKILL.md`, à une
 différence près — l'annonce :
 
 > **Tribunal du code :** gemini + glm + deepseek en parallèle (jusqu'à
-> 9 min). Cible : <mode/cible>. Je lance ?
+> 20 min). Cible : <mode/cible>. Je lance ?
 
 ## Étape 5 — Spawner les 3 devils EN PARALLÈLE
 

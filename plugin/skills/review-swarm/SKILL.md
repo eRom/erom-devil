@@ -21,7 +21,7 @@ TMP_DIR, partagé en lecture par les 3 spawns), à une différence près,
 l'annonce de confirmation :
 
 > **Tribunal de merge :** gemini + glm + deepseek en parallèle (jusqu'à
-> 9 min).
+> 20 min).
 > - Cible : <mode/cible>
 > - Fichiers : <N> (±<lignes>) [· dont <U> non suivis] · FILES <complet / tronqué : n exclus / omis>
 > - Porte : <état> · Intent : <source> · Stack : <pack>
@@ -77,7 +77,17 @@ Par référence à `skills/code-swarm/SKILL.md` Étapes 6 et 7 :
   fusionner ; badges de convergence SUR LES VOIX EXPRIMÉES, donc 3/3, 2/3
   et 1/3 à trois voix, 2/2 et 1/2 à deux ; sévérité du groupe = la plus
   haute ; suggestion la plus actionnable conservée ; tri par convergence
-  puis sévérité).
+  puis sévérité) ;
+- **catégorie du groupe**, règle propre à cet exercice : un groupe est de
+  catégorie `security` dès qu'UNE voix au moins classe son issue en
+  `security` ; pour les autres cas, la catégorie majoritaire, et à
+  égalité celle de l'issue la plus sévère. La consolidation de
+  `code-swarm` définit la sévérité d'un groupe mais PAS sa catégorie, et
+  dit même explicitement que « la catégorie aide mais ne décide pas, un
+  même bug peut être classé correctness par l'un, security par l'autre ».
+  Sans cette règle, le périmètre de l'Étape 9 (« tout groupe de catégorie
+  `security` ») serait indécidable, et un groupe que deux voix sur trois
+  jugent sécuritaire pourrait sortir de la vérification.
 
 ## Étape 9 - Passe de vérification
 

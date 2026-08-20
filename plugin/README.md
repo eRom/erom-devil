@@ -93,6 +93,14 @@ phase ; `review` est la porte avant merge to main.
   l'extra usage. Sans solde, l'appel retourne `402` et le devil rend un
   `CLI_FAILED` (crédit sur https://ollama.com/settings).
 - `jq`, `trash`.
+- `BASH_MAX_TIMEOUT_MS=1200000` dans l'environnement de la session qui
+  invoque la skill, ou dans le bloc `env` d'un `settings.json`. Les agents
+  demandent un timeout de 1 200 000 ms pour l'appel modèle, mais Claude
+  Code plafonne toute demande à `BASH_MAX_TIMEOUT_MS`, **dix minutes par
+  défaut**. Sans ce réglage, un devil qui met plus de 10 minutes est tué
+  avant de rendre : mesuré à 620 s sur un paquet de 128 Ko à effort max,
+  donc la marge est mince. Le symptôme est une review qui sort en
+  `CLI_FAILED` ou `PARSE_ERROR` sans raison apparente.
 
 ## Installation
 

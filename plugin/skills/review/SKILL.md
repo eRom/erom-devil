@@ -144,7 +144,7 @@ Attends la confirmation de Romain (« oui », « go », « lance »).
 Spawn `erom-devil:<devil>` (fallback `<devil>` sans préfixe si le type est
 introuvable). INPUTS : `DIFF:` toujours ; `FILES:`, `INTENT:` et `STACK:`
 seulement si les fichiers existent. Annonce avant le spawn :
-« **Review en cours...** <devil> instruit le dossier (jusqu'à 9 min). »
+« **Review en cours...** <devil> instruit le dossier (jusqu'à 20 min). »
 
 ```
 Agent(
@@ -182,6 +182,15 @@ Deux conditions à cette ré-ancre, dans cet ordre :
   description de l'issue ancrée, et elle reste en annexe notée « doublon de
   <issue> ». Deux entrées pour un seul problème gonflent le verdict sans
   rien ajouter.
+  **La fusion prend le MAXIMUM des deux sévérités et des deux catégories**,
+  jamais celles de l'issue d'accueil : une DÉCLASSÉE `critical` repliée
+  dans une ancrée `medium` PROMEUT l'ancrée en `critical`, et une
+  DÉCLASSÉE `security` repliée dans une `correctness` fait passer l'ancrée
+  en `security`. Sans cette règle, la sévérité et la catégorie qui
+  déclenchent le garde-fou disparaissent dans l'annexe, et le repli
+  anti-doublon devient un trou : c'est exactement la faille que la
+  ré-ancre est censée fermer. Toute promotion est TRACÉE dans la ligne
+  Findings : « promue <sév/cat> par fusion avec <issue déclassée> ».
 - **Ligne d'activation ensuite** : pour ré-ancrer, nomme la ligne `+` ou `-`
   du diff qui rend le problème atteignable (une garde retirée, un nouvel
   appelant, un argument changé qui alimente le sink). Si tu ne peux pas la

@@ -71,7 +71,7 @@ Agent(
 ```
 
 Annonce avant le spawn : « **Review en cours…** <devil> analyse les specs vs
-le brainstorm (jusqu'à 9 min). »
+le brainstorm (jusqu'à 20 min). »
 
 ## Étape 3 — Parser l'enveloppe et présenter le rapport
 
