@@ -134,37 +134,42 @@
   (`task_type: in_process_teammate`). Utiliser TaskStop, pas le protocole
   de shutdown.
 
-## Effort max + gros paquet = réponse VIDE, facturée (PAS un timeout)
-- Mesure DIRECTE du 2026-08-20, même paquet (128 338 octets), même modèle
+## Le timeout de 540 s des agents est trop court pour l'effort max
+- Rejouable : `tests-devil/` (paquet figé de 128 338 octets, deux scripts).
+- Mesure du 2026-08-20, même paquet, même modèle
   `deepseek-v4-pro:cloud[1m]`, même ligne d'appel, seule l'effort change :
 
   | | `max` | `low` |
   |---|---|---|
-  | durée | 194 s | 90 s |
-  | `stop_reason` | `stop_sequence` | `end_turn` |
-  | `num_turns` | 2 | 1 |
-  | `result` | **chaîne vide** | 5 667 caractères, JSON conforme |
-  | `usage.output_tokens` | **0** (279 côté `modelUsage`) | 15 683 |
-  | coût | **0,54 USD pour rien** | 0,79 USD |
+  | durée API | **620 s** | 90 s |
+  | `stop_reason` | `end_turn` | `end_turn` |
+  | `result` | 11 610 caractères | 5 667 caractères |
+  | tokens de sortie | **115 018** | 15 683 |
+  | coût | 3,90 USD | 0,79 USD |
+  | verdict rendu | 72, `rework`, **6 issues** | 84, `approve`, 2 issues |
 
-- **Le mot « timeout » était faux** et vient d'une interprétation du
-  subagent devil, reprise sans la vérifier. L'appel REND, en moins de
-  4 minutes, avec `is_error:false` et `api_error_status:null`. Il rend une
-  chaîne vide. Le modèle produit bien quelques centaines de tokens
-  (`modelUsage.outputTokens: 279`) puis s'interrompt sur une stop sequence
-  avant d'avoir écrit sa review. `ttft_ms` était de 74 s.
-- Conséquence pour le transport : un agent qui teste `RAW` vide ou
-  `is_error` ne voit RIEN d'anormal ici. C'est `.result` qui est vide, et
-  le `jq -c '.'` de l'étape 3 échoue ensuite, ce qui sort en
-  `PARSE_ERROR`. Ne pas chercher un TIMEOUT dans les logs : chercher un
-  `result` vide avec `stop_reason: stop_sequence`.
-- Corroboration : 3 échecs à max (2 tentatives du devil le soir même,
-  plus cette mesure directe), 2 succès à low sur des paquets comparables
-  (166 s sur 101 Ko, 90 s sur 128 Ko). La cause n'est pas identifiée au
-  delà de ça ; le fait, lui, est reproductible.
-- Qualité à low : review rendue avec un score de 84 et deux issues
-  réelles et ancrées. Baisser l'effort ne vide pas la critique de sa
-  substance sur ce modèle.
+- **La cause est le timeout de la procédure de transport, pas l'effort.**
+  Les `agents/*.md` codent `timeout` Bash à 540 000 ms ; à max, ce paquet
+  demande 620 s. Le devil était tué 80 s avant la fin. Monter le timeout
+  suffit : c'est Romain qui l'a trouvé en le passant à 1200 s, après une
+  soirée où je l'avais pris pour une constante intouchable.
+- **À max la critique est franchement meilleure**, ce qui inverse
+  l'arbitrage : 6 issues contre 2, dont une `high` réelle (asymétrie entre
+  la borne de sévérité de l'Étape 8 et le périmètre catégoriel de
+  l'Étape 9) que le run à low n'a pas vue. Pour une porte de merge payée
+  une fois avant merge, 10 minutes et 3,90 USD sont le bon prix.
+- **Incident distinct, non reproduit** : un run à max le même soir s'est
+  arrêté à 194 s avec `stop_reason: stop_sequence`, `.result` vide,
+  `usage.output_tokens: 0` et 0,54 USD facturés, sans être tué par le
+  timeout (exit 0). Ce n'est PAS le comportement normal à max. Si ça
+  revient, le symptôme à chercher est un `.result` vide avec
+  `is_error: false` : un transport qui ne teste que `is_error` ou « RAW
+  est-il vide » ne voit rien passer, et sort en `PARSE_ERROR` à l'étape
+  suivante.
+- Leçon de méthode, la plus chère de la soirée : j'ai construit tout un
+  diagnostic en tenant le timeout de 540 s pour une donnée du problème,
+  parce qu'il était écrit dans la procédure. Quand une mesure bute sur une
+  limite, tester la limite AVANT d'expliquer ce qu'il y a derrière.
 - Ce n'est ni le modèle ni le volume seuls : à effort max, un prompt
   minimal répond en **719 ms** (`is_error:false`).
 - **L'effort atteint réellement le modèle : chaîne vérifiée de bout en
