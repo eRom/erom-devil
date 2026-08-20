@@ -1,6 +1,6 @@
 # Patterns & conventions — erom-devil (dossier local : erom-agence-devil)
 
-> MàJ : 2026-08-18 (v0.7.0)
+> MàJ : 2026-08-20 (v0.7.0)
 
 ## Contrat de spawn (tous exercices → tous agents)
 - Prompt : `MISSION_FILE=` / `SCHEMA_FILE=` / `VALIDATE_JQ=` puis `INPUTS:`
@@ -9,6 +9,14 @@
   quotes). Testées : spec (prod) et brain (9/9 cas dont bornes).
 - Les blocs VALIDATE_JQ doivent rester BYTE-IDENTIQUES entre skill unitaire
   et skill swarm d'un même exercice (risque n°1 de désync des jumelles).
+- Parade en vigueur côté review : la skill swarm RÉFÉRENCE les étapes de
+  l'unitaire (« Identique à `/erom-devil:review` Étape 9 ») au lieu de les
+  recopier. Une modification de l'Étape 8 ou 9 se propage donc toute seule.
+  Vérifié le 2026-08-20 avant d'éditer la grille de réfutation : une seule
+  source à toucher. Attention au reste, qui PARAPHRASE (l'exception de
+  ré-ancre est redite en toutes lettres dans review-swarm Étape 8) : une
+  paraphrase, elle, se désynchronise en silence. Grep le libellé avant de
+  changer une règle référencée.
 
 ## Enveloppe de sortie (tous les agents)
 - Une ligne : `{devil, model, status:"ok", review:{…}}` ou `{devil, model,

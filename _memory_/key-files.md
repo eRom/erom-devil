@@ -1,6 +1,6 @@
 # Fichiers clés — erom-devil (dossier local : erom-agence-devil)
 
-> MàJ : 2026-08-18 (v0.7.0)
+> MàJ : 2026-08-20 (v0.7.0)
 
 > Tous les chemins ci-dessous sont relatifs à `plugin/` (racine du plugin
 > livrable, tirée par la marketplace en `git-subdir`). `.specs/`, `_memory_/`
@@ -22,7 +22,7 @@
   issues {severity, category (6+intent), file "chemin:ligne",
   failure_scenario obligatoire, suggestion}. VALIDATE_JQ borne scores ET
   critères (testée jq 1.8.1).
-- `plugin/scripts/devil-review-mission.md` : mission porte de merge (STACK, axe intent, anti-bruit renforcé)
+- `plugin/scripts/devil-review-mission.md` : mission porte de merge (STACK, axe intent, anti-bruit renforcé). Porte depuis le 2026-08-20 la section « Axe sécurité » : méthode entrées vers sinks, 9 formes à fort taux de raté avec leur condition de NON-émission, liste « ne rends PAS », et l'exception de rappel à la règle de confiance élevée.
 - `plugin/scripts/stacks/nextjs.md` : grille de stack liante (autorisation DAL, pièges Prisma 7 / Zod 4 / Next 16, tests)
 
 ## Agents (agents/) — transport pur, Sonnet, color red, tools Bash/Read/Glob/Grep
@@ -75,6 +75,16 @@
   pré-vol (AKIA + PRIVATE KEY, exemples doc AWS).
 - `.specs/plugin-devil-brain/{brainstorming,architecture-technique,plan}.md`
   — design v0.2.0 complet, avec « Limites connues » (dogfood) et pistes v0.3.
+
+## Notes de travail (hors git, `.claude/notes/` est gitignoré)
+- `.claude/notes/recuperable-security-guidance.md` : analyse complète de
+  `security-guidance@claude-plugins-official` 2.0.7, lue depuis son cache
+  de plugin. Dit ce qui vaut d'être repris (prompts investigate et refute,
+  ancrage souple in_diff/off_diff, taxonomie triée pour la stack d'ici) et
+  ce qui ne vaut rien (plomberie API, machine à états de diff, dual-OR
+  inférieur au swarm). Chaque pointeur est file:ligne dans le cache et se
+  rejoue. À rouvrir avant tout nouvel emprunt à ce plugin, pour ne pas
+  relire 8 000 lignes de Python.
 
 ## Ledger de chantier
 - `.superpowers/sdd/` — scratch du chantier courant (task-briefs, reports,

@@ -1,6 +1,6 @@
 # Gotchas — erom-devil (dossier local : erom-agence-devil)
 
-> MàJ : 2026-07-18 (v0.3.0)
+> MàJ : 2026-08-20 (v0.7.0)
 
 ## Masquage credentials = AFFICHAGE seulement (piège de transcription v0.3.0)
 - Le hook PII local réécrit les credentials (clé AWS `AKIAIOSFODNN7EXAMPLE`
@@ -120,6 +120,19 @@
   idle notification sans livrable = à traiter (redemander + fallback fichier
   scratchpad). Les agents SANS nom retournent leur résultat de façon fiable
   via task-notification. Pour du fan-out fiable : agents anonymes + fichier.
+- Re-confirmé le 2026-08-20 au prix d'un run de devil : un `Agent` nommé
+  `devil-deepseek` a produit une review complète et une réponse détaillée à
+  ma question de diagnostic. AUCUN des deux ne m'est parvenu, seulement
+  trois `idle_notification`. Redemander ne sert à rien, c'est un défaut
+  d'outillage. Récupération par le transcript frère
+  `~/.claude/projects/<projet>/<sessionId>.jsonl` (le plus récent après
+  celui de la session mère), en extrayant les `tool_use` Bash et les blocs
+  texte avec `jq`. Cela a parfaitement marché.
+- `shutdown_request` via SendMessage retourne « success » et ne tue PAS un
+  teammate in-process : il a re-signalé idle juste après. `TaskStop` avec le
+  NOM de l'agent en `task_id` l'a arrêté du premier coup
+  (`task_type: in_process_teammate`). Utiliser TaskStop, pas le protocole
+  de shutdown.
 
 ## Effort max + gros paquet = TIMEOUT systématique du devil
 - Mesuré 2026-08-20, dogfood de `/erom-devil:review` sur son propre diff.

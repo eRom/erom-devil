@@ -1,6 +1,6 @@
 # Architecture — erom-devil (dossier local : erom-agence-devil)
 
-> MàJ : 2026-08-18 (v0.7.0)
+> MàJ : 2026-08-20 (v0.7.0)
 
 **Type** : Plugin Claude Code `erom-devil` (renommé le 2026-07-30, ex-`devil`),
 distribué par `erom-marketplace`.
@@ -22,6 +22,12 @@ amont à la porte de merge. Quatre exercices :
   (Confirmée/Réfutée/Hypothèse + balayage frontières), verdict GO/NO-GO,
   rapport persistant `docs/reviews/`. Skills review{,-swarm} par référence
   aux étapes de code{,-swarm} ; mission/schéma propres ; agents inchangés.
+  Depuis le 2026-08-20, l'exercice porte une asymétrie assumée entre ses
+  deux acteurs : le devil élargit son rappel sur l'axe sécurité (mission),
+  l'orchestrateur élargit son filet en conséquence (Étape 9 : grille de
+  réfutation à 8 motifs, périmètre couvrant TOUTE issue `security`
+  ancrée). Les deux moitiés ne se modifient pas séparément. Le schéma est
+  inchangé : c'est un changement de contrat textuel, pas de structure.
 
 **Stack** : agents + skills en markdown ; bash + `jq` + `sed` ; `agy`
 (Antigravity CLI → Gemini) ; `claude -p` → ollama cloud (GLM/Deepseek) ;
