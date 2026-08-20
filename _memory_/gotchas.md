@@ -130,13 +130,25 @@
     timeout des 540 s à chaque fois.
   - `CLAUDE_CODE_EFFORT_LEVEL=low` : rend en **166 s**, `is_error:false`,
     `stop_reason:end_turn`, JSON conforme au schéma.
-- Ce n'est ni le modèle ni le volume seuls : un prompt minimal répond en
-  1,1 s à effort max. C'est la combinaison effort max + gros contexte.
-- Les 5 agents (`glm`, `deepseek`, `kimi`, et par symétrie les autres)
-  posent `CLAUDE_CODE_EFFORT_LEVEL=max` en dur dans leur Step 2. Sur un
-  paquet de review réaliste, la porte de merge ne peut donc pas rendre.
-  Non corrigé à ce jour : l'arbitrage qualité contre latence appartient à
-  Romain (baisser l'effort dégrade la critique).
+- Ce n'est ni le modèle ni le volume seuls : à effort max, un prompt
+  minimal répond en **719 ms** (`is_error:false`). C'est la combinaison
+  effort max + gros contexte.
+- **Ce qui est mesuré, et par qui.** Les deux runs à effort low et le run
+  minimal à max sont des mesures directes de la session mère. Le run
+  « complet + max » vient du subagent devil, récupéré dans son transcript
+  et NON reproduit en direct : ses deux tentatives appartiennent au même
+  run, ce ne sont pas deux mesures indépendantes, et son TMP_DIR a été
+  détruit par le `trash` de son étape 4. Reproduire en direct avant de
+  traiter ce point comme définitif.
+- **Non mesuré** : le seuil de bascule entre un prompt minimal et 101 Ko,
+  et le comportement des autres modèles. Seul `deepseek-v4-pro:cloud[1m]`
+  a été testé ; l'extrapolation aux 5 agents repose sur le seul fait
+  qu'ils posent tous `CLAUDE_CODE_EFFORT_LEVEL=max` en dur dans leur
+  Step 2, pas sur une mesure.
+- Conséquence pratique, dans la limite de ce qui précède : sur un paquet
+  de l'ordre de 100 Ko, la porte de merge ne rend pas. Non corrigé :
+  l'arbitrage qualité contre latence appartient à Romain (baisser l'effort
+  dégrade la critique, allonger le timeout allonge l'attente).
 - Re-jouer la mesure : reconstruire le prompt hermétique, lancer deux fois
   la ligne de `agents/deepseek.md` Step 2 en ne changeant que l'effort.
 - Piège de diagnostic : le stderr porte
