@@ -145,25 +145,36 @@
     `stop_reason:end_turn`, JSON conforme au schéma.
 - Ce n'est ni le modèle ni le volume seuls : à effort max, un prompt
   minimal répond en **719 ms** (`is_error:false`).
-- **ATTRIBUTION NON ÉTABLIE, lire avant d'agir sur ce gotcha.** Tous les
-  runs ci-dessous pilotent l'effort par la variable
-  `CLAUDE_CODE_EFFORT_LEVEL`, et rien ne prouve qu'elle soit lue sur ce
-  transport (ollama via `ANTHROPIC_BASE_URL`). Mesuré le 2026-08-20 sur un
-  problème demandant un calcul : `thinking_tokens` vaut **0** dans les
-  trois cas, sans rien / avec la variable à max / avec le flag
-  `--effort max`, alors que le flag est le mécanisme officiel et qu'il
-  fonctionne (2 s, `is_error:false`). Le seul marqueur d'effort exposé par
-  la sortie JSON est donc inutilisable ici. Si la variable n'a aucun effet,
-  les deux runs comparés tournaient au MÊME effort et l'écart entre 166 s
-  et rien du tout vient d'ailleurs, cause inconnue.
-- Ce qui reste vrai quoi qu'il en soit : un paquet de 101 Ko est passé en
-  166 s dans un run, et n'est jamais revenu dans un autre. Le fait est
-  solide, son explication ne l'est pas.
-- Test qui trancherait : rejouer le paquet de 101 Ko deux fois en pilotant
-  l'effort par le FLAG `--effort` (low puis max), pas par la variable. Le
-  commit fa9ff98 (2026-08-20, Romain) ayant ajouté `--effort max` en flag
-  aux trois agents ollama, le prochain run réel de la porte de merge est
-  ce test.
+- **L'effort atteint réellement le modèle : chaîne vérifiée de bout en
+  bout le 2026-08-20.** Deux preuves indépendantes, après un faux
+  soupçon (voir plus bas) :
+  1. **Ce qui part sur le fil**, capturé en pointant `ANTHROPIC_BASE_URL`
+     vers un serveur local qui logge le body : `CLAUDE_CODE_EFFORT_LEVEL=max`
+     et le flag `--effort max` produisent un body IDENTIQUE, portant
+     `output_config: {effort: "max"}` (contre `"high"` sans rien, l'effort
+     de la session parente). La variable d'environnement n'a rien
+     d'inerte, et le flag ne fait rien de plus qu'elle.
+  2. **Ce qu'Ollama en fait**, lu dans `anthropic/anthropic.go:378-400` :
+     `output_config.effort` est traduit en `api.ThinkValue`, et `"max"`
+     figure dans la liste acceptée (`high`, `medium`, `low`, `max`). La
+     priorité irait au champ `thinking` s'il valait `enabled` ou
+     `disabled` ; or le CLI envoie `{"type":"adaptive"}`, qui ne matche ni
+     l'un ni l'autre, donc l'effort n'est jamais écrasé.
+- **Piège de diagnostic n°2, celui qui m'a fait dérailler** :
+  `thinking_tokens` vaut 0 dans la réponse quel que soit l'effort, y
+  compris avec le flag officiel. Ce n'est PAS un signe que l'effort se
+  perd, seulement que ce modèle ne rapporte pas ses tokens de réflexion
+  via ce transport. Ne jamais s'en servir comme marqueur d'effort ici :
+  capturer le body sortant, c'est cinq minutes et ça ne ment pas.
+- **`xhigh` est silencieusement rabattu sur `high`** par Ollama
+  (`anthropic.go:384`). Sur les transports ollama, demander xhigh donne
+  high. Seul `max` monte réellement au-dessus.
+- Ce qui reste non reproduit : le run « complet + max » est celui du
+  subagent devil, pas une mesure directe. L'explication est solide, la
+  seconde moitié de la mesure reste à refaire en direct.
+- Le commit fa9ff98 (2026-08-20, Romain) a ajouté `--effort max` en flag
+  aux trois agents ollama, en plus de la variable déjà présente. Redondant
+  et inoffensif : les deux écrivent le même champ.
 - **Ce qui est mesuré, et par qui.** Les deux runs à effort low et le run
   minimal à max sont des mesures directes de la session mère. Le run
   « complet + max » vient du subagent devil, récupéré dans son transcript
