@@ -19,7 +19,7 @@
     },
     "criteria": {
       "type": "object",
-      "required": ["fidelity", "completeness", "consistency", "feasibility", "security", "clarity"],
+      "required": ["fidelity", "completeness", "consistency", "feasibility", "security", "clarity", "acceptance"],
       "properties": {
         "fidelity": {
           "type": "object",
@@ -68,6 +68,14 @@
             "score": { "type": "integer", "minimum": 0, "maximum": 100 },
             "comment": { "type": "string" }
           }
+        },
+        "acceptance": {
+          "type": "object",
+          "required": ["score", "comment"],
+          "properties": {
+            "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "comment": { "type": "string" }
+          }
         }
       }
     },
@@ -83,7 +91,7 @@
           },
           "category": {
             "type": "string",
-            "enum": ["fidelity", "completeness", "consistency", "feasibility", "security", "clarity"]
+            "enum": ["fidelity", "completeness", "consistency", "feasibility", "security", "clarity", "acceptance"]
           },
           "description": {
             "type": "string",

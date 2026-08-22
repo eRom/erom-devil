@@ -51,7 +51,7 @@ et s'appellent unitairement, pour un second avis hors consensus du swarm.
 ```
 
 **spec** — entrées : 2 fichiers (brainstorming + specs). Sortie par
-devil : JSON strict (score 0-100, verdict approve/rework/reject, 6 critères,
+devil : JSON strict (score 0-100, verdict approve/rework/reject, 7 critères,
 issues actionnables). Le swarm consolide : VALABLE, MODIFICATIONS REQUISES,
 ou JETABLE, avec convergence des issues (3/3, 2/3, 1/3) et voix dissonantes.
 

@@ -94,6 +94,7 @@ Scores :
   Faisabilité     <n>   <n>    <n>       <n>
   Sécurité        <n>   <n>    <n>       <n>
   Clarté          <n>   <n>    <n>       <n>
+  Acceptation     <n>   <n>    <n>       <n>
   GLOBAL          <n>   <n>    <n>       <n>
 
 Verdicts : gemini <verdict> · glm <verdict> · deepseek <verdict>

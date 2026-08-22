@@ -103,6 +103,7 @@ Critères :
   Faisabilité   <n>/100  <commentaire court>
   Sécurité      <n>/100  <commentaire court>
   Clarté        <n>/100  <commentaire court>
+  Acceptation   <n>/100  <commentaire court>
 
 Résumé : <summary>
 ```
