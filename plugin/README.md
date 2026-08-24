@@ -1,4 +1,4 @@
-# erom-devil — avocats du diable pour la définition de besoins
+# erom-devil - avocats du diable pour la définition de besoins
 
 Plugin Claude Code. Trois reviewers critiques externes (Gemini, GLM,
 Deepseek), renforcés par Opus et Kimi en review unitaire, attaquent ton
@@ -10,8 +10,8 @@ travail sous quatre angles, du document amont à la porte de merge :
   questions les plus dangereuses jamais posées (angles morts, pans oubliés),
   sans score ni verdict.
 - **code** : ils jugent un changement de code (PR, branche, range de
-  commits ou working tree) — bugs, architecture, sécurité, performance,
-  tests, maintenabilité — avec scan anti-fuite de secrets avant tout envoi.
+  commits ou working tree) - bugs, architecture, sécurité, performance,
+  tests, maintenabilité - avec scan anti-fuite de secrets avant tout envoi.
 - **review** : la porte de merge complète : porte déterministe, chasse à
   l'intention, grille de stack optionnelle, review devil, vérification
   contradictoire par l'orchestrateur, verdict GO/NO-GO, rapport persistant
@@ -50,18 +50,18 @@ et s'appellent unitairement, pour un second avis hors consensus du swarm.
 /erom-devil:review-swarm main             # tribunal de merge + vérification
 ```
 
-**spec** — entrées : 2 fichiers (brainstorming + specs). Sortie par
+**spec** - entrées : 2 fichiers (brainstorming + specs). Sortie par
 devil : JSON strict (score 0-100, verdict approve/rework/reject, 7 critères,
 issues actionnables). Le swarm consolide : VALABLE, MODIFICATIONS REQUISES,
 ou JETABLE, avec convergence des issues (3/3, 2/3, 1/3) et voix dissonantes.
 
-**brain** — entrée : 1 fichier (brainstorming). Sortie par devil : les
+**brain** - entrée : 1 fichier (brainstorming). Sortie par devil : les
 5 questions les plus dangereuses jamais posées (domaine, risque, criticité)
-plus une impression en une ligne — sans score ni verdict, 0 question = prêt
+plus une impression en une ligne - sans score ni verdict, 0 question = prêt
 à spécifier. Le swarm consolide par convergence, tri criticité puis
 convergence, puis Q&A ciblé qui amende le doc.
 
-**code** — entrée : un changement (PR via gh, branche vs base, range
+**code** - entrée : un changement (PR via gh, branche vs base, range
 de commits, working tree), packagé en DIFF + fichiers modifiés + intention
 optionnelle. Scan anti-fuite de secrets AVANT tout envoi (STOP sur hit).
 Sortie par devil : JSON strict (score 0-100, verdict approve/rework/reject,
