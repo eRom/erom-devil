@@ -143,7 +143,7 @@ fichier temp) → absent. Pas d'auto-detect `.specs/`.
    - **exclure** : régénère le DIFF avec `git diff … -- ':!chemin'` (mode
      PR : retire les hunks du fichier du diff téléchargé), retire le
      fichier de FILES, re-scanne le paquet réduit ;
-   - **annuler** : fin de la skill, `trash "$TMP_DIR"` ;
+   - **annuler** : fin de la skill, `[ -n "${TMP_DIR:-}" ] && trash "$TMP_DIR"` ;
    - **forcer** : continue, et la confirmation porte « scan : FORCÉ ».
    Biais assumé : le faux positif (un STOP à tort coûte une relecture, un
    faux négatif coûte une fuite irréversible).
@@ -276,6 +276,6 @@ non-ancrées exclues) :
 - Les issues `low` ne sont PAS corrigées sauf demande explicite.
 - Maximum 2 cycles de re-review ; après 2 rework consécutifs, Romain
   tranche.
-- `trash "$TMP_DIR"` en fin de run (succès comme échec).
+- `[ -n "${TMP_DIR:-}" ] && trash "$TMP_DIR"` en fin de run (succès comme échec).
 - Jamais de secrets dans un paquet envoyé : le scan de l'Étape 3 est
   obligatoire, jamais sauté.

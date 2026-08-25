@@ -109,7 +109,8 @@ DETAIL=$(printf '%s' "${API_STATUS:+[$API_STATUS] }${ERR_MSG:-$(head -c 500 "$TM
 
 ```bash
 command jq -n -c --argjson review "$REVIEW" '{devil:"deepseek",model:"deepseek-v4-pro:cloud[1m]",status:"ok",review:$review}'
-trash "$TMP_DIR" 2>/dev/null || true
+# Garde : TMP_DIR vide (état perdu entre deux appels Bash) ferait trash "" et mettrait le DOSSIER COURANT à la Corbeille.
+[ -n "${TMP_DIR:-}" ] && trash "$TMP_DIR" 2>/dev/null || true
 ```
 
 En cas d'échec, construis l'enveloppe error avec `jq -n -c --arg detail "…"`.

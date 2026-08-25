@@ -146,6 +146,6 @@ silencieusement).
 - Maximum 1 re-swarm ; ensuite Romain tranche.
 - opus et kimi ne siègent pas au tribunal : ce sont des juges indépendants,
   appelés unitairement (/erom-devil:code opus, /erom-devil:code kimi).
-- `trash "$TMP_DIR"` en fin de run.
+- `[ -n "${TMP_DIR:-}" ] && trash "$TMP_DIR"` en fin de run.
 - Coût : 3 modèles en parallèle ≈ la durée du plus lent. C'est un gate de
   commit/merge, pas un lint : pas sur un diff de deux lignes.

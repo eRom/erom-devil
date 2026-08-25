@@ -98,7 +98,8 @@ Step 3, même OUT_FILE). Toujours en échec après retry :
 
 ```bash
 command jq -n -c --argjson review "$REVIEW" '{devil:"gemini",model:"Gemini 3.7 Flash (High)",status:"ok",review:$review}'
-trash "$TMP_DIR" 2>/dev/null || true
+# Garde : TMP_DIR vide (état perdu entre deux appels Bash) ferait trash "" et mettrait le DOSSIER COURANT à la Corbeille.
+[ -n "${TMP_DIR:-}" ] && trash "$TMP_DIR" 2>/dev/null || true
 ```
 
 En cas d'échec, construis l'enveloppe error avec `jq -n -c --arg detail "…"`.

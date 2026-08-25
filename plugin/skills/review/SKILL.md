@@ -157,7 +157,7 @@ Enveloppe `error` : gabarit d'échec de `code` Étape 6, dont tu réécris la
 dernière ligne pour cette skill : « Relance
 (`/erom-devil:review <target> <devil>`), autre devil, ou review manuelle. »
 Puis FIN DE RUN : pas de passe de vérification, pas de verdict, AUCUN
-rapport écrit dans `docs/reviews/`, et `trash "$TMP_DIR"`. Une porte de
+rapport écrit dans `docs/reviews/`, et `[ -n "${TMP_DIR:-}" ] && trash "$TMP_DIR"`. Une porte de
 merge sans voix de devil ne certifie rien : elle ne laisse jamais un GO
 derrière elle.
 
@@ -425,7 +425,7 @@ mêmes issues. En mode working tree, elles sont prises telles quelles.
   de PR, temporaires) s'écrit par redirection shell, jamais par l'outil
   Write : le hook du dépôt refuse un `.md` ou un `.txt` portant un tiret
   cadratin, et les entrées en portent souvent.
-- `trash "$TMP_DIR"` en fin de run (succès comme échec).
+- `[ -n "${TMP_DIR:-}" ] && trash "$TMP_DIR"` en fin de run (succès comme échec).
 - Un NO-GO levé se trace dans le rapport, jamais dans le seul chat.
 - C'est une porte de merge, pas un lint : pas sur un diff de deux lignes
   (pour ça : `/erom-devil:code`).

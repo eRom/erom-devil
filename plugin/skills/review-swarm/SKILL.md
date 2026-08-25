@@ -50,7 +50,7 @@ Par référence à `skills/code-swarm/SKILL.md` Étapes 6 et 7 :
 - quorum : 3 voix pleines ; 2 voix : le rapport ouvre sur la voix absente ;
   1 voix ou moins : FIN DE RUN, comme la garde de terminaison de
   `/erom-devil:review` Étape 7. Pas de verdict, AUCUN fichier écrit dans
-  `docs/reviews/`, `trash "$TMP_DIR"`, et un récap d'échec affiché dans le
+  `docs/reviews/`, `[ -n "${TMP_DIR:-}" ] && trash "$TMP_DIR"`, et un récap d'échec affiché dans le
   chat seulement, qui propose une relance ou un passage en unitaire. Un
   tribunal à une voix ne certifie rien : il ne laisse pas de rapport
   derrière lui ;
@@ -138,7 +138,7 @@ Correction guidée : mêmes règles que `/erom-devil:review` Étape 12, ordre
 de passage : groupes convergents (unanimes puis majoritaires sur les voix
 exprimées) Confirmés d'abord, puis
 critical / high isolées Confirmées, puis Hypothèses hautes. Re-swarm max 1,
-porte rejouée, rapport suffixé. `trash "$TMP_DIR"` en fin de run.
+porte rejouée, rapport suffixé. `[ -n "${TMP_DIR:-}" ] && trash "$TMP_DIR"` en fin de run.
 
 ## Règles
 

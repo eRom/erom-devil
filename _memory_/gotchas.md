@@ -1,6 +1,6 @@
 # Gotchas — erom-devil (dossier local : erom-agence-devil)
 
-> MàJ : 2026-08-20 (v0.7.0)
+> MàJ : 2026-08-25 (v0.8.1)
 
 ## Masquage credentials = AFFICHAGE seulement (piège de transcription v0.3.0)
 - Le hook PII local réécrit les credentials (clé AWS `AKIAIOSFODNN7EXAMPLE`
@@ -244,3 +244,16 @@
 ## Push / remote
 - Les 2 repos en HTTPS (SSH publickey denied dans cet env). Marketplace :
   entrée devil à bump (version + description) EN PLUS de metadata.version.
+
+## `trash ""` met le DOSSIER COURANT à la Corbeille (incident 2026-08-25, v0.8.0 → garde en v0.8.1)
+- `/usr/bin/trash` avec un argument vide envoie le cwd à la Corbeille, exit 0, sans
+  message. Reproduit : `mkdir -p /tmp/x/v && cd /tmp/x/v && /usr/bin/trash ""; ls /tmp/x` → vide.
+- Les transports créent `TMP_DIR` dans un appel Bash et le trashent dans un autre : l'état
+  shell ne persiste pas entre deux appels, la variable est vide au nettoyage. Le juge
+  `erom-devil:gemini` (taste gate, cwd hérité = `naolib-routes/probe/` dans EROM-HQ) a mis
+  le dossier de travail entier à la Corbeille pendant que son serveur tournait (HTTP 500).
+  Récupéré par `mv ~/.Trash/probe …`, rien perdu.
+- Garde posée en 0.8.1 dans les 5 transports et les 4 skills qui citent le nettoyage :
+  `[ -n "${TMP_DIR:-}" ] && trash "$TMP_DIR" 2>/dev/null || true`. Règle : jamais
+  `trash "$VAR"` sans garde, et un dossier disparu après un sous-agent se cherche d'abord
+  dans `~/.Trash`.
