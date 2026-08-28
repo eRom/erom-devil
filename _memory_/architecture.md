@@ -37,7 +37,7 @@ amont à la porte de merge. Quatre exercices :
 | agent | modèle | transport |
 |---|---|---|
 | gemini | Gemini 3.7 Flash (High) | agy (review par fichier, bug stdout #76) |
-| glm | glm-5.2:cloud[1m] | claude -p ollama cloud (JSON stdout) |
+| glm | glm-5.3-flash:cloud[1m] | claude -p ollama cloud (JSON stdout) |
 | deepseek | deepseek-v4-pro:cloud[1m] | idem glm (jumeau sed) |
 | opus | Opus 4.8 xHigh | claude -p (hors swarms, unitaire seulement) |
 | kimi | kimi-k3:cloud[1m] | idem glm (jumeau sed) ; hors swarms, unitaire |

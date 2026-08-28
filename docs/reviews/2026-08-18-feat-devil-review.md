@@ -109,7 +109,7 @@ produit de la valeur.
 | Devil | Modèle | Score | Verdict | correctness | architecture | security | performance | tests | maintainability |
 |---|---|---|---|---|---|---|---|---|---|
 | gemini | Gemini 3.7 Flash (High) | 96 | approve | 98 | 97 | 98 | 95 | 92 | 96 |
-| glm | glm-5.2:cloud[1m] | 87 | approve | 88 | 92 | 93 | 90 | 75 | 82 |
+| glm | glm-5.3-flash:cloud[1m] | 87 | approve | 88 | 92 | 93 | 90 | 75 | 82 |
 | deepseek | deepseek-v4-pro:cloud[1m] | absent | CLI_FAILED | n/a | n/a | n/a | n/a | n/a | n/a |
 
 Moyenne indicative sur les voix exprimées : 91,5. Grille devils : deux

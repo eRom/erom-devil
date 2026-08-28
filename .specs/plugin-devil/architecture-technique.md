@@ -13,7 +13,7 @@ erom-agence-devil/
 ├── .claude-plugin/plugin.json        # name "devil", v0.1.0
 ├── agents/
 │   ├── devil-spec-gemini.md          # devil-spec-reviewer renommé (agy)
-│   ├── devil-spec-glm.md             # claude -p → ollama glm-5.2:cloud
+│   ├── devil-spec-glm.md             # claude -p → ollama glm-5.3-flash:cloud
 │   └── devil-spec-deepseek.md        # claude -p → ollama deepseek-v4-pro:cloud
 ├── skills/
 │   ├── devil-spec/SKILL.md           # unitaire, arg devil (défaut gemini)
@@ -50,8 +50,8 @@ suggestion/source). Un seul schéma pour les 3 devils.
 Chaque agent termine par UN objet JSON, succès ou échec :
 
 ```json
-{ "devil": "glm", "model": "glm-5.2:cloud", "status": "ok", "review": { … } }
-{ "devil": "glm", "model": "glm-5.2:cloud", "status": "error",
+{ "devil": "glm", "model": "glm-5.3-flash:cloud", "status": "ok", "review": { … } }
+{ "devil": "glm", "model": "glm-5.3-flash:cloud", "status": "error",
   "error": "CLI_FAILED | PARSE_ERROR | TIMEOUT", "detail": "extrait ≤ 500 chars" }
 ```
 
@@ -91,7 +91,7 @@ Différence unique entre les deux fichiers : le nom du modèle. Procédure :
 ```bash
 ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_BASE_URL=http://localhost:11434 \
 ANTHROPIC_API_KEY="" CLAUDE_CODE_EFFORT_LEVEL=max \
-claude --model glm-5.2:cloud --dangerously-skip-permissions \
+claude --model glm-5.3-flash:cloud --dangerously-skip-permissions \
   -p --output-format json --strict-mcp-config [hermétisme] < "$PROMPT_FILE"
 ```
 

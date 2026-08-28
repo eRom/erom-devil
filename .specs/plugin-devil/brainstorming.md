@@ -44,7 +44,7 @@ modèles cloud ollama.com. Romain a testé les deux lignes, elles fonctionnent :
 ```bash
 ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_BASE_URL=http://localhost:11434 \
 ANTHROPIC_API_KEY="" CLAUDE_CODE_EFFORT_LEVEL=max \
-claude --model glm-5.2:cloud --dangerously-skip-permissions -p "..."
+claude --model glm-5.3-flash:cloud --dangerously-skip-permissions -p "..."
 # idem avec --model deepseek-v4-pro:cloud
 ```
 

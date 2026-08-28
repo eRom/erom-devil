@@ -258,7 +258,7 @@ AVANT implémentation.
 | Devil | Modèle | Transport |
 |---|---|---|
 | gemini | Gemini 3.5 Flash (High) | Antigravity CLI (agy) |
-| glm | glm-5.2:cloud | claude CLI → ollama cloud |
+| glm | glm-5.3-flash:cloud | claude CLI → ollama cloud |
 | deepseek | deepseek-v4-pro:cloud | claude CLI → ollama cloud |
 
 ## Usage
@@ -277,7 +277,7 @@ JETABLE, avec convergence des issues (3/3, 2/3, 1/3) et voix dissonantes.
 ## Prérequis
 
 - `agy` (Antigravity CLI) authentifié, pour le devil gemini.
-- `claude` CLI + ollama local avec accès aux modèles cloud (`glm-5.2:cloud`,
+- `claude` CLI + ollama local avec accès aux modèles cloud (`glm-5.3-flash:cloud`,
   `deepseek-v4-pro:cloud`), pour glm et deepseek.
 - `jq`, `trash`.
 
@@ -422,14 +422,14 @@ git add agents && git commit -m "feat: agent devil-spec-gemini (contrat v2, miss
 
 **Interfaces:**
 - Consumes: contrat v2 (Task 1), fixtures (Task 2).
-- Produces: agent `devil-spec-glm`, même interface et même enveloppe que Task 4 (`"devil":"glm"`, `"model":"glm-5.2:cloud"`).
+- Produces: agent `devil-spec-glm`, même interface et même enveloppe que Task 4 (`"devil":"glm"`, `"model":"glm-5.3-flash:cloud"`).
 
 - [ ] **Step 1 : Créer `agents/devil-spec-glm.md`** (contenu intégral) :
 
 ````markdown
 ---
 name: devil-spec-glm
-description: Avocat du diable GLM — review de specs techniques via claude CLI sur ollama cloud (glm-5.2:cloud). Assemble le prompt, appelle le modèle, retourne l'enveloppe JSON.
+description: Avocat du diable GLM — review de specs techniques via claude CLI sur ollama cloud (glm-5.3-flash:cloud). Assemble le prompt, appelle le modèle, retourne l'enveloppe JSON.
 color: red
 tools: Bash, Read, Glob, Grep
 model: sonnet
@@ -449,8 +449,8 @@ MISSION_FILE=…
 ## Sortie (contrat strict)
 
 Ton message final est UN objet JSON sur une ligne, rien d'autre :
-- succès : `{"devil":"glm","model":"glm-5.2:cloud","status":"ok","review":{…}}`
-- échec  : `{"devil":"glm","model":"glm-5.2:cloud","status":"error","error":"CLI_FAILED|PARSE_ERROR|TIMEOUT","detail":"≤ 500 chars"}`
+- succès : `{"devil":"glm","model":"glm-5.3-flash:cloud","status":"ok","review":{…}}`
+- échec  : `{"devil":"glm","model":"glm-5.3-flash:cloud","status":"error","error":"CLI_FAILED|PARSE_ERROR|TIMEOUT","detail":"≤ 500 chars"}`
 
 ## Procédure
 
@@ -487,7 +487,7 @@ Ligne de base validée par Romain + flags d'hermétisme validés le 2026-07-18 :
 ```bash
 RAW=$(cd "$TMP_DIR" && ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_BASE_URL=http://localhost:11434 \
   ANTHROPIC_API_KEY="" CLAUDE_CODE_EFFORT_LEVEL=max \
-  claude --model glm-5.2:cloud --dangerously-skip-permissions \
+  claude --model glm-5.3-flash:cloud --dangerously-skip-permissions \
   --strict-mcp-config --tools "" --setting-sources "" --no-session-persistence \
   -p --output-format json < "$PROMPT_FILE" 2>"$TMP_DIR/stderr.log")
 ```
@@ -511,7 +511,7 @@ complet (Step 2 puis Step 3). Toujours en échec après retry :
 ### Step 4 — Enveloppe et nettoyage
 
 ```bash
-command jq -n -c --argjson review "$REVIEW" '{devil:"glm",model:"glm-5.2:cloud",status:"ok",review:$review}'
+command jq -n -c --argjson review "$REVIEW" '{devil:"glm",model:"glm-5.3-flash:cloud",status:"ok",review:$review}'
 trash "$TMP_DIR" 2>/dev/null || true
 ```
 
@@ -634,7 +634,7 @@ Toujours confirmer avant de lancer :
 > **Fichiers détectés :**
 > - Brainstorm : `.specs/mvp/brainstorming.md`
 > - Specs : `.specs/mvp/architecture-technique.md`
-> - Devil : glm (glm-5.2:cloud)
+> - Devil : glm (glm-5.3-flash:cloud)
 >
 > Je lance la review ?
 
@@ -932,9 +932,9 @@ Contrat de succès : l'inventaire liste 2 skills (devil-spec, devil-spec-swarm) 
 
 - [ ] **Step 3 : Chemin d'erreur — modèle volontairement inexistant** (teste NOTRE gestion d'erreur, pas la connectivité validée par Romain)
 
-Exécuter les Steps 1-4 de l'agent glm sur les fixtures en remplaçant, dans le Step 2 seulement, `--model glm-5.2:cloud` par `--model glm-typo:cloud` (timeout Bash 540000).
+Exécuter les Steps 1-4 de l'agent glm sur les fixtures en remplaçant, dans le Step 2 seulement, `--model glm-5.3-flash:cloud` par `--model glm-typo:cloud` (timeout Bash 540000).
 
-Attendu : le flux aboutit à une enveloppe `{"devil":"glm","model":"glm-5.2:cloud","status":"error","error":"CLI_FAILED","detail":"…"}` après 1 retry, et `stderr.log`/RAW contient l'erreur amont. Aucun crash, aucune sortie non-JSON.
+Attendu : le flux aboutit à une enveloppe `{"devil":"glm","model":"glm-5.3-flash:cloud","status":"error","error":"CLI_FAILED","detail":"…"}` après 1 retry, et `stderr.log`/RAW contient l'erreur amont. Aucun crash, aucune sortie non-JSON.
 
 ---
 

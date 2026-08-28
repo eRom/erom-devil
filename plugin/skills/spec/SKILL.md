@@ -51,7 +51,7 @@ Toujours confirmer avant de lancer :
 > **Fichiers détectés :**
 > - Brainstorm : `.specs/mvp/brainstorming.md`
 > - Specs : `.specs/mvp/architecture-technique.md`
-> - Devil : glm (glm-5.2:cloud)
+> - Devil : glm (glm-5.3-flash:cloud[1m])
 >
 > Je lance la review ?
 
