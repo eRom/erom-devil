@@ -1,6 +1,6 @@
 # Gotchas — erom-devil (dossier local : erom-agence-devil)
 
-> MàJ : 2026-08-25 (v0.8.1)
+> MàJ : 2026-08-28 (v0.9.1)
 
 ## Masquage credentials = AFFICHAGE seulement (piège de transcription v0.3.0)
 - Le hook PII local réécrit les credentials (clé AWS `AKIAIOSFODNN7EXAMPLE`
@@ -257,3 +257,20 @@
   `[ -n "${TMP_DIR:-}" ] && trash "$TMP_DIR" 2>/dev/null || true`. Règle : jamais
   `trash "$VAR"` sans garde, et un dossier disparu après un sous-agent se cherche d'abord
   dans `~/.Trash`.
+
+## Un cwd neuf par appel `claude` = un dossier `~/.claude/projects/` à vie (corrigé 2026-08-28)
+- `claude` crée `~/.claude/projects/<slug-du-cwd>/memory/` au démarrage de CHAQUE
+  session, y compris avec `--no-session-persistence` : ce flag n'efface que le
+  transcript `.jsonl`, pas le dossier. Les 4 transports (opus, glm, kimi, deepseek)
+  faisaient `cd "$TMP_DIR"` sur un `mktemp -d` neuf : un dossier vide de plus par run,
+  jamais nettoyé, y compris quand le run échoue.
+- Anchor : même ligne d'appel côté erom-memory-system, 2409 dossiers vides accumulés
+  du 14/08 au 27/08 2026 (purgés le 28/08), commit `ee8c105`. Reproduit ici le 28/08 :
+  un `cd $(mktemp -d)` + un appel → `projects/` passe de 238 à 239, avec `memory/` dedans.
+- Fix : `CLAUDE_CWD="${TMPDIR:-/tmp}/erom-claude-cwd"` (chemin FIXE, partagé avec
+  erom-memory-system donc un seul slug pour tout l'atelier), `mkdir -p` avant chaque run
+  car la purge temp de macOS peut l'emporter. `TMP_DIR` reste par appel pour prompt/stderr
+  et reste jeté en Step 4 ; `CLAUDE_CWD` ne se jette JAMAIS.
+- Re-jouer : `ls ~/.claude/projects | wc -l` avant, 3 appels d'affilée de la ligne
+  Step 2 (base URL morte = zéro token), puis après. Attendu : delta 0. Mesuré : 238/238.
+- Le transport `gemini` n'est pas concerné : il passe par `agy`, pas par `claude`.

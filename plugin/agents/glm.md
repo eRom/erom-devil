@@ -49,6 +49,7 @@ adapte le nombre de blocs à tes INPUTS :
 IN1_ABS=$(realpath "$IN1_PATH"); IN2_ABS=$(realpath "$IN2_PATH")
 SCHEMA=$(tr -d '\n' < "${SCHEMA_FILE}")
 TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/glm-XXXXXX")
+CLAUDE_CWD="${TMPDIR:-/tmp}/erom-claude-cwd"; mkdir -p "$CLAUDE_CWD"  # cwd FIXE du run modèle, cf. Step 2
 PROMPT_FILE="$TMP_DIR/prompt.txt"
 {
   cat "${MISSION_FILE}"
@@ -67,8 +68,18 @@ PROMPT_FILE="$TMP_DIR/prompt.txt"
 
 Ligne de base validée par Romain + flags d'hermétisme validés le 2026-07-18 :
 
+Le `cd` vise `$CLAUDE_CWD`, chemin **fixe et partagé par tous les appels**,
+jamais `$TMP_DIR` : claude crée `~/.claude/projects/<slug-du-cwd>/memory/` au
+démarrage de CHAQUE session, y compris avec `--no-session-persistence` (qui
+n'efface que le transcript `.jsonl`). Un cwd neuf par appel laisse donc un
+dossier vide à vie par appel (constaté 2026-08-28 : 2409 dossiers en 13 jours
+côté erom-memory-system, même ligne d'appel ; reproduit ici, 1 dossier par run).
+Les artefacts de CET appel (prompt, stderr) restent dans `$TMP_DIR`, jeté en
+Step 4. Le cwd ne sert qu'à ne pas polluer le repo courant : le modèle n'y écrit
+jamais, `--tools ""` ne lui ouvre aucun outil.
+
 ```bash
-RAW=$(cd "$TMP_DIR" && ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_BASE_URL=http://localhost:11434 \
+RAW=$(cd "$CLAUDE_CWD" && ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_BASE_URL=http://localhost:11434 \
   ANTHROPIC_API_KEY="" CLAUDE_CODE_EFFORT_LEVEL=max \
   claude --model "glm-5.3-flash:cloud[1m]" --effort max --dangerously-skip-permissions \
   --strict-mcp-config --tools "" --setting-sources "" --no-session-persistence \
@@ -111,6 +122,7 @@ DETAIL=$(printf '%s' "${API_STATUS:+[$API_STATUS] }${ERR_MSG:-$(head -c 500 "$TM
 command jq -n -c --argjson review "$REVIEW" '{devil:"glm",model:"glm-5.3-flash:cloud[1m]",status:"ok",review:$review}'
 # Garde : TMP_DIR vide (état perdu entre deux appels Bash) ferait trash "" et mettrait le DOSSIER COURANT à la Corbeille.
 [ -n "${TMP_DIR:-}" ] && trash "$TMP_DIR" 2>/dev/null || true
+# Ne JAMAIS jeter $CLAUDE_CWD : il est partagé par tous les appels, il doit survivre.
 ```
 
 En cas d'échec, construis l'enveloppe error avec `jq -n -c --arg detail "…"`.
