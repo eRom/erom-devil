@@ -23,7 +23,7 @@ travail sous quatre angles, du document amont à la porte de merge :
 
 | Devil | Modèle | Transport | Swarms |
 |---|---|---|---|
-| gemini | Gemini 3.7 Flash (High) | Antigravity CLI (agy) | oui |
+| gemini | Gemini 3.8 Flash (High) | Antigravity CLI (agy) | oui |
 | glm | glm-5.3-flash:cloud[1m] | claude CLI → ollama cloud | oui |
 | deepseek | deepseek-v4-pro:cloud[1m] | claude CLI → ollama cloud | oui |
 | opus | Opus 4.8 xHigh | claude CLI | non (unitaire seulement) |
