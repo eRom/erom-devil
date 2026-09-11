@@ -53,10 +53,10 @@ reste au millimètre celle de v0.1.0 :
   Une non-conformité consomme une tentative (donc le retry unique) ; en
   échec final, les champs fautifs sont nommés dans `detail`.
 - deepseek régénéré depuis glm :
-  `sed -e 's/glm-5\.2:cloud/deepseek-v4-pro:cloud/g' -e 's/glm/deepseek/g'
+  `sed -e 's/glm-5\.2:cloud/deepseek-v4.1-flash:cloud/g' -e 's/glm/deepseek/g'
   -e 's/GLM/Deepseek/g'` (modèle d'abord). Contrôle post-génération
   obligatoire : zéro occurrence résiduelle de `glm` dans le fichier produit
-  et présence de `deepseek-v4-pro:cloud`. Les versions de modèles sont
+  et présence de `deepseek-v4.1-flash:cloud`. Les versions de modèles sont
   indicatives : à aligner sur la config ollama locale du moment.
 
 Robustesse et modèle de confiance (assumé, hérité de v0.1.0) :

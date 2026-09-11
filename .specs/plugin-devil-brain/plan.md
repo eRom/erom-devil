@@ -455,9 +455,9 @@ AUCUN texte autour.
 - [ ] **Step 3: Régénérer devil-deepseek par sed (MODÈLE d'abord) + contrôle post-génération**
 
 ```bash
-command sed -e 's/glm-5\.2:cloud/deepseek-v4-pro:cloud/g' -e 's/glm/deepseek/g' -e 's/GLM/Deepseek/g' agents/devil-glm.md > agents/devil-deepseek.md
+command sed -e 's/glm-5\.2:cloud/deepseek-v4.1-flash:cloud/g' -e 's/glm/deepseek/g' -e 's/GLM/Deepseek/g' agents/devil-glm.md > agents/devil-deepseek.md
 command grep -ci 'glm' agents/devil-deepseek.md
-command grep -c 'deepseek-v4-pro:cloud' agents/devil-deepseek.md
+command grep -c 'deepseek-v4.1-flash:cloud' agents/devil-deepseek.md
 command grep -n 'name: devil-deepseek' agents/devil-deepseek.md
 ```
 Attendu : premier grep `0` (exit 1, insensible à la casse — aucun résidu glm/GLM) ; deuxième ≥ `3` ; troisième matche la ligne 2.

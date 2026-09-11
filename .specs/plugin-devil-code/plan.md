@@ -1008,7 +1008,7 @@ depuis la 0.2.1) ; ancien :
 |---|---|---|
 | gemini | Gemini 3.5 Flash (High) | Antigravity CLI (agy) |
 | glm | glm-5.3-flash:cloud | claude CLI → ollama cloud |
-| deepseek | deepseek-v4-pro:cloud | claude CLI → ollama cloud |
+| deepseek | deepseek-v4.1-flash:cloud | claude CLI → ollama cloud |
 ```
 Nouveau :
 ```
@@ -1016,7 +1016,7 @@ Nouveau :
 |---|---|---|---|
 | gemini | Gemini 3.5 Flash (High) | Antigravity CLI (agy) | oui |
 | glm | glm-5.3-flash:cloud | claude CLI → ollama cloud | oui |
-| deepseek | deepseek-v4-pro:cloud | claude CLI → ollama cloud | oui |
+| deepseek | deepseek-v4.1-flash:cloud | claude CLI → ollama cloud | oui |
 | opus | Opus 4.8 xHigh | claude CLI | non (unitaire seulement) |
 ```
 

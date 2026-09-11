@@ -14,7 +14,7 @@ erom-agence-devil/
 ├── agents/
 │   ├── devil-spec-gemini.md          # devil-spec-reviewer renommé (agy)
 │   ├── devil-spec-glm.md             # claude -p → ollama glm-5.3-flash:cloud
-│   └── devil-spec-deepseek.md        # claude -p → ollama deepseek-v4-pro:cloud
+│   └── devil-spec-deepseek.md        # claude -p → ollama deepseek-v4.1-flash:cloud
 ├── skills/
 │   ├── devil-spec/SKILL.md           # unitaire, arg devil (défaut gemini)
 │   └── devil-spec-swarm/SKILL.md     # les 3 en parallèle + synthèse

@@ -2,7 +2,7 @@
 date: 2026-08-20
 target: working tree (arbre sale, 5 fichiers suivis)
 range: 349dd70 + working tree
-devils: deepseek (deepseek-v4-pro:cloud[1m], effort dégradé à low, voir Couverture)
+devils: deepseek (deepseek-v4.1-flash:cloud[1m], effort dégradé à low, voir Couverture)
 porte: non applicable (le dépôt ne porte ni package.json ni script de vérification)
 intent: .claude/notes/recuperable-security-guidance.md
 stack: aucun

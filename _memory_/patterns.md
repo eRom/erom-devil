@@ -38,7 +38,7 @@
   consolidation. Tri convergence puis sévérité.
 
 ## Agents symétriques
-- glm est la source ; deepseek = sed `s/glm-5\.2:cloud/deepseek-v4-pro:cloud/g`
+- glm est la source ; deepseek = sed `s/glm-5\.2:cloud/deepseek-v4.1-flash:cloud/g`
   puis `s/glm/deepseek/g` puis `s/GLM/Deepseek/g` (MODÈLE d'abord) +
   contrôle post-gen obligatoire (grep -ci 'glm' = 0, modèle présent).
 - gemini à part (protocole agy), non dérivable.

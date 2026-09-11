@@ -110,7 +110,7 @@ produit de la valeur.
 |---|---|---|---|---|---|---|---|---|---|
 | gemini | Gemini 3.8 Flash (High) | 96 | approve | 98 | 97 | 98 | 95 | 92 | 96 |
 | glm | glm-5.3-flash:cloud[1m] | 87 | approve | 88 | 92 | 93 | 90 | 75 | 82 |
-| deepseek | deepseek-v4-pro:cloud[1m] | absent | CLI_FAILED | n/a | n/a | n/a | n/a | n/a | n/a |
+| deepseek | deepseek-v4.1-flash:cloud[1m] | absent | CLI_FAILED | n/a | n/a | n/a | n/a | n/a | n/a |
 
 Moyenne indicative sur les voix exprimées : 91,5. Grille devils : deux
 `approve` sur deux voix exprimées, aucun `reject`, donc VALABLE au sens de

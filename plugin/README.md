@@ -23,7 +23,7 @@ travail sous quatre angles, du document amont à la porte de merge :
 |---|---|---|---|
 | gemini | Gemini 3.8 Flash (High) | Antigravity CLI (agy) | oui |
 | glm | glm-5.3-flash:cloud[1m] | claude CLI → ollama cloud | oui |
-| deepseek | deepseek-v4-pro:cloud[1m] | claude CLI → ollama cloud | oui |
+| deepseek | deepseek-v4.1-flash:cloud[1m] | claude CLI → ollama cloud | oui |
 | opus | Opus 4.8 xHigh | claude CLI | non (unitaire seulement) |
 | kimi | kimi-k3:cloud[1m] | claude CLI → ollama cloud | non (unitaire seulement) |
 
@@ -88,7 +88,7 @@ phase ; `review` est la porte avant merge to main.
 
 - `agy` (Antigravity CLI) authentifié, pour le devil gemini.
 - `claude` CLI + ollama local avec accès aux modèles cloud (`glm-5.3-flash:cloud`,
-  `deepseek-v4-pro:cloud`, `kimi-k3:cloud`), pour glm, deepseek et kimi.
+  `deepseek-v4.1-flash:cloud`, `kimi-k3:cloud`), pour glm, deepseek et kimi.
 - `kimi-k3:cloud` n'est pas inclus dans les forfaits Ollama : il consomme de
   l'extra usage. Sans solde, l'appel retourne `402` et le devil rend un
   `CLI_FAILED` (crédit sur https://ollama.com/settings).

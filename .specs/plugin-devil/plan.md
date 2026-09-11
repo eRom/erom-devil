@@ -259,7 +259,7 @@ AVANT implémentation.
 |---|---|---|
 | gemini | Gemini 3.5 Flash (High) | Antigravity CLI (agy) |
 | glm | glm-5.3-flash:cloud | claude CLI → ollama cloud |
-| deepseek | deepseek-v4-pro:cloud | claude CLI → ollama cloud |
+| deepseek | deepseek-v4.1-flash:cloud | claude CLI → ollama cloud |
 
 ## Usage
 
@@ -278,7 +278,7 @@ JETABLE, avec convergence des issues (3/3, 2/3, 1/3) et voix dissonantes.
 
 - `agy` (Antigravity CLI) authentifié, pour le devil gemini.
 - `claude` CLI + ollama local avec accès aux modèles cloud (`glm-5.3-flash:cloud`,
-  `deepseek-v4-pro:cloud`), pour glm et deepseek.
+  `deepseek-v4.1-flash:cloud`), pour glm et deepseek.
 - `jq`, `trash`.
 
 ## Installation
@@ -539,12 +539,12 @@ git add agents/devil-spec-glm.md && git commit -m "feat: agent devil-spec-glm"
 
 **Interfaces:**
 - Consumes: `agents/devil-spec-glm.md` committé (Task 5).
-- Produces: agent `devil-spec-deepseek`, même contrat (`"devil":"deepseek"`, `"model":"deepseek-v4-pro:cloud"`).
+- Produces: agent `devil-spec-deepseek`, même contrat (`"devil":"deepseek"`, `"model":"deepseek-v4.1-flash:cloud"`).
 
 - [ ] **Step 1 : Dériver le fichier** (l'ordre des règles sed est significatif : le modèle d'abord, sinon `s/glm/deepseek/` produirait `deepseek-5.2:cloud`) :
 
 ```bash
-sed -e 's/glm-5\.2:cloud/deepseek-v4-pro:cloud/g' \
+sed -e 's/glm-5\.2:cloud/deepseek-v4.1-flash:cloud/g' \
     -e 's/glm/deepseek/g' \
     -e 's/GLM/Deepseek/g' \
     agents/devil-spec-glm.md > agents/devil-spec-deepseek.md
@@ -553,7 +553,7 @@ sed -e 's/glm-5\.2:cloud/deepseek-v4-pro:cloud/g' \
 - [ ] **Step 2 : Vérifier la dérivation**
 
 ```bash
-command grep -c 'glm' agents/devil-spec-deepseek.md; command grep -c 'deepseek-v4-pro:cloud' agents/devil-spec-deepseek.md; command grep -n 'name:' agents/devil-spec-deepseek.md | head -1
+command grep -c 'glm' agents/devil-spec-deepseek.md; command grep -c 'deepseek-v4.1-flash:cloud' agents/devil-spec-deepseek.md; command grep -n 'name:' agents/devil-spec-deepseek.md | head -1
 ```
 Attendu : `0`, puis ≥ `4`, puis `name: devil-spec-deepseek`.
 
