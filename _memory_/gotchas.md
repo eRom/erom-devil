@@ -137,7 +137,9 @@
 ## Le timeout de 540 s des agents est trop court pour l'effort max
 - Rejouable : `tests-devil/` (paquet figé de 128 338 octets, deux scripts).
 - Mesure du 2026-08-20, même paquet, même modèle
-  `deepseek-v4.1-flash:cloud[1m]`, même ligne d'appel, seule l'effort change :
+  `deepseek-v4-pro:cloud[1m]`, même ligne d'appel, seule l'effort change.
+  **Non re-mesuré sur `deepseek-v4.1-flash:cloud[1m]`**, le modèle du devil
+  depuis la 0.9.3 (8991e8a) : les durées ci-dessous ne valent que pour pro.
 
   | | `max` | `low` |
   |---|---|---|
@@ -225,8 +227,8 @@
   détruit par le `trash` de son étape 4. Reproduire en direct avant de
   traiter ce point comme définitif.
 - **Non mesuré** : le seuil de bascule entre un prompt minimal et 101 Ko,
-  et le comportement des autres modèles. Seul `deepseek-v4.1-flash:cloud[1m]`
-  a été testé ; l'extrapolation aux 5 agents repose sur le seul fait
+  et le comportement des autres modèles. Seul `deepseek-v4-pro:cloud[1m]`
+  a été testé, pas `deepseek-v4.1-flash` qui l'a remplacé ; l'extrapolation aux 5 agents repose sur le seul fait
   qu'ils posent tous `CLAUDE_CODE_EFFORT_LEVEL=max` en dur dans leur
   Step 2, pas sur une mesure.
 - Conséquence pratique, dans la limite de ce qui précède : sur un paquet
@@ -239,7 +241,8 @@
   `[claude-code:unrecognized_model] {"model":"deepseek-v4.1-flash:cloud[1m]",
   "query_source":"generate_session_title"}` **même quand l'appel
   réussit**. C'est cosmétique (génération du titre de session), ce n'est
-  jamais la cause. Vérifié sur un appel minimal `is_error:false`.
+  jamais la cause. Vérifié sur un appel minimal `is_error:false`, avec
+  pro le 2026-08-20 puis avec flash le 2026-09-11.
 
 ## Push / remote
 - Les 2 repos en HTTPS (SSH publickey denied dans cet env). Marketplace :
