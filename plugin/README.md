@@ -53,12 +53,17 @@ et s'appellent unitairement, pour un second avis hors consensus du swarm.
 /erom-devil:review-swarm main             # tribunal de merge + vérification
 ```
 
-**spec** - entrées : 2 fichiers (brainstorming + specs). Sortie par
+**spec** - entrées : 2 fichiers (brainstorming + specs). Sans chemins, ils
+sont trouvés seuls : la paire superpowers
+`docs/superpowers/docs/intents/<date>-<topic>-intent.md` +
+`docs/superpowers/specs/<date>-<topic>-design.md`, sinon `.specs/` (anciens
+projets). Sortie par
 devil : JSON strict (score 0-100, verdict approve/rework/reject, 7 critères,
 issues actionnables). Le swarm consolide : VALABLE, MODIFICATIONS REQUISES,
 ou JETABLE, avec convergence des issues (3/3, 2/3, 1/3) et voix dissonantes.
 
-**brain** - entrée : 1 fichier (brainstorming). Sortie par devil : les
+**brain** - entrée : 1 fichier (brainstorming ; sans chemin, cherché dans
+les fiches d'intention superpowers, sinon `.specs/`). Sortie par devil : les
 5 questions les plus dangereuses jamais posées (domaine, risque, criticité)
 plus une impression en une ligne - sans score ni verdict, 0 question = prêt
 à spécifier. Le swarm consolide par convergence, tri criticité puis

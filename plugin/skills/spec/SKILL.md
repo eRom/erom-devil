@@ -38,19 +38,34 @@ rapport et guides les corrections.
 Utilise-les directement. Vérifie qu'ils existent.
 
 ### Si aucun path
-Auto-detect :
-1. Cherche `brainstorming.md` et `*-technique.md` ou `plan.md` dans `.specs/`
-   (Glob `**/*.md`)
-2. Si plusieurs chantiers existent, demande à Romain lequel reviewer
-3. Si un seul chantier, prends le brainstorming.md + le fichier de specs le
-   plus récent
+Auto-detect, premier schéma trouvé gagne :
+
+1. **Schéma superpowers** (fiche d'intention = le brainstorm) :
+   - Glob `docs/superpowers/specs/*-design.md` et
+     `docs/superpowers/docs/intents/*-intent.md`.
+   - Apparie chaque spec `YYYY-MM-DD-<topic>-design.md` à la fiche
+     `YYYY-MM-DD-<topic>-intent.md` de même préfixe. Si le préfixe ne matche
+     pas, lis les premières lignes de la spec : elle s'ouvre sur une ligne qui
+     pointe vers sa fiche d'intention ; si ce chemin existe, c'est la paire.
+   - Une spec sans fiche d'intention (ni préfixe, ni lien valide) : dis-le
+     clairement (« spec `<chemin>` sans fiche d'intention »), ne l'apparie à
+     rien, n'invente aucun brainstorm. Si c'est la seule spec trouvée, arrête
+     et demande le chemin du brainstorm à Romain.
+   - Une fiche d'intention sans spec n'est pas une paire : ignore-la.
+2. **Repli `.specs/`** (anciens projets), seulement si le schéma superpowers
+   ne donne aucune paire : cherche `brainstorming.md` et `*-technique.md` ou
+   `plan.md` dans `.specs/` (Glob `**/*.md`) ; un chantier = un dossier, avec
+   son brainstorming.md + le fichier de specs le plus récent.
+3. Plusieurs paires ou chantiers : liste-les (le plus récent en premier) et
+   demande à Romain lequel reviewer. Un seul : prends-le.
+4. Rien trouvé : arrête et demande les deux chemins, aucun appel modèle.
 
 ### Confirmation
 Toujours confirmer avant de lancer :
 
 > **Fichiers détectés :**
-> - Brainstorm : `.specs/mvp/brainstorming.md`
-> - Specs : `.specs/mvp/architecture-technique.md`
+> - Brainstorm : `docs/superpowers/docs/intents/2026-09-25-mvp-intent.md`
+> - Specs : `docs/superpowers/specs/2026-09-25-mvp-design.md`
 > - Devil : glm (glm-5.3-flash:cloud[1m])
 >
 > Je lance la review ?

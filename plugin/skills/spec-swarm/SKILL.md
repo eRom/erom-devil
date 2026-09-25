@@ -20,7 +20,10 @@ et `MISSION_FILE` = `<racine>/scripts/devil-spec-mission.md`, vérifie l'existen
 ## Étape 1 — Fichiers d'entrée
 
 Même détection, mêmes règles et même confirmation que /erom-devil:spec (paths en
-argument sinon auto-detect `.specs/`), avec l'annonce :
+argument, sinon auto-detect : paires superpowers
+`docs/superpowers/docs/intents/*-intent.md` ↔ `docs/superpowers/specs/*-design.md`
+d'abord, repli `.specs/` ensuite ; spec sans fiche d'intention signalée, jamais
+appariée à un brainstorm inventé), avec l'annonce :
 
 > **Tribunal convoqué :** gemini + glm + deepseek en parallèle (jusqu'à 20 min).
 > Fichiers : <brainstorm> vs <specs>. Je lance ?
