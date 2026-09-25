@@ -1,4 +1,4 @@
-![erom-devil](assets/erom-devil.png)
+![erom-devil](plugin/assets/erom-devil.png)
 
 # erom-devil - avocats du diable pour la définition de besoins
 

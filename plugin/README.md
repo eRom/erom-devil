@@ -1,5 +1,8 @@
 # erom-devil - avocats du diable pour la définition de besoins
 
+![erom-devil](assets/erom-devil.png)
+
+
 Plugin Claude Code. Trois reviewers critiques externes (Gemini, GLM,
 Deepseek), renforcés par Opus et Kimi en review unitaire, attaquent ton
 travail sous quatre angles, du document amont à la porte de merge :
