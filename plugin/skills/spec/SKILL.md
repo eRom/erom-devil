@@ -42,7 +42,7 @@ Auto-detect, premier schéma trouvé gagne :
 
 1. **Schéma superpowers** (fiche d'intention = le brainstorm) :
    - Glob `docs/superpowers/specs/*-design.md` et
-     `docs/superpowers/docs/intents/*-intent.md`.
+     `docs/superpowers/intents/*-intent.md`.
    - Apparie chaque spec `YYYY-MM-DD-<topic>-design.md` à la fiche
      `YYYY-MM-DD-<topic>-intent.md` de même préfixe. Si le préfixe ne matche
      pas, lis les premières lignes de la spec : elle s'ouvre sur une ligne qui
@@ -64,7 +64,7 @@ Auto-detect, premier schéma trouvé gagne :
 Toujours confirmer avant de lancer :
 
 > **Fichiers détectés :**
-> - Brainstorm : `docs/superpowers/docs/intents/2026-09-25-mvp-intent.md`
+> - Brainstorm : `docs/superpowers/intents/2026-09-25-mvp-intent.md`
 > - Specs : `docs/superpowers/specs/2026-09-25-mvp-design.md`
 > - Devil : glm (glm-5.3-flash:cloud[1m])
 >

@@ -36,7 +36,7 @@ amendes le doc au fil de ses réponses.
 
 - Path fourni en argument → vérifie qu'il existe et n'est pas vide.
   Introuvable ou vide → arrête et demande, AUCUN appel modèle.
-- Sinon auto-detect : Glob `docs/superpowers/docs/intents/*-intent.md`
+- Sinon auto-detect : Glob `docs/superpowers/intents/*-intent.md`
   (fiches d'intention superpowers) ; aucune → repli Glob `**/brainstorming.md`
   dans `.specs/`. Plusieurs candidats → liste-les (le plus récent en premier)
   et demande lequel ; un seul → prends-le.

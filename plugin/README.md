@@ -55,7 +55,7 @@ et s'appellent unitairement, pour un second avis hors consensus du swarm.
 
 **spec** - entrées : 2 fichiers (brainstorming + specs). Sans chemins, ils
 sont trouvés seuls : la paire superpowers
-`docs/superpowers/docs/intents/<date>-<topic>-intent.md` +
+`docs/superpowers/intents/<date>-<topic>-intent.md` +
 `docs/superpowers/specs/<date>-<topic>-design.md`, sinon `.specs/` (anciens
 projets). Sortie par
 devil : JSON strict (score 0-100, verdict approve/rework/reject, 7 critères,

@@ -21,7 +21,7 @@ l'existence.
 ## Étape 1 — Doc de brainstorming
 
 Identique à /erom-devil:brain (path explicite sinon auto-detect
-`docs/superpowers/docs/intents/*-intent.md`, repli `**/brainstorming.md` dans
+`docs/superpowers/intents/*-intent.md`, repli `**/brainstorming.md` dans
 `.specs/` ; introuvable ou vide → stop sans
 appel ; en pleine session sans fichier → écris d'abord le draft).
 Confirmation :

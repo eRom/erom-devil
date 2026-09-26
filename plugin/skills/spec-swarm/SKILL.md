@@ -21,7 +21,7 @@ et `MISSION_FILE` = `<racine>/scripts/devil-spec-mission.md`, vérifie l'existen
 
 Même détection, mêmes règles et même confirmation que /erom-devil:spec (paths en
 argument, sinon auto-detect : paires superpowers
-`docs/superpowers/docs/intents/*-intent.md` ↔ `docs/superpowers/specs/*-design.md`
+`docs/superpowers/intents/*-intent.md` ↔ `docs/superpowers/specs/*-design.md`
 d'abord, repli `.specs/` ensuite ; spec sans fiche d'intention signalée, jamais
 appariée à un brainstorm inventé), avec l'annonce :
 
