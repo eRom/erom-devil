@@ -39,7 +39,7 @@ amont à la porte de merge. Quatre exercices :
 | gemini | Gemini 3.8 Flash (High) | agy (review par fichier, bug stdout #76) |
 | glm | glm-5.3-flash:cloud[1m] | claude -p ollama cloud (JSON stdout) |
 | deepseek | deepseek-v4.1-flash:cloud[1m] | idem glm (jumeau sed) |
-| opus | Opus 4.8 xHigh | claude -p (hors swarms, unitaire seulement) |
+| opus | Opus 5.5 High | claude -p (hors swarms, unitaire seulement) |
 | kimi | kimi-k3:cloud[1m] | idem glm (jumeau sed) ; hors swarms, unitaire |
 
 Le suffixe `[1m]` (contexte 1M) est porté par les 3 transports ollama, dans

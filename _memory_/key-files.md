@@ -32,7 +32,7 @@
   marqueurs `=== BEGIN LABEL ===` ; parse .result + strip fences.
 - `deepseek.md` — jumeau sed de glm.md (modèle d'abord). À régénérer
   par sed si glm change + contrôle post-gen (0 « glm » résiduel).
-- `opus.md` — claude -p (Opus 4.8 xHigh) ; même contrat de transport ;
+- `opus.md` — claude -p (Opus 5.5 High) ; même contrat de transport ;
   hors swarms, dispo en unitaire (`/erom-devil:<skill> opus`).
 - `kimi.md` — jumeau sed de glm.md (kimi-k3:cloud[1m]) ; hors
   swarms comme opus, juge indépendant en unitaire (`/erom-devil:<skill> kimi`).

@@ -28,8 +28,8 @@ VALIDATE_JQ en bash entre single quotes.
 ## Sortie (contrat strict)
 
 Ton message final est UN objet JSON sur une ligne, rien d'autre :
-- succès : `{"devil":"opus","model":"Opus 4.8 xHigh","status":"ok","review":{…}}`
-- échec  : `{"devil":"opus","model":"Opus 4.8 xHigh","status":"error","error":"CLI_FAILED|PARSE_ERROR|SCHEMA_INVALID|TIMEOUT","detail":"≤ 500 chars"}`
+- succès : `{"devil":"opus","model":"Opus 5.5 High","status":"ok","review":{…}}`
+- échec  : `{"devil":"opus","model":"Opus 5.5 High","status":"error","error":"CLI_FAILED|PARSE_ERROR|SCHEMA_INVALID|TIMEOUT","detail":"≤ 500 chars"}`
 
 ## Procédure
 
@@ -77,7 +77,7 @@ Step 4. Le cwd ne sert qu'à ne pas polluer le repo courant : le modèle n'y éc
 jamais, `--tools ""` ne lui ouvre aucun outil.
 
 ```bash
-RAW=$(cd "$CLAUDE_CWD" && claude --model opus --effort xhigh --dangerously-skip-permissions \
+RAW=$(cd "$CLAUDE_CWD" && claude --model claude-opus-5-5 --effort high --dangerously-skip-permissions \
   --strict-mcp-config --tools "" --setting-sources "" --no-session-persistence \
   -p --output-format json < "$PROMPT_FILE" 2>"$TMP_DIR/stderr.log")
 ```
@@ -115,7 +115,7 @@ DETAIL=$(printf '%s' "${API_STATUS:+[$API_STATUS] }${ERR_MSG:-$(head -c 500 "$TM
 ### Step 4 — Enveloppe et nettoyage
 
 ```bash
-command jq -n -c --argjson review "$REVIEW" '{devil:"opus",model:"Opus 4.8 xHigh",status:"ok",review:$review}'
+command jq -n -c --argjson review "$REVIEW" '{devil:"opus",model:"Opus 5.5 High",status:"ok",review:$review}'
 # Garde : TMP_DIR vide (état perdu entre deux appels Bash) ferait trash "" et mettrait le DOSSIER COURANT à la Corbeille.
 [ -n "${TMP_DIR:-}" ] && trash "$TMP_DIR" 2>/dev/null || true
 # Ne JAMAIS jeter $CLAUDE_CWD : il est partagé par tous les appels, il doit survivre.

@@ -27,7 +27,7 @@ travail sous quatre angles, du document amont à la porte de merge :
 | gemini | Gemini 3.8 Flash (High) | Antigravity CLI (agy) | oui |
 | glm | glm-5.3-flash:cloud[1m] | claude CLI → ollama cloud | oui |
 | deepseek | deepseek-v4.1-flash:cloud[1m] | claude CLI → ollama cloud | oui |
-| opus | Opus 4.8 xHigh | claude CLI | non (unitaire seulement) |
+| opus | Opus 5.5 High | claude CLI | non (unitaire seulement) |
 | kimi | kimi-k3:cloud[1m] | claude CLI → ollama cloud | non (unitaire seulement) |
 
 Opus et Kimi sont des juges indépendants : ils ne siègent pas aux tribunaux
