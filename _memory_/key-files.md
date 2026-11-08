@@ -34,7 +34,7 @@
   par sed si glm change + contrôle post-gen (0 « glm » résiduel).
 - `opus.md` — claude -p (Opus 5.5 High) ; même contrat de transport ;
   hors swarms, dispo en unitaire (`/erom-devil:<skill> opus`).
-- `kimi.md` — jumeau sed de glm.md (kimi-k3:cloud[1m]) ; hors
+- `kimi.md` — jumeau sed de glm.md (kimi-k3.1-pro:cloud[1m]) ; hors
   swarms comme opus, juge indépendant en unitaire (`/erom-devil:<skill> kimi`).
   Modèle hors forfait Ollama : 402 sans extra usage (voir gotchas.md).
 - Les 3 transports ollama portent `[1m]` aux 5 mêmes emplacements (desc,

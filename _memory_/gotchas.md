@@ -46,7 +46,13 @@
 - Sans danger dans une valeur JSON de programme `jq` (`model:"…[1m]"`,
   testé exit 0) : le piège est le shell, pas jq.
 
-## Kimi (kimi-k3:cloud) — hors forfait Ollama
+## Kimi (kimi-k3.1-pro:cloud depuis 0.11.0) — hors forfait Ollama
+- 2026-11-08 : passage à `kimi-k3.1-pro:cloud[1m]`. `ollama show
+  kimi-k3.1-pro:cloud` : archi kimi-k3, 2.8T, MXFP4, context 1048576, thinking
+  défaut max. Smoke test claude CLI OK (`result:"OK kimi"`). claude CLI émet
+  `[claude-code:unrecognized_model]` sur STDERR : inoffensif, le transport
+  redirige stderr. Les mesures ci-dessous restent celles de `kimi-k3:cloud`
+  (non re-mesurées sur k3.1-pro).
 - Tag exact `kimi-k3:cloud` (2.8T params, MXFP4, `context_length` 1048576 →
   le `[1m]` est justifié). `kimi-3:cloud` et `kimi-k2:cloud` n'existent pas ;
   `kimi-k2-thinking:cloud` répond 410 (retiré).
@@ -95,6 +101,10 @@
 ## agy (devil gemini)
 - `--print` DERNIER flag avant le prompt ; `< /dev/null` obligatoire ;
   review lue depuis un FICHIER écrit par agy (bug amont #76, stdout parfois vide).
+- Depuis agy 1.5.3 (2026-11-08) : flag `--effort low|medium|high|xhigh|max`.
+  Le devil passe `--model gemini-4-argon --effort medium` (smoke test OK).
+  `agy models` liste aussi des IDs suffixés (`gemini-4-argon-medium`) : la forme
+  modèle + `--effort` est celle retenue.
 
 ## sed glm→deepseek
 - MODÈLE d'abord (`glm-5\.2:cloud` avant `glm`), sinon chimère

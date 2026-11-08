@@ -1,6 +1,6 @@
 ---
 name: kimi
-description: Transport Kimi des avocats du diable — assemble mission + inputs étiquetés, appelle claude CLI sur ollama cloud (kimi-k3:cloud[1m]), retourne l'enveloppe JSON. L'exercice est porté par la mission fournie.
+description: Transport Kimi des avocats du diable — assemble mission + inputs étiquetés, appelle claude CLI sur ollama cloud (kimi-k3.1-pro:cloud[1m]), retourne l'enveloppe JSON. L'exercice est porté par la mission fournie.
 color: red
 tools: Bash, Read, Glob, Grep
 model: sonnet
@@ -28,8 +28,8 @@ VALIDATE_JQ en bash entre single quotes.
 ## Sortie (contrat strict)
 
 Ton message final est UN objet JSON sur une ligne, rien d'autre :
-- succès : `{"devil":"kimi","model":"kimi-k3:cloud[1m]","status":"ok","review":{…}}`
-- échec  : `{"devil":"kimi","model":"kimi-k3:cloud[1m]","status":"error","error":"CLI_FAILED|PARSE_ERROR|SCHEMA_INVALID|TIMEOUT","detail":"≤ 500 chars"}`
+- succès : `{"devil":"kimi","model":"kimi-k3.1-pro:cloud[1m]","status":"ok","review":{…}}`
+- échec  : `{"devil":"kimi","model":"kimi-k3.1-pro:cloud[1m]","status":"error","error":"CLI_FAILED|PARSE_ERROR|SCHEMA_INVALID|TIMEOUT","detail":"≤ 500 chars"}`
 
 ## Procédure
 
@@ -81,7 +81,7 @@ jamais, `--tools ""` ne lui ouvre aucun outil.
 ```bash
 RAW=$(cd "$CLAUDE_CWD" && ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_BASE_URL=http://localhost:11434 \
   ANTHROPIC_API_KEY="" CLAUDE_CODE_EFFORT_LEVEL=max \
-  claude --model "kimi-k3:cloud[1m]" --effort max --dangerously-skip-permissions \
+  claude --model "kimi-k3.1-pro:cloud[1m]" --effort max --dangerously-skip-permissions \
   --strict-mcp-config --tools "" --setting-sources "" --no-session-persistence \
   -p --output-format json < "$PROMPT_FILE" 2>"$TMP_DIR/stderr.log")
 ```
@@ -119,7 +119,7 @@ DETAIL=$(printf '%s' "${API_STATUS:+[$API_STATUS] }${ERR_MSG:-$(head -c 500 "$TM
 ### Step 4 — Enveloppe et nettoyage
 
 ```bash
-command jq -n -c --argjson review "$REVIEW" '{devil:"kimi",model:"kimi-k3:cloud[1m]",status:"ok",review:$review}'
+command jq -n -c --argjson review "$REVIEW" '{devil:"kimi",model:"kimi-k3.1-pro:cloud[1m]",status:"ok",review:$review}'
 # Garde : TMP_DIR vide (état perdu entre deux appels Bash) ferait trash "" et mettrait le DOSSIER COURANT à la Corbeille.
 [ -n "${TMP_DIR:-}" ] && trash "$TMP_DIR" 2>/dev/null || true
 # Ne JAMAIS jeter $CLAUDE_CWD : il est partagé par tous les appels, il doit survivre.
